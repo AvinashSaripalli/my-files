@@ -1,28 +1,43 @@
-Employee Management System
-This project is an Employee Management System designed to help organizations manage their employee data, including employee registration, login, profile management, and role-based access. It supports CRUD operations for employee data and features role-based dashboards for administrators, managers, and employees.
+# Employee Management System
 
-Features
-User Authentication: Login and registration with JWT-based authentication.
+This is an Employee Management System (EMS) built using Node.js, Express.js, MySQL, and ReactJS. The system allows users to perform CRUD operations on employee data, with role-based access (Admin, Manager, Employee). The admin and manager can perform CRUD operations on employee data, while employees have access to their personal data.
 
-Role-Based Access: Admin, Manager, and Employee roles, each with specific permissions.
+## Features
 
-Employee Management: CRUD operations to manage employee data (create, read, update, delete).
+- **User Authentication**: Role-based authentication (Admin, Manager, Employee).
+- **CRUD Operations**: Admin and Manager can Create, Read, Update, and Delete employee records.
+- **Employee Dashboard**: Displays personalized data for employees.
+- **Role-based Access**: Different levels of access for Admin, Manager, and Employee.
+- **File Upload**: Employee profile photos can be uploaded.
+- **Employee Management**: Manage employees by adding new records, editing existing records, and deleting them.
+- **Analytics**: Various charts and graphs for analyzing employee data by department, role, etc.
 
-Employee Dashboard: A dashboard displaying employee-specific information.
+## Tech Stack
 
-Admin Dashboard: An admin panel to manage users, view employee data, and track analytics.
+- **Frontend**:
+  - ReactJS (Material UI, Redux)
+  - React Router
+- **Backend**:
+  - Node.js with Express.js
+  - MySQL Database
+  - JWT Authentication
+  - Multer for file uploads
+- **Development Tools**:
+  - npm
+  - Visual Studio Code
 
-File Upload: Profile pictures and other employee-related documents can be uploaded and stored.
+## Installation
 
-Department and Location-Based Filtering: Filter employees based on departments or locations.
+### Prerequisites
 
-Tech Stack
-Frontend: ReactJS, Material UI, Redux (for state management)
+- Node.js (v14 or higher)
+- MySQL
+- npm (Node Package Manager)
 
-Backend: Node.js, Express.js
+### Backend Setup
 
-Database: MySQL
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/AvinashSaripalli/Employee-Management-System.git
+   cd Employee-Management-System
 
-Authentication: JWT (JSON Web Tokens)
-
-File Storage: Multer (for handling file uploads)
