@@ -3,8 +3,141 @@ const bcrypt = require("bcryptjs");
 const db = require("../db");
 require("dotenv").config(); 
 
+// exports.registerUsers = async (req, res) => {
+//   const {
+//     firstName, lastName, email, phoneNumber, password, companyName, role, 
+//     designation, department, jobLocation, dateOfBirth, bloodGroup, 
+//     technicalSkills, employeeId, gender, confirmPassword
+//   } = req.body;
+
+//   if (!password) {
+//     return res.status(400).json({ error: "Password is required" });
+//   }
+
+//   const photo = req.file ? `/uploads/${req.file.filename}` : null;
+
+//   try {
+//     // Check if email already exists
+//     const checkEmailQuery = "SELECT email FROM users WHERE email = ?";
+//     db.query(checkEmailQuery, [email], async (err, results) => {
+//       if (err) {
+//         console.error("MySQL error:", err);
+//         return res.status(500).json({ error: "Database error" });
+//       }
+//       if (results.length > 0) {
+//         return res.status(400).json({ error: "Email already exists" });
+//       }
+
+//       try {
+//         // Hash the password safely
+//         const hashedPassword = await bcrypt.hash(password, 10);
+
+//         // Insert user data into database
+//         const insertQuery = `INSERT INTO users 
+//           (firstName, lastName, email, phoneNumber, password, companyName, role, 
+//           designation, department, jobLocation, dateOfBirth, bloodGroup, photo, 
+//           technicalSkills, employeeId, gender, confirmPassword) 
+//           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+//         db.query(
+//           insertQuery, 
+//           [firstName, lastName, email, phoneNumber, hashedPassword, companyName, 
+//           role, designation, department, jobLocation, dateOfBirth, bloodGroup, 
+//           photo, technicalSkills, employeeId, gender, confirmPassword], 
+//           (err, result) => {
+//             if (err) {
+//               console.error("MySQL error:", err);
+//               return res.status(500).json({ error: "Failed to add user" });
+//             }
+//             res.status(201).json({ message: "User added successfully" });
+//           }
+//         );
+//       } catch (hashError) {
+//         console.error("Error hashing password:", hashError);
+//         return res.status(500).json({ error: "Error hashing password" });
+//       }
+//     });
+//   } catch (error) {
+//     console.error("Server error:", error);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
+
 exports.registerUsers = async (req, res) => {
-  const {firstName, lastName, email, phoneNumber, companyName,role, designation, department, jobLocation, dateOfBirth,bloodGroup, technicalSkills, employeeId, gender,} = req.body;
+  const {
+    firstName, lastName, email, phoneNumber, password, companyName, role, 
+    designation, department, jobLocation, dateOfBirth, bloodGroup, 
+    technicalSkills, employeeId, gender, confirmPassword
+  } = req.body;
+
+  // Validate required fields
+  if (!password) {
+    return res.status(400).json({ error: "Password is required" });
+  }
+  if (!confirmPassword) {
+    return res.status(400).json({ error: "Confirm password is required" });
+  }
+  if (password !== confirmPassword) {
+    return res.status(400).json({ error: "Passwords do not match" });
+  }
+  if (!req.file) {
+    return res.status(400).json({ error: "Photo is required" });
+  }
+
+  const photo = `/uploads/${req.file.filename}`;
+
+  try {
+    // Check if email already exists
+    const checkEmailQuery = "SELECT email FROM users WHERE email = ?";
+    db.query(checkEmailQuery, [email], async (err, results) => {
+      if (err) {
+        console.error("MySQL error:", err);
+        return res.status(500).json({ error: "Database error", details: err.message });
+      }
+      if (results.length > 0) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      try {
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Insert user data, including confirmPassword
+        const insertQuery = `INSERT INTO users 
+          (firstName, lastName, email, phoneNumber, password, companyName, role, 
+           designation, department, jobLocation, dateOfBirth, bloodGroup, photo, 
+           technicalSkills, employeeId, gender, confirmPassword) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        db.query(
+          insertQuery,
+          [
+            firstName, lastName, email, phoneNumber, hashedPassword, companyName,
+            role, designation, department, jobLocation, dateOfBirth, bloodGroup,
+            photo, technicalSkills, employeeId, gender, confirmPassword
+          ],
+          (err, result) => {
+            if (err) {
+              console.error("MySQL error:", err);
+              return res.status(500).json({ error: "Failed to add user", details: err.message });
+            }
+            res.status(201).json({ message: "User added successfully" });
+          }
+        );
+      } catch (hashError) {
+        console.error("Error hashing password:", hashError);
+        return res.status(500).json({ error: "Error hashing password", details: hashError.message });
+      }
+    });
+  } catch (error) {
+    console.error("Server error:", error);
+    res.status(500).json({ error: "Server error", details: error.message });
+  }
+};
+
+exports.registerUser = async (req, res) => {
+  const {firstName, lastName, email, phoneNumber, password, companyName,role, designation, department, jobLocation, dateOfBirth,bloodGroup, technicalSkills, gender, confirmPassword} = req.body;
+  
   const photo = req.file ? `/uploads/${req.file.filename}` : null;
 
   try {
@@ -17,17 +150,43 @@ exports.registerUsers = async (req, res) => {
       if (results.length > 0) {
         return res.status(400).json({ error: "Email already exists" });
       }
-      const insertQuery = `INSERT INTO users 
-        (firstName, lastName, email, phoneNumber,  companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, employeeId, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-      db.query(insertQuery, 
-        [firstName, lastName, email, phoneNumber,  companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, employeeId, gender], (err, result) => {
-          if (err) {
-            console.error("MySQL error:", err);
-            return res.status(500).json({ error: "Failed to add user" });
+      const getLastEmployeeQuery = `
+        SELECT employeeId FROM users WHERE companyName = ?  ORDER BY employeeId DESC LIMIT 1
+      `;
+      db.query(getLastEmployeeQuery, [companyName], async (err, results) => {
+        if (err) {
+          console.error("MySQL error:", err);
+          return res.status(500).json({ error: "Error fetching last employee ID" });
+        }
+
+        let newEmployeeId;
+        if (results.length > 0) {
+          const lastEmployeeId = results[0].employeeId;
+          const prefix = lastEmployeeId.slice(0, 2);
+          const number = parseInt(lastEmployeeId.slice(2)) + 1;
+          newEmployeeId = `${prefix}${number.toString().padStart(3, '0')}`;
+        } else {
+          newEmployeeId = companyName === "Karncy" ? "KC001" : "KN001";
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const insertQuery = `INSERT INTO users 
+          (firstName, lastName, email, phoneNumber, password, companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, employeeId, gender, confirmPassword) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        db.query(insertQuery, 
+          [firstName, lastName, email, phoneNumber, hashedPassword, companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, newEmployeeId, gender, confirmPassword], 
+          (err, result) => {
+            if (err) {
+              console.error("MySQL error:", err);
+              return res.status(500).json({ error: "Failed to add user" });
+            }
+            res.status(201).json({ message: "User added successfully", employeeId: newEmployeeId });
           }
-          res.status(201).json({ message: "User added successfully" });
-        });
+        );
+      });
     });
   } catch (error) {
     console.error("Error hashing password:", error);

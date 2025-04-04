@@ -25,46 +25,7 @@ const togglePasswordVisibility = () => {
     const { name, value } = e.target;
     setLoginValues({ ...loginValues, [name]: value });
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await axios.post("http://localhost:5000/api/login", loginValues);
-  //     if (response.data.success) {
-  //       const { token,role, photo, companyName, designation, email, firstName,jobLocation,lastName,phoneNumber,department,id,technicalSkills,dateOfBirth,bloodGroup,gender} = response.data;
-  //       localStorage.setItem("token", token);
-  //       localStorage.setItem("userRole", role);
-  //       localStorage.setItem("userPhoto", photo);
-  //       localStorage.setItem("companyName", companyName);
-  //       localStorage.setItem("userDesignation", designation);
-  //       localStorage.setItem("userJobLocation", jobLocation);
-  //       localStorage.setItem("userEmail",email);
-  //       localStorage.setItem("userFirstName", firstName);
-  //       localStorage.setItem("userLastName", lastName);
-  //       localStorage.setItem("userPhoneNumber", phoneNumber);
-  //       localStorage.setItem("userDepartment", department);
-  //       localStorage.setItem("userId", id);
-  //       localStorage.setItem("userTechnicalSkills", technicalSkills);
-  //       localStorage.setItem("userDateofBirth",dateOfBirth);
-  //       localStorage.setItem("userBloodGroup",bloodGroup);
-  //       localStorage.setItem("userGender",gender);
-        
-  //       setSnackbar({ open: true, message: "Login successful!", severity: "success" });
-
-  //       setTimeout(() => {navigate("/sidebar");}, 1000);
-  //       // navigate("/sidebar");
-  //       console.log("Login Success");
-  //       console.log(localStorage.getItem("userPhoto"));
-  //     } else {
-  //       // alert("Invalid login credentials.");
-  //       setSnackbar({ open: true, message: "Incorrect email or password.", severity: "error" });
-  //     }
-  //   } catch (error) {
-  //     console.error("Login Failed", error);
-  //     setSnackbar({ open: true, message: "Login failed. Please try again.", severity: "error" });
-  //   }
-  // };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

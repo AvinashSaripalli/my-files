@@ -16,6 +16,8 @@ app.use('/api', userRoutes);
 const leaveRoutes = require('./routes/leaveRoutes');
 app.use('/api/leaves', leaveRoutes);
 
+const reportRoutes = require("./routes/reportRoutes");
+app.use("/api/reports", reportRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

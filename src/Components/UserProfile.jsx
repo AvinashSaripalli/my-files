@@ -271,7 +271,7 @@ const UserProfile = () => {
         </Typography>
         
       <Paper
-        elevation={6}
+        elevation={1}
         sx={{
           mt: 1,
           p: 3,

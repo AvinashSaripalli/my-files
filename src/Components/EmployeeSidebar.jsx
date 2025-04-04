@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowCircleLeft, ArrowCircleRight, LogoutCurve,Note,Notepad2,Profile,} from "iconsax-react";
 import { Notification } from "iconsax-react";
 import { Badge } from "@mui/material";
+import WorkReports from './WorkReports';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('EmployeesList');
@@ -43,6 +44,7 @@ const Sidebar = () => {
       return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</Box>;
     }
     switch (selectedComponent) {
+      case 'Work Reports': return <WorkReports />;
       case 'Apply Leave': return <ApplyLeave />;
       case 'My Leaves': return <MyLeaves />;
       case 'Profile': return <EmployeeProfile />;
@@ -105,6 +107,12 @@ const Sidebar = () => {
         </ListItem>
         <Divider/>
           {[
+
+            { text: 'Work Reports', icon: selectedComponent === 'Work Reports' 
+              ? <Notepad2 size="25" variant="Bold"/>  
+              : <Notepad2 size="25" variant="Outline"/> 
+            },
+
             { text: 'Apply Leave', icon: selectedComponent === 'Apply Leave'
                 ?  <Note size="25" variant="Bold"/>
                 :  <Note size="25" variant="Outline"/>
@@ -135,7 +143,7 @@ const Sidebar = () => {
               <Collapse in={sidebarOpen} orientation="horizontal"><ListItemText primary="Logout" /></Collapse>
             </ListItemButton>
           </ListItem>
-          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '320px' }}>
+          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '250px' }}>
             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
               {sidebarOpen ? <ArrowCircleLeft size="22" color="#14286d"/> : <ArrowCircleRight size="24" color="#14286d"/>}
             </IconButton>
