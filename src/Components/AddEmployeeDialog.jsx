@@ -154,7 +154,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
             value={user.employeeId}
             variant="outlined"
             InputProps={{ readOnly: true }}
-            sx={{ ml: 1, width: "740px", mt: 1, mr: 1 }}
+            sx={{ ml: 1, width: "720px", mt: 1, mr: 1 }}
           />
           <div style={{ display: "flex", alignItems: "flex-start" }}>
             <TextField

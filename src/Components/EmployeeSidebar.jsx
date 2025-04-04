@@ -7,7 +7,7 @@ import ApplyLeave from './ApplyLeave';
 import MyLeaves from './MyLeaves';
 import EmployeeProfile from './EmployeeProfile';
 import { useNavigate } from 'react-router-dom';
-import { ArrowCircleLeft, ArrowCircleRight, LogoutCurve,Note,Notepad2,Profile,} from "iconsax-react";
+import { ArrowCircleLeft, ArrowCircleRight, DocumentText, LogoutCurve,Note,Notepad2,Profile,} from "iconsax-react";
 import { Notification } from "iconsax-react";
 import { Badge } from "@mui/material";
 import WorkReports from './WorkReports';
@@ -109,8 +109,8 @@ const Sidebar = () => {
           {[
 
             { text: 'Work Reports', icon: selectedComponent === 'Work Reports' 
-              ? <Notepad2 size="25" variant="Bold"/>  
-              : <Notepad2 size="25" variant="Outline"/> 
+              ? <DocumentText size="25" variant="Bold"/>  
+              : <DocumentText size="25" variant="Outline"/> 
             },
 
             { text: 'Apply Leave', icon: selectedComponent === 'Apply Leave'
@@ -135,8 +135,7 @@ const Sidebar = () => {
                 </Collapse>
               </ListItemButton>
             </ListItem>
-          ))}
-
+          ))}{/**/}
           <ListItem sx={{justifyContent:'center'}} disablePadding>
             <ListItemButton onClick={handleLogout}>
               <ListItemIcon sx={{ color: '#14286D' }}><LogoutCurve size="25" /></ListItemIcon>
