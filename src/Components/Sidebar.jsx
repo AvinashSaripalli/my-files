@@ -98,14 +98,6 @@ const Sidebar = () => {
           />
         </ListItem>
         <Divider/>
-          {/* {[{ text: 'Dashboard', icon: <Element4 size="25"/> }, { text: 'Employees List', icon: <RowVertical size="25"variant="Outline"/> }, { text: 'Profile', icon: <Profile size="25" color="#14286d"/> }].map(({ text, icon }) => (
-            <ListItem sx={{justifyContent:'center'}}disablePadding key={text}>
-              <ListItemButton onClick={() => handleListItemOnClick(text)}>
-                <ListItemIcon sx={{ color: '#14286D' }}>{icon}</ListItemIcon>
-                <Collapse in={sidebarOpen} orientation="horizontal"><ListItemText primary={text} /></Collapse>
-              </ListItemButton>
-            </ListItem>
-          ))} */}
           {[
             { text: 'Dashboard', icon: selectedComponent === 'Dashboard'
                 ?  <Element4 size="24" variant="Bold"/>

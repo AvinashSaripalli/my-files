@@ -79,8 +79,6 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        
-
         const updatedMonthOrder = monthOrder.map((month, index) => {
           const foundData = data.find((item) => item.month === index + 1);
           return {
