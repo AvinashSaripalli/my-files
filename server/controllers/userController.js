@@ -1,67 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const db = require("../db");
-require("dotenv").config(); 
-
-// exports.registerUsers = async (req, res) => {
-//   const {
-//     firstName, lastName, email, phoneNumber, password, companyName, role, 
-//     designation, department, jobLocation, dateOfBirth, bloodGroup, 
-//     technicalSkills, employeeId, gender, confirmPassword
-//   } = req.body;
-
-//   if (!password) {
-//     return res.status(400).json({ error: "Password is required" });
-//   }
-
-//   const photo = req.file ? `/uploads/${req.file.filename}` : null;
-
-//   try {
-//     // Check if email already exists
-//     const checkEmailQuery = "SELECT email FROM users WHERE email = ?";
-//     db.query(checkEmailQuery, [email], async (err, results) => {
-//       if (err) {
-//         console.error("MySQL error:", err);
-//         return res.status(500).json({ error: "Database error" });
-//       }
-//       if (results.length > 0) {
-//         return res.status(400).json({ error: "Email already exists" });
-//       }
-
-//       try {
-//         // Hash the password safely
-//         const hashedPassword = await bcrypt.hash(password, 10);
-
-//         // Insert user data into database
-//         const insertQuery = `INSERT INTO users 
-//           (firstName, lastName, email, phoneNumber, password, companyName, role, 
-//           designation, department, jobLocation, dateOfBirth, bloodGroup, photo, 
-//           technicalSkills, employeeId, gender, confirmPassword) 
-//           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-//         db.query(
-//           insertQuery, 
-//           [firstName, lastName, email, phoneNumber, hashedPassword, companyName, 
-//           role, designation, department, jobLocation, dateOfBirth, bloodGroup, 
-//           photo, technicalSkills, employeeId, gender, confirmPassword], 
-//           (err, result) => {
-//             if (err) {
-//               console.error("MySQL error:", err);
-//               return res.status(500).json({ error: "Failed to add user" });
-//             }
-//             res.status(201).json({ message: "User added successfully" });
-//           }
-//         );
-//       } catch (hashError) {
-//         console.error("Error hashing password:", hashError);
-//         return res.status(500).json({ error: "Error hashing password" });
-//       }
-//     });
-//   } catch (error) {
-//     console.error("Server error:", error);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// };
+require("dotenv").config();
 
 exports.registerUsers = async (req, res) => {
   const {
