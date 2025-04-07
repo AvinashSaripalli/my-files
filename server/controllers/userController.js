@@ -10,7 +10,6 @@ exports.registerUsers = async (req, res) => {
     technicalSkills, employeeId, gender, confirmPassword
   } = req.body;
 
-  // Validate required fields
   if (!password) {
     return res.status(400).json({ error: "Password is required" });
   }
@@ -27,7 +26,6 @@ exports.registerUsers = async (req, res) => {
   const photo = `/uploads/${req.file.filename}`;
 
   try {
-    // Check if email already exists
     const checkEmailQuery = "SELECT email FROM users WHERE email = ?";
     db.query(checkEmailQuery, [email], async (err, results) => {
       if (err) {
@@ -39,10 +37,8 @@ exports.registerUsers = async (req, res) => {
       }
 
       try {
-        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Insert user data, including confirmPassword
         const insertQuery = `INSERT INTO users 
           (firstName, lastName, email, phoneNumber, password, companyName, role, 
            designation, department, jobLocation, dateOfBirth, bloodGroup, photo, 
@@ -233,43 +229,6 @@ exports.loginUser = (req, res) => {
     });
   });
 };
-
-
-
-// exports.getLeavesByEmployeeId = (req, res) => {
-//   const { employeeId } = req.params;
-
-//   const query = 'SELECT leave_type, start_date, end_date, reason, status FROM leaves WHERE employeeId = ?';
-
-//   db.query(query, [employeeId], (err, results) => {
-//       if (err) {
-//           return res.status(500).json({ error: 'Database error' });
-//       }
-//       res.json(results);
-//   });
-// };
-
-exports.getLeavesByEmployeeId = (req, res) => {
-  const { employeeId } = req.params;
-
-  const query = `
-      SELECT 
-          leave_type AS leaveType, 
-          start_date AS startDate, 
-          end_date AS endDate, 
-          reason, 
-          status 
-      FROM leaves 
-      WHERE employeeId = ?`;
-
-  db.query(query, [employeeId], (err, results) => {
-      if (err) {
-          return res.status(500).json({ error: 'Database error' });
-      }
-      res.json(results);
-  });
-};
-
 
 exports.updateUser = (req, res) => {
   const { id, designation, department, jobLocation, technicalSkills, phoneNumber, dateOfBirth,bloodGroup,gender } = req.body;

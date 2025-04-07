@@ -277,16 +277,6 @@ const EditEmployeeDialog = ({ open, onClose, user, onSave }) => {
                 <MenuItem value="Employee">Employee</MenuItem>
               </Select>
           </FormControl>
-        {/*<TextField
-          fullWidth
-          label="Role"
-          name="role"
-          value={formData.role}
-          vatiant="outlined"
-          onChange={handleChange}
-          margin="dense" 
-        /> */}
-        
         <TextField
           fullWidth 
           margin="dense" 
