@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  Avatar,
-  IconButton,
-  TextField,
-  Button,
-  Stack,Chip,
-  Container,
+import { Box, Paper, Typography, Avatar, IconButton,TextField,Button,Stack,Chip,Container,
   Snackbar, 
   Alert ,
   Divider,
@@ -246,7 +237,7 @@ const UserProfile = () => {
           <Avatar
             src={userData.userPhoto}
             alt={`${userData.userFirstName} ${userData.userLastName}`}
-            sx={{ width: 140, height: 140, mx: "auto", mb: 2, border: "4px solid white" }}
+            sx={{ width: 140, height: 140, mx: "auto", mb: 2, border: "4px solid #2196f3", borderRadius: "50%",  }}
           />
           <IconButton
             component="label"
@@ -271,12 +262,12 @@ const UserProfile = () => {
         </Typography>
         
       <Paper
-        elevation={1}
+        elevation={0}
         sx={{
           mt: 1,
           p: 3,
           borderRadius: 3,
-          backgroundColor:'#f4f7fe',
+          backgroundColor:'#e9edfb',
           // boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px", 
         }}
       > 
