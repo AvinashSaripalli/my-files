@@ -76,7 +76,9 @@ const WorkReports = () => {
     }
   };
   const handleEdit = (index) => {
-    setNewReport(reports[index]);
+    const report = reports[index];
+    const formattedDate = new Date(report.date).toISOString().split("T")[0]; // YYYY-MM-DD
+    setNewReport({ ...report, date: formattedDate });
     setEditIndex(index);
     setOpenDialog(true);
   };
