@@ -49,6 +49,7 @@ const ApplyLeave = () => {
     if (!validateForm()) return;
 
     const employeeId = localStorage.getItem("userEmployeeId");
+    const companyName = localStorage.getItem("companyName");
     if (!employeeId) {
       alert("Error: Employee ID not found. Please log in again.");
       return;
@@ -56,6 +57,7 @@ const ApplyLeave = () => {
 
     const leaveData = {
       employeeId,
+      companyName,
       leaveType,
       startDate,
       endDate,

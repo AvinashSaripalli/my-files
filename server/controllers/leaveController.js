@@ -1,12 +1,12 @@
 const db = require('../db');
 
 exports.leaveApply=(req, res) => {
-    const { employeeId, leaveType, startDate, endDate, reason, onlyTomorrow, halfDay } = req.body;
+    const { employeeId, companyName,leaveType, startDate, endDate, reason, onlyTomorrow, halfDay } = req.body;
   
-    const sql = `INSERT INTO leaves (employeeId, leave_type, start_date, end_date, reason, only_tomorrow, half_day, status)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')`;
+    const sql = `INSERT INTO leaves (employeeId, leave_type, start_date, end_date, reason, only_tomorrow, half_day, status, companyName)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', ?)`;
   
-    db.query(sql, [employeeId, leaveType, startDate, endDate, reason, onlyTomorrow, halfDay], (err, result) => {
+    db.query(sql, [employeeId, leaveType, startDate, endDate, reason, onlyTomorrow, halfDay, companyName], (err, result) => {
       if (err) return res.status(500).json({ error: "Database error" });
       res.status(201).json({ message: "Leave applied successfully", leaveId: result.insertId });
     });
