@@ -148,7 +148,7 @@ const WorkReports = () => {
               <TableBody>
                 {filteredReports.map((report, index) => (
                   <TableRow key={report.id}>
-                    <TableCell>{report.date}</TableCell>
+                    <TableCell>{new Date(report.date).toLocaleDateString("en-GB")}</TableCell>
                     <TableCell>{report.tasks}</TableCell>
                     <TableCell>{report.hoursWorked}</TableCell>
                     <TableCell>{report.status}</TableCell>
