@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { 
   TextField, Button, Box, Typography, FormControl, Container, 
-  MenuItem, Select, InputLabel, Tabs, Tab, Snackbar, Alert, Stepper, Step, StepLabel,Autocomplete,Chip
+  MenuItem, Select, InputLabel, Tabs, Tab, Snackbar, Alert, Stepper, Step, StepLabel,Autocomplete,Chip,Grid
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -249,7 +249,7 @@ function Register() {
               </Select>
               {errors.companyName && <Typography color="error" sx={{ fontSize: '0.75rem', mt: 0.5, ml:2 }}>{errors.companyName}</Typography>}
             </FormControl>
-            <TextField label="Designation" name="designation" margin="dense" fullWidth value={formValues.designation} inputProps={{maxLength:50}} onChange={handleChange} error={!!errors.designation} helperText={errors.designation} sx={{ width: '600px' }}/>
+            <TextField label="Designation" name="designation" margin="dense" fullWidth value={formValues.designation} inputProps={{maxLength:50}} onChange={handleChange} error={!!errors.designation} helperText={errors.designation} sx={{ width: '500px' }}/>
             <FormControl fullWidth margin="dense" error={!!errors.department}>
               <InputLabel>Department</InputLabel>
               <Select name="department" onChange={handleChange} label="Department" value={formValues.department}>
@@ -321,55 +321,79 @@ function Register() {
   };
 
   return (
-    <Container maxWidth="100vh" sx={{
-      display: "flex", justifyContent: "center", alignItems: "center",
-      background: "radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%)",
+    <Container maxWidth="100%" disableGutters sx={{
       minHeight: "100vh",
+      background: "radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
     }}>
-      <Box maxWidth="600px" sx={{ mt: 5, mb: 5, p: 3, borderRadius: 2, boxShadow: 3, background: "white" }}>
-        <Typography variant="h5" sx={{ textAlign: "center", fontWeight: "bold" }}>
-          Register
-        </Typography>
-
-        <Tabs value={tabValue} onChange={handleTabChange} centered>
-          <Tab label="Manager" />
-          <Tab label="Employee" />
-        </Tabs>
-
-        <Stepper activeStep={activeStep} sx={{ mt: 2 }}>
-          {steps.map((label) => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-
-        <Box component="form" noValidate autoComplete="off" sx={{ mt: 2 }}>
-          {renderStepContent(activeStep)}
-          
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-            <Button
-              disabled={activeStep === 0}
-              onClick={handleBack}
-              variant="contained"
-            >
-              Back
-            </Button>
-            <Button
-              onClick={handleNext}
-              variant="contained"
-              color="primary"
-            >
-              {activeStep === steps.length - 1 ? 'Register' : 'Next'}
-            </Button>
-          </Box>
-
-          <Typography sx={{ textAlign: "center", mt: 2 }}>
-            Already have an account? <a href="/login">Login</a>
-          </Typography>
-        </Box>
-      </Box>
+      {/* <Box sx={{ width: "100%", maxWidth: "1000px", mx: "auto", px: 2 }}>
+    <Grid container sx={{ minHeight: "90vh", borderRadius: 2, overflow: "hidden", boxShadow: 4 ,backgroundColor:'#3ffe6f'}}> */}
       
+      <Grid container sx={{ minHeight: "100vh" }}>
+        
+        {/* Left Side - Welcome Message */}
+        <Grid item xs={12} md={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', p: 5 }}>
+          <Box>
+            <Typography variant="h3" fontWeight="bold" gutterBottom>
+              Welcome!
+            </Typography>
+            <Typography variant="h6">
+              Join our platform and explore all the features by registering as a Manager or Employee.
+            </Typography>
+          </Box>
+        </Grid>
+    
+        {/* Right Side - Register Box */}
+        <Grid item xs={12} md={7} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 4 }}>
+          <Box maxWidth="500px" sx={{ p: 3, borderRadius: 2, boxShadow: 3, background: "white", width: "100%" }}>
+            <Typography variant="h5" sx={{ textAlign: "center", fontWeight: "bold" }}>
+              Register
+            </Typography>
+    
+            <Tabs value={tabValue} onChange={handleTabChange} centered sx={{ mb: 2 }}>
+              <Tab label="Manager" />
+              <Tab label="Employee" />
+            </Tabs>
+    
+            <Stepper activeStep={activeStep} sx={{ mb: 2 }}>
+              {steps.map((label) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+    
+            <Box component="form" noValidate autoComplete="off">
+              {renderStepContent(activeStep)}
+    
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  variant="contained"
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  variant="contained"
+                  color="primary"
+                >
+                  {activeStep === steps.length - 1 ? 'Register' : 'Next'}
+                </Button>
+              </Box>
+    
+              <Typography sx={{ textAlign: "center", mt: 2 }}>
+                Already have an account? <a href="/login">Login</a>
+              </Typography>
+            </Box>
+          </Box>
+        </Grid>
+      </Grid>
+    
+      {/* Snackbar for alerts */}
       <Snackbar 
         open={snackbar.open} 
         autoHideDuration={3000} 
@@ -385,6 +409,7 @@ function Register() {
         </Alert>
       </Snackbar>
     </Container>
+    
   );
 }
 
