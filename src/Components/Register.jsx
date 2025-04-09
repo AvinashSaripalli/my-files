@@ -328,12 +328,8 @@ function Register() {
       justifyContent: "center",
       alignItems: "center",
     }}>
-      {/* <Box sx={{ width: "100%", maxWidth: "1000px", mx: "auto", px: 2 }}>
-    <Grid container sx={{ minHeight: "90vh", borderRadius: 2, overflow: "hidden", boxShadow: 4 ,backgroundColor:'#3ffe6f'}}> */}
-      
-      <Grid container sx={{ minHeight: "100vh" }}>
-        
-        {/* Left Side - Welcome Message */}
+    <Grid container sx={{ minHeight: "100vh" ,  maxWidth: "1000px",}}>
+  
         <Grid item xs={12} md={5} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white', p: 5 }}>
           <Box>
             <Typography variant="h3" fontWeight="bold" gutterBottom>
@@ -345,7 +341,6 @@ function Register() {
           </Box>
         </Grid>
     
-        {/* Right Side - Register Box */}
         <Grid item xs={12} md={7} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', p: 4 }}>
           <Box maxWidth="500px" sx={{ p: 3, borderRadius: 2, boxShadow: 3, background: "white", width: "100%" }}>
             <Typography variant="h5" sx={{ textAlign: "center", fontWeight: "bold" }}>
@@ -392,8 +387,7 @@ function Register() {
           </Box>
         </Grid>
       </Grid>
-    
-      {/* Snackbar for alerts */}
+
       <Snackbar 
         open={snackbar.open} 
         autoHideDuration={3000} 
