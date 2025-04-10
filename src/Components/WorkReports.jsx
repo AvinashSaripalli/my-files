@@ -3,10 +3,8 @@ import {
   Container, TextField, Button, Typography, Snackbar, Select, MenuItem,
   Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, FormControl,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Grid, IconButton, Card, CardContent, Chip
+  Grid, Card, CardContent, Chip
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 const WorkReports = () => {
@@ -19,7 +17,6 @@ const WorkReports = () => {
   });
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [filter, setFilter] = useState("All");
-  const [editIndex, setEditIndex] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const employeeId = localStorage.getItem("userEmployeeId");
 
@@ -33,16 +30,10 @@ const WorkReports = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url =
-      editIndex !== null
-        ? `http://localhost:5000/api/reports/${reports[editIndex].id}`
-        : "http://localhost:5000/api/reports";
-
-    const method = editIndex !== null ? "PUT" : "POST";
 
     try {
-      const res = await fetch(url, {
-        method,
+      const res = await fetch("http://localhost:5000/api/reports", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...newReport,
@@ -53,14 +44,7 @@ const WorkReports = () => {
       const data = await res.json();
 
       if (res.ok) {
-        if (editIndex !== null) {
-          const updated = [...reports];
-          updated[editIndex] = { ...newReport, id: reports[editIndex].id };
-          setReports(updated);
-          setEditIndex(null);
-        } else {
-          setReports([...reports, { ...newReport, id: data.id }]);
-        }
+        setReports([...reports, { ...newReport, id: data.id }]);
         setNewReport({ date: "", tasks: "", hoursWorked: "", status: "Pending" });
         setOpenSnackbar(true);
         setOpenDialog(false);
@@ -69,29 +53,6 @@ const WorkReports = () => {
       }
     } catch (error) {
       console.error("Submit error:", error);
-    }
-  };
-
-  const handleEdit = (index) => {
-    const report = reports[index];
-    const formattedDate = new Date(report.date).toISOString().split("T")[0];
-    setNewReport({ ...report, date: formattedDate });
-    setEditIndex(index);
-    setOpenDialog(true);
-  };
-
-  const handleDelete = async (index) => {
-    const id = reports[index].id;
-    try {
-      const res = await fetch(`http://localhost:5000/api/reports/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        const updated = reports.filter((_, i) => i !== index);
-        setReports(updated);
-      }
-    } catch (error) {
-      console.error("Delete error:", error);
     }
   };
 
@@ -109,7 +70,7 @@ const WorkReports = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 2 }}>
       <Typography variant="h4" align="center" gutterBottom>
         My Work Reports
       </Typography>
@@ -121,7 +82,6 @@ const WorkReports = () => {
             color="primary"
             startIcon={<AddCircleOutlineIcon />}
             onClick={() => {
-              setEditIndex(null);
               setNewReport({ date: "", tasks: "", hoursWorked: "", status: "Pending" });
               setOpenDialog(true);
             }}
@@ -129,8 +89,8 @@ const WorkReports = () => {
             Add Report
           </Button>
         </Grid>
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth>
+        <Grid item xs={12} sm={2}>
+          <FormControl fullWidth size="small">
             <InputLabel>Status Filter</InputLabel>
             <Select value={filter} onChange={(e) => setFilter(e.target.value)} label="Status Filter">
               <MenuItem value="All">All</MenuItem>
@@ -150,11 +110,10 @@ const WorkReports = () => {
               <TableCell>Tasks</TableCell>
               <TableCell>Hours Worked</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredReports.map((report, index) => (
+            {filteredReports.map((report) => (
               <TableRow key={report.id}>
                 <TableCell>{new Date(report.date).toLocaleDateString("en-GB")}</TableCell>
                 <TableCell>{report.tasks}</TableCell>
@@ -162,19 +121,11 @@ const WorkReports = () => {
                 <TableCell>
                   <Chip label={report.status} color={getStatusColor(report.status)} />
                 </TableCell>
-                <TableCell align="center">
-                  <IconButton color="primary" onClick={() => handleEdit(index)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(index)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
               </TableRow>
             ))}
             {filteredReports.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={4} align="center">
                   No reports found.
                 </TableCell>
               </TableRow>
@@ -183,7 +134,7 @@ const WorkReports = () => {
         </Table>
       </TableContainer>
 
-      {/* Summary Cards */}
+      {/* Summary Cards
       <Grid container spacing={3} sx={{ mt: 3 }}>
         <Grid item xs={12} sm={4}>
           <Card elevation={4}>
@@ -213,11 +164,11 @@ const WorkReports = () => {
             </CardContent>
           </Card>
         </Grid>
-      </Grid>
+      </Grid> */}
 
-      {/* Add/Edit Dialog */}
+      {/* Add Report Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
-        <DialogTitle>{editIndex !== null ? "Edit Report" : "Add Report"}</DialogTitle>
+        <DialogTitle>Add Report</DialogTitle>
         <DialogContent>
           <TextField
             label="Date"
@@ -266,7 +217,7 @@ const WorkReports = () => {
             Cancel
           </Button>
           <Button onClick={handleSubmit} variant="contained">
-            {editIndex !== null ? "Update" : "Submit"}
+            Submit
           </Button>
         </DialogActions>
       </Dialog>
@@ -282,5 +233,6 @@ const WorkReports = () => {
 };
 
 export default WorkReports;
+
 
 
