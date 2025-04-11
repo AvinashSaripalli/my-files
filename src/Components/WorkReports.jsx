@@ -119,18 +119,18 @@ const WorkReports = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Tasks</TableCell>
-              <TableCell>Hours Worked</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Date</TableCell>
+              <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Tasks</TableCell>
+              <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Hours Worked</TableCell>
+              <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {paginatedReports.map((report) => (
               <TableRow key={report.id}>
-                <TableCell>{new Date(report.date).toLocaleDateString("en-GB")}</TableCell>
-                <TableCell>{report.tasks}</TableCell>
-                <TableCell>{report.hoursWorked}</TableCell>
+                <TableCell align="center">{new Date(report.date).toLocaleDateString("en-GB")}</TableCell>
+                <TableCell align="left">{report.tasks}</TableCell>
+                <TableCell align="center">{report.hoursWorked}</TableCell>
                 <TableCell>
                   <Chip label={report.status} color={getStatusColor(report.status)} />
                 </TableCell>
