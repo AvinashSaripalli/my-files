@@ -3,7 +3,7 @@ import {
   Container, TextField, Button, Typography, Snackbar, Select, MenuItem,
   Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, FormControl,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Grid, Card, CardContent, Chip
+  Grid, Card, CardContent, Chip, TablePagination
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
@@ -18,6 +18,8 @@ const WorkReports = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [filter, setFilter] = useState("All");
   const [openDialog, setOpenDialog] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const employeeId = localStorage.getItem("userEmployeeId");
 
   useEffect(() => {
@@ -69,6 +71,17 @@ const WorkReports = () => {
     }
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const paginatedReports = filteredReports.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <Container maxWidth="lg" sx={{ py: 2 }}>
       <Typography variant="h4" align="center" gutterBottom>
@@ -113,7 +126,7 @@ const WorkReports = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredReports.map((report) => (
+            {paginatedReports.map((report) => (
               <TableRow key={report.id}>
                 <TableCell>{new Date(report.date).toLocaleDateString("en-GB")}</TableCell>
                 <TableCell>{report.tasks}</TableCell>
@@ -123,7 +136,7 @@ const WorkReports = () => {
                 </TableCell>
               </TableRow>
             ))}
-            {filteredReports.length === 0 && (
+            {paginatedReports.length === 0 && (
               <TableRow>
                 <TableCell colSpan={4} align="center">
                   No reports found.
@@ -134,37 +147,16 @@ const WorkReports = () => {
         </Table>
       </TableContainer>
 
-      {/* Summary Cards
-      <Grid container spacing={3} sx={{ mt: 3 }}>
-        <Grid item xs={12} sm={4}>
-          <Card elevation={4}>
-            <CardContent>
-              <Typography variant="h6">Total Reports</Typography>
-              <Typography variant="h4" color="primary">{reports.length}</Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card elevation={4}>
-            <CardContent>
-              <Typography variant="h6">Completed Reports</Typography>
-              <Typography variant="h4" color="success.main">
-                {reports.filter((r) => r.status === "Completed").length}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Card elevation={4}>
-            <CardContent>
-              <Typography variant="h6">Pending/In Progress</Typography>
-              <Typography variant="h4" color="warning.main">
-                {reports.filter((r) => r.status !== "Completed").length}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid> */}
+      {/* Pagination Controls */}
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={filteredReports.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
 
       {/* Add Report Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
@@ -233,6 +225,4 @@ const WorkReports = () => {
 };
 
 export default WorkReports;
-
-
 
