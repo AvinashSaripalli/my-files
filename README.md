@@ -34,10 +34,3 @@ This is an Employee Management System (EMS) built using Node.js, Express.js, MyS
 - MySQL
 - npm (Node Package Manager)
 
-### Backend Setup
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/AvinashSaripalli/Employee-Management-System.git
-   cd Employee-Management-System
-
