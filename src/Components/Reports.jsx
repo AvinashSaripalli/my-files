@@ -75,9 +75,9 @@ const Reports = () => {
               ))}
           </TableBody>
         </Table>
-
-       
-        <TablePagination
+        
+      </Paper>
+      <TablePagination
           component="div"
           count={reports.length}
           page={page}
@@ -86,7 +86,6 @@ const Reports = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25, 50]}
         />
-      </Paper>
     </Box>
   );
 };
