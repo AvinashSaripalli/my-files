@@ -86,7 +86,7 @@ const Reports = () => {
                 <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' }, height:"70px" }}>
                   <TableCell>{report.employeeId}</TableCell>
                   <TableCell>{report.department}</TableCell>
-                  <TableCell>{new Date(report.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{new Date(report.date).toLocaleDateString('en-GB')}</TableCell>
                   <TableCell>{report.tasks}</TableCell>
                   <TableCell>{report.hoursWorked}</TableCell>
                   <TableCell>{report.status}</TableCell>

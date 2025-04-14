@@ -38,7 +38,7 @@ const MyLeaves = () => {
   }, []);
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString(); 
+    return new Date(dateString).toLocaleDateString('en-GB'); 
   };
 
   const getStatusColor = (status) => {

@@ -73,8 +73,8 @@ const ManageLeaves = () => {
                   <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
                     <TableCell align='center'>{leave.employeeId}</TableCell>
                     <TableCell align='left'>{leave.leave_type}</TableCell>
-                    <TableCell align='left'>{new Date(leave.start_date).toLocaleDateString()}</TableCell>
-                    <TableCell align='left'>{new Date(leave.end_date).toLocaleDateString()}</TableCell>
+                    <TableCell align='left'>{new Date(leave.start_date).toLocaleDateString('en-GB')}</TableCell>
+                    <TableCell align='left'>{new Date(leave.end_date).toLocaleDateString('en-GB')}</TableCell>
                     <TableCell align='left'>{leave.reason}</TableCell>
                     <TableCell align="left">
                       {leave.status === 'Pending' ? (
