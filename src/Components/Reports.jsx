@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper,TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination, Button } from '@mui/material';
+import { Box, Typography, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import axios from 'axios';
 
 const Reports = () => {
@@ -9,6 +9,8 @@ const Reports = () => {
   
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedReport, setSelectedReport] = useState(null);
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/reports')
@@ -29,6 +31,16 @@ const Reports = () => {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
+  };
+
+  const handleViewClick = (report) => {
+    setSelectedReport(report);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedReport(null);
   };
 
   if (loading) {
@@ -78,7 +90,7 @@ const Reports = () => {
                   <TableCell>{report.tasks}</TableCell>
                   <TableCell>{report.hoursWorked}</TableCell>
                   <TableCell>{report.status}</TableCell>
-                  <TableCell><Button variant='contained' size='small'>View</Button></TableCell>
+                  <TableCell><Button variant='contained' size='small' onClick={() => handleViewClick(report)}>View</Button></TableCell>
                 </TableRow>
               ))}
           </TableBody>
@@ -93,6 +105,24 @@ const Reports = () => {
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25, 50]}
         />
+        <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Report Details</DialogTitle>
+        <DialogContent>
+          {selectedReport && (
+            <>
+              <Typography variant="body1"><strong>Employee ID:</strong> {selectedReport.employeeId}</Typography>
+              <Typography variant="body1"><strong>Department:</strong> {selectedReport.department}</Typography>
+              <Typography variant="body1"><strong>Date:</strong> {new Date(selectedReport.date).toLocaleDateString()}</Typography>
+              <Typography variant="body1"><strong>Tasks:</strong> {selectedReport.tasks}</Typography>
+              <Typography variant="body1"><strong>Hours Worked:</strong> {selectedReport.hoursWorked}</Typography>
+              <Typography variant="body1"><strong>Status:</strong> {selectedReport.status}</Typography>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
