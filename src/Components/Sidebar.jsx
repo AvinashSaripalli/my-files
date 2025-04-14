@@ -9,8 +9,9 @@ import EmployeesList from './EmployeesList';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router-dom';
-import { ArrowCircleLeft, ArrowCircleRight, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical} from "iconsax-react";
+import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical,} from "iconsax-react";
 import ManageLeaves from './ManageLeaves';
+import Reports from './Reports';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('EmployeesList');
@@ -47,6 +48,7 @@ const Sidebar = () => {
       case 'Dashboard': return <Dashboard />;
       case 'Users List': return <EmployeesList />;
       case 'Manage Leaves': return <ManageLeaves />;
+      case 'Reports': return <Reports />;
       case 'Profile': return <UserProfile />;
       default: return <EmployeesList />;
     }
@@ -111,6 +113,10 @@ const Sidebar = () => {
                 ? <Notepad2 size="25" color="#14286d" variant="Bold"/>  
                 : <Notepad2 size="25" color="#14286d" variant="Outline"/> 
             },
+            { text: 'Reports', icon: selectedComponent === 'Reports' 
+              ? <ChartSquare size="25" color="#14286d" variant="Bold"/>
+              : <ChartSquare size="25" color="#14286d" variant="Outline"/>
+            },
             { 
               text: 'Profile', 
               icon: selectedComponent === 'Profile' 
@@ -140,7 +146,7 @@ const Sidebar = () => {
               {sidebarOpen ?  <ArrowCircleLeft size="22" color="#14286d"/> : <ArrowCircleRight size="24" color="#14286d"/>}
             </IconButton>
           </ListItem> */}
-          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '300px' }}>
+          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '220px' }}>
             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
               {sidebarOpen ? <ArrowCircleLeft size="22" color="#14286d"/> : <ArrowCircleRight size="24" color="#14286d"/>}
             </IconButton>

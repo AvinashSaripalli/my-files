@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip } from '@mui/material';
+import {
+  Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Paper, Button, Chip, TablePagination
+} from '@mui/material';
 import axios from 'axios';
 
 const ManageLeaves = () => {
   const [leaves, setLeaves] = useState([]);
+  const [page, setPage] = useState(0); 
+  const [rowsPerPage, setRowsPerPage] = useState(5); 
 
   const fetchLeaves = async () => {
     try {
@@ -24,7 +29,7 @@ const ManageLeaves = () => {
   const handleUpdateStatus = async (leaveId, status) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put('http://localhost:5000/api/leaves/update-status', 
+      await axios.put('http://localhost:5000/api/leaves/update-status',
         { leaveId, status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -34,8 +39,14 @@ const ManageLeaves = () => {
     }
   };
 
+  const handleChangePage = (event, newPage) => setPage(newPage);
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
   return (
-    <Box sx={{ pl: 10, pr: 10, mt: '30px' }}>
+    <Box sx={{ pl: 10, pr: 10, mt: '60px' }}>
       <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>Leave Management</Typography>
 
       <TableContainer component={Paper} sx={{
@@ -46,59 +57,59 @@ const ManageLeaves = () => {
         <Table stickyHeader aria-label="leaves table">
           <TableHead sx={{ backgroundColor: '#f4f7fe' }}>
             <TableRow>
-              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Leave Type</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Start Date</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>End Date</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Reason</TableCell>
-              <TableCell align="left" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold' }}>Employee ID</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold' }}>Leave Type</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold' }}>Start Date</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold' }}>End Date</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold' }}>Reason</TableCell>
+              <TableCell align="left" sx={{ fontWeight: 'bold' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {leaves.length > 0 ? (
-              leaves.map((leave) => (
-                <TableRow key={leave.id}>
-                  <TableCell align='center'>{leave.employeeId}</TableCell>
-                  <TableCell align='left'>{leave.leave_type}</TableCell>
-                  <TableCell align='left'>{new Date(leave.start_date).toLocaleDateString()}</TableCell>
-                  <TableCell align='left'>{new Date(leave.end_date).toLocaleDateString()}</TableCell>
-                  <TableCell align='left'>{leave.reason}</TableCell>
-                  <TableCell align="left">
-                    {leave.status === 'Pending' ? (
-                      <>
-                        <Button 
-                          variant="contained" 
-                          color="success" 
-                          onClick={() => handleUpdateStatus(leave.id, 'Approved')}
-                          sx={{ mr: 1 }}
-                        >
-                          Approve
-                        </Button>
-                        <Button 
-                          variant="contained" 
-                          color="error" 
-                          onClick={() => handleUpdateStatus(leave.id, 'Rejected')}
-                        >
-                          Reject
-                        </Button>
-                      </>
-                    ) : <>
-                    <Chip variant="contained"
-                    label={leave.status}
-                    color={
-                      leave.status === 'Approved' ? 'success' :
-                      leave.status === 'Rejected' ? 'error' : 'warning'
-                    }
-                    
-                  />
-                  </>
-                  }
-                  </TableCell>
-                </TableRow>
-              ))
+              leaves
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((leave, index) => (
+                  <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
+                    <TableCell align='center'>{leave.employeeId}</TableCell>
+                    <TableCell align='left'>{leave.leave_type}</TableCell>
+                    <TableCell align='left'>{new Date(leave.start_date).toLocaleDateString()}</TableCell>
+                    <TableCell align='left'>{new Date(leave.end_date).toLocaleDateString()}</TableCell>
+                    <TableCell align='left'>{leave.reason}</TableCell>
+                    <TableCell align="left">
+                      {leave.status === 'Pending' ? (
+                        <>
+                          <Button
+                            variant="contained"
+                            color="success"
+                            onClick={() => handleUpdateStatus(leave.id, 'Approved')}
+                            sx={{ mr: 1 }}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => handleUpdateStatus(leave.id, 'Rejected')}
+                          >
+                            Reject
+                          </Button>
+                        </>
+                      ) : (
+                        <Chip
+                          label={leave.status}
+                          color={
+                            leave.status === 'Approved' ? 'success' :
+                              leave.status === 'Rejected' ? 'error' : 'warning'
+                          }
+                        />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
                   No leave records found
                 </TableCell>
               </TableRow>
@@ -106,8 +117,19 @@ const ManageLeaves = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <TablePagination
+        component="div"
+        count={leaves.length}
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[5, 10, 25]}
+      />
     </Box>
   );
 };
 
 export default ManageLeaves;
+
