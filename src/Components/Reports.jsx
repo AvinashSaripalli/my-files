@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableHead, TableBody, TableRow, TableCell, TablePagination } from '@mui/material';
+import { Box, Typography, Paper,TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination } from '@mui/material';
 import axios from 'axios';
 
 const Reports = () => {
@@ -49,8 +49,12 @@ const Reports = () => {
 
   return (
     <Box sx={{ pl: 17, pr: 17, mt: '40px' }}>
-      <Typography variant="h5" gutterBottom>Work Reports</Typography>
-      <Paper elevation={2} sx={{ p: 2 }}>
+      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>Work Reports</Typography>
+      <TableContainer component={Paper} sx={{
+        maxHeight: '462px',
+        overflowY: 'auto',
+        boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
+      }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -75,8 +79,7 @@ const Reports = () => {
               ))}
           </TableBody>
         </Table>
-        
-      </Paper>
+        </TableContainer>
       <TablePagination
           component="div"
           count={reports.length}
