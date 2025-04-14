@@ -56,7 +56,7 @@ const Reports = () => {
         boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
       }}>
         <Table>
-          <TableHead>
+          <TableHead sx={{ height:"80px" }}>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Date</TableCell>
