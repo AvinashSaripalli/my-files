@@ -55,7 +55,7 @@ const ManageLeaves = () => {
         boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
       }}>
         <Table stickyHeader aria-label="leaves table">
-          <TableHead sx={{ backgroundColor: '#f4f7fe' }}>
+          <TableHead sx={{ backgroundColor: '#f4f7fe', height:"80px" }} >
             <TableRow>
               <TableCell align='center' sx={{ fontWeight: 'bold' }}>Employee ID</TableCell>
               <TableCell align='left' sx={{ fontWeight: 'bold' }}>Leave Type</TableCell>

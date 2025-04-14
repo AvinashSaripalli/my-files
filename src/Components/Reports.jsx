@@ -48,7 +48,7 @@ const Reports = () => {
   }
 
   return (
-    <Box sx={{ pl: 17, pr: 17, mt: '50px' }}>
+    <Box sx={{ pl: 17, pr: 17, mt: '40px' }}>
       <Typography variant="h5" gutterBottom>Work Reports</Typography>
       <Paper elevation={2} sx={{ p: 2 }}>
         <Table>
@@ -65,7 +65,7 @@ const Reports = () => {
             {reports
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((report, index) => (
-                <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
+                <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' }, height:"70px" }}>
                   <TableCell>{report.employeeId}</TableCell>
                   <TableCell>{new Date(report.date).toLocaleDateString()}</TableCell>
                   <TableCell>{report.tasks}</TableCell>
