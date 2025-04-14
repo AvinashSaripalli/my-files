@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper,TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination } from '@mui/material';
+import { Box, Typography, Paper,TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination, Button } from '@mui/material';
 import axios from 'axios';
 
 const Reports = () => {
@@ -64,6 +64,7 @@ const Reports = () => {
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Tasks</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Hours Worked</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Status</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -77,6 +78,7 @@ const Reports = () => {
                   <TableCell>{report.tasks}</TableCell>
                   <TableCell>{report.hoursWorked}</TableCell>
                   <TableCell>{report.status}</TableCell>
+                  <TableCell><Button variant='contained' size='small'>View</Button></TableCell>
                 </TableRow>
               ))}
           </TableBody>
