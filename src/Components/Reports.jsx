@@ -59,6 +59,7 @@ const Reports = () => {
           <TableHead sx={{ height:"80px" }}>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Department</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Date</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Tasks</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Hours Worked</TableCell>
@@ -71,6 +72,7 @@ const Reports = () => {
               .map((report, index) => (
                 <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' }, height:"70px" }}>
                   <TableCell>{report.employeeId}</TableCell>
+                  <TableCell>{report.department}</TableCell>
                   <TableCell>{new Date(report.date).toLocaleDateString()}</TableCell>
                   <TableCell>{report.tasks}</TableCell>
                   <TableCell>{report.hoursWorked}</TableCell>

@@ -21,6 +21,7 @@ const WorkReports = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const employeeId = localStorage.getItem("userEmployeeId");
+  const department = localStorage.getItem("userDepartment");
 
   useEffect(() => {
     if (!employeeId) return;
@@ -40,6 +41,7 @@ const WorkReports = () => {
         body: JSON.stringify({
           ...newReport,
           employeeId,
+          department,
         }),
       });
 

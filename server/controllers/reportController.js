@@ -9,9 +9,9 @@ exports.getReports = (req, res) => {
 };
 
 exports.createReport = (req, res) => {
-  const { employeeId, date, tasks, hoursWorked, status } = req.body;
-  const sql = "INSERT INTO reports (employeeId, date, tasks, hoursWorked, status) VALUES (?, ?, ?, ?, ?)";
-  db.query(sql, [employeeId, date, tasks, hoursWorked, status], (err, result) => {
+  const { employeeId, department, date, tasks, hoursWorked, status } = req.body;
+  const sql = "INSERT INTO reports (employeeId, department, date, tasks, hoursWorked, status) VALUES (?, ?, ?, ?, ?, ?)";
+  db.query(sql, [employeeId, department, date, tasks, hoursWorked, status], (err, result) => {
     if (err) return res.status(500).json({ error: err });
     res.json({ message: "Report added successfully", id: result.insertId });
   });
