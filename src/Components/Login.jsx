@@ -6,13 +6,26 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { keyframes } from '@emotion/react';
 
 function Login() {
   const [loginValues, setLoginValues] = useState({ email: "", password: "" });
   const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info" });
-  const [showPassword, setShowPassword] = useState(false);
 
+  const gradientAnimation = keyframes`
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  `;
+
+  const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
 
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
@@ -75,6 +88,8 @@ function Login() {
     <Container maxWidth="100%" disableGutters sx={{
       minHeight: "100vh",
       background: "radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%)",
+      backgroundSize: "200% 200%",
+      animation: `${gradientAnimation} 6s ease infinite`,
       display: "flex",
       justifyContent: "center",
       alignItems: "center",

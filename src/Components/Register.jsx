@@ -5,6 +5,8 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { keyframes } from '@emotion/react';
+
 
 function Register() {
   const [formValues, setFormValues] = useState({
@@ -33,6 +35,19 @@ function Register() {
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
 
   const steps = ['Personal Info', 'Professional Info', 'Account Info'];
+
+  const gradientAnimation = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`;
+
 
   const validateStep = () => {
     const newErrors = {};
@@ -324,6 +339,8 @@ function Register() {
     <Container maxWidth="100%" disableGutters sx={{
       minHeight: "100vh",
       background: "radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%)",
+      backgroundSize: "200% 200%",
+      animation: `${gradientAnimation} 6s ease infinite`,
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
