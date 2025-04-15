@@ -73,7 +73,7 @@ const Reports = () => {
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Department</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Tasks</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Task Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Hours Worked</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Status</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
@@ -87,7 +87,7 @@ const Reports = () => {
                   <TableCell>{report.employeeId}</TableCell>
                   <TableCell>{report.department}</TableCell>
                   <TableCell>{new Date(report.date).toLocaleDateString('en-GB')}</TableCell>
-                  <TableCell>{report.tasks}</TableCell>
+                  <TableCell>{report.taskName}</TableCell>
                   <TableCell>{report.hoursWorked}</TableCell>
                   <TableCell>{report.status}</TableCell>
                   <TableCell><Button variant='contained' size='small' onClick={() => handleViewClick(report)}>View</Button></TableCell>
@@ -113,7 +113,7 @@ const Reports = () => {
               <Typography variant="body1"><strong>Employee ID:</strong> {selectedReport.employeeId}</Typography>
               <Typography variant="body1"><strong>Department:</strong> {selectedReport.department}</Typography>
               <Typography variant="body1"><strong>Date:</strong> {new Date(selectedReport.date).toLocaleDateString()}</Typography>
-              <Typography variant="body1"><strong>Tasks:</strong> {selectedReport.tasks}</Typography>
+              <Typography variant="body1"><strong>Tasks:</strong> {selectedReport.taskName}</Typography>
               <Typography variant="body1"><strong>Hours Worked:</strong> {selectedReport.hoursWorked}</Typography>
               <Typography variant="body1"><strong>Status:</strong> {selectedReport.status}</Typography>
             </>

@@ -11,7 +11,7 @@ const WorkReports = () => {
   const [reports, setReports] = useState([]);
   const [newReport, setNewReport] = useState({
     date: "",
-    tasks: "",
+    taskName: "",
     workDescription: "",
     hoursWorked: "",
     status: "Pending",
@@ -50,7 +50,7 @@ const WorkReports = () => {
 
       if (res.ok) {
         setReports([...reports, { ...newReport, id: data.id }]);
-        setNewReport({ date: "", tasks: "", hoursWorked: "", status: "Pending" });
+        setNewReport({ date: "", taskName: "", workDescription:"", hoursWorked: "", status: "Pending" });
         setOpenSnackbar(true);
         setOpenDialog(false);
       } else {
@@ -99,7 +99,7 @@ const WorkReports = () => {
             startIcon={<AddCircleOutlineIcon />}
             onClick={() => {
               const today = new Date().toISOString().split("T")[0]; 
-              setNewReport({ date: today, tasks: "", hoursWorked: "", status: "Pending" });
+              setNewReport({ date: today, taskName: "",workDescription: "", hoursWorked: "", status: "Pending" });
               setOpenDialog(true);
             }}
           >
@@ -119,12 +119,12 @@ const WorkReports = () => {
         </Grid>
       </Grid>
 
-      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 3 }}>
+      <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Date</TableCell>
-              <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Tasks</TableCell>
+              <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Task Name</TableCell>
               <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Hours Worked</TableCell>
               <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
             </TableRow>
@@ -133,7 +133,7 @@ const WorkReports = () => {
             {paginatedReports.map((report) => (
               <TableRow key={report.id}>
                 <TableCell align="center">{new Date(report.date).toLocaleDateString("en-GB")}</TableCell>
-                <TableCell align="left">{report.tasks}</TableCell>
+                <TableCell align="left">{report.taskName}</TableCell>
                 <TableCell align="center">{report.hoursWorked}</TableCell>
                 <TableCell>
                   <Chip label={report.status} color={getStatusColor(report.status)} />
@@ -185,8 +185,8 @@ const WorkReports = () => {
             label="Task Name"
             fullWidth
             margin="dense"
-            value={newReport.tasks}
-            onChange={(e) => setNewReport({ ...newReport, tasks: e.target.value })}
+            value={newReport.taskName}
+            onChange={(e) => setNewReport({ ...newReport, taskName: e.target.value })}
             required
           />
           <TextField

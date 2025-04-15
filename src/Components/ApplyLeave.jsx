@@ -107,7 +107,7 @@ const ApplyLeave = () => {
 
   return (
     <Box sx={{ maxWidth: 500, margin: "auto", p: 3 }}>
-      <Card elevation={5} sx={{ borderRadius: 3, p: 2 }}>
+      <Card elevation={5} sx={{ p: 2 }}>
         <CardContent>
           <Typography variant="h5" mb={2} textAlign="center">
             Apply Leave
