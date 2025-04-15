@@ -12,6 +12,7 @@ const WorkReports = () => {
   const [newReport, setNewReport] = useState({
     date: "",
     tasks: "",
+    workDescription: "",
     hoursWorked: "",
     status: "Pending",
   });
@@ -97,7 +98,8 @@ const WorkReports = () => {
             color="primary"
             startIcon={<AddCircleOutlineIcon />}
             onClick={() => {
-              setNewReport({ date: "", tasks: "", hoursWorked: "", status: "Pending" });
+              const today = new Date().toISOString().split("T")[0]; 
+              setNewReport({ date: today, tasks: "", hoursWorked: "", status: "Pending" });
               setOpenDialog(true);
             }}
           >
@@ -173,17 +175,31 @@ const WorkReports = () => {
             onChange={(e) => setNewReport({ ...newReport, date: e.target.value })}
             InputLabelProps={{ shrink: true }}
             required
+            InputProps={{
+              inputProps: {
+                min: new Date().toISOString().split("T")[0],
+              },
+            }}
           />
           <TextField
-            label="Tasks Worked-on"
-            multiline
-            rows={3}
+            label="Task Name"
             fullWidth
             margin="dense"
             value={newReport.tasks}
             onChange={(e) => setNewReport({ ...newReport, tasks: e.target.value })}
             required
           />
+          <TextField
+            label="Work Description"
+            multiline
+            rows={5}
+            fullWidth
+            margin="dense"
+            value={newReport.workDescription}
+            onChange={(e) => setNewReport({ ...newReport, workDescription: e.target.value })}
+            required
+          />
+
           <TextField
             label="Hours Worked"
             type="number"
