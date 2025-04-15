@@ -247,7 +247,7 @@ const EmployeeProfile = () => {
           <Avatar
             src={userData.userPhoto}
             alt={`${userData.userFirstName} ${userData.userLastName}`}
-            sx={{ width: 140, height: 140, mx: "auto", mb: 2, border: "4px solid white" }}
+            sx={{ width: 140, height: 140, mx: "auto", mb: 2, border: "4px solid #2196f3", borderRadius: "50%",}}
           />
           <IconButton
             component="label"
@@ -272,12 +272,12 @@ const EmployeeProfile = () => {
         </Typography>
         
       <Paper
-        elevation={6}
+        elevation={0}
         sx={{
           mt: 1,
           p: 3,
           borderRadius: 3,
-          backgroundColor:'#f4f7fe',
+          backgroundColor:'#e9edfb',
           // boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px", 
         }}
       > 
