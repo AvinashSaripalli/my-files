@@ -41,6 +41,9 @@ const Sidebar = () => {
   const handleClockOut = () => {
     setClockedIn(false);
     clearInterval(clockInterval);
+    const totalWorkedTime = formatElapsedTime(elapsedSeconds);
+    localStorage.setItem('workedTime', totalWorkedTime);
+    console.log("Total Worked Time:", totalWorkedTime);
   };
 
   const handleLogout = () => {

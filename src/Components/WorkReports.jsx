@@ -23,6 +23,7 @@ const WorkReports = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const employeeId = localStorage.getItem("userEmployeeId");
   const department = localStorage.getItem("userDepartment");
+  const workedTime = localStorage.getItem("workedTime")
 
   useEffect(() => {
     if (!employeeId) return;
@@ -99,7 +100,7 @@ const WorkReports = () => {
             startIcon={<AddCircleOutlineIcon />}
             onClick={() => {
               const today = new Date().toISOString().split("T")[0]; 
-              setNewReport({ date: today, taskName: "",workDescription: "", hoursWorked: "", status: "Pending" });
+              setNewReport({ date: today, taskName: "",workDescription: "", hoursWorked: workedTime, status: "Pending" });
               setOpenDialog(true);
             }}
           >
@@ -202,7 +203,7 @@ const WorkReports = () => {
 
           <TextField
             label="Hours Worked"
-            type="number"
+            //type="number"
             fullWidth
             margin="dense"
             value={newReport.hoursWorked}
