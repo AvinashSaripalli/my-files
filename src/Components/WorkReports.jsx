@@ -100,7 +100,7 @@ const WorkReports = () => {
             startIcon={<AddCircleOutlineIcon />}
             onClick={() => {
               const today = new Date().toISOString().split("T")[0]; 
-              setNewReport({ date: today, taskName: "",workDescription: "", hoursWorked: workedTime, status: "Pending" });
+              setNewReport({ date: today, taskName: "",workDescription: "", hoursWorked: "", status: "Pending" });
               setOpenDialog(true);
             }}
           >
@@ -203,7 +203,7 @@ const WorkReports = () => {
 
           <TextField
             label="Hours Worked"
-            //type="number"
+            type="number"
             fullWidth
             margin="dense"
             value={newReport.hoursWorked}
