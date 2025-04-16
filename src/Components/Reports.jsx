@@ -60,7 +60,7 @@ const Reports = () => {
   }
 
   return (
-    <Box sx={{ pl: 17, pr: 17, mt: '40px' }}>
+    <Box sx={{ pl: 10, pr: 10, mt: '40px' }}>
       <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>Work Reports</Typography>
       <TableContainer component={Paper} sx={{
         maxHeight: '462px',

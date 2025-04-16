@@ -36,12 +36,17 @@ const WorkReports = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const workDescriptionArray = newReport.workDescription
+    .split("\n")
+    .filter((line) => line.trim() !== "");
+
     try {
       const res = await fetch("http://localhost:5000/api/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...newReport,
+          workDescription: JSON.stringify(workDescriptionArray),
           employeeId,
           department,
         }),
