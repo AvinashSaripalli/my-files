@@ -100,7 +100,7 @@ const WorkReports = () => {
             startIcon={<AddCircleOutlineIcon />}
             onClick={() => {
               const today = new Date().toISOString().split("T")[0]; 
-              setNewReport({ date: today, taskName: "",workDescription: "", hoursWorked: "", status: "Pending" });
+              setNewReport({ date: today, taskName: "",workDescription: "1. ", hoursWorked: "", status: "Pending" });
               setOpenDialog(true);
             }}
           >
@@ -190,7 +190,7 @@ const WorkReports = () => {
             onChange={(e) => setNewReport({ ...newReport, taskName: e.target.value })}
             required
           />
-          <TextField
+          {/* <TextField
             label="Work Description"
             multiline
             rows={5}
@@ -199,7 +199,38 @@ const WorkReports = () => {
             value={newReport.workDescription}
             onChange={(e) => setNewReport({ ...newReport, workDescription: e.target.value })}
             required
+          /> */}
+
+          <TextField
+            label="Work Description"
+            multiline
+            rows={5}
+            fullWidth
+            margin="dense"
+            value={newReport.workDescription}
+            onChange={(e) => setNewReport({ ...newReport, workDescription: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+
+                const lines = newReport.workDescription.split("\n");
+                const lastLine = lines[lines.length - 1];
+                const match = lastLine.match(/^(\d+)\.\s/);
+                let nextNumber = 1;
+
+                if (match) {
+                  nextNumber = parseInt(match[1]) + 1;
+                } else if (lines.length > 0) {
+                  nextNumber = lines.length + 1;
+                }
+
+                const newValue = newReport.workDescription + `\n${nextNumber}. `;
+                setNewReport({ ...newReport, workDescription: newValue });
+              }
+            }}
+            required
           />
+
 
           <TextField
             label="Hours Worked"
