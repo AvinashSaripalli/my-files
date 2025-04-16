@@ -195,18 +195,6 @@ const WorkReports = () => {
             onChange={(e) => setNewReport({ ...newReport, taskName: e.target.value })}
             required
           />
-
-          {/* <TextField
-            label="Work Description"
-            multiline
-            rows={5}
-            fullWidth
-            margin="dense"
-            value={newReport.workDescription}
-            onChange={(e) => setNewReport({ ...newReport, workDescription: e.target.value })}
-            required
-          /> */}
-
           <TextField
             label="Work Description"
             multiline
