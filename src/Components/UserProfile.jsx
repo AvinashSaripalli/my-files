@@ -321,7 +321,6 @@ const UserProfile = () => {
         </Stack>
       </Box>
       </Box>
-
   <Box display="flex" flexDirection="column" gap={3} >
   <Box
       elevation={6}
