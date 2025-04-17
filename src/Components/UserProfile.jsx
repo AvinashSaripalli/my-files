@@ -221,14 +221,16 @@ const UserProfile = () => {
   };
 
   return (
-    <Box sx={{ mt: 6, display: "flex", justifyContent: "center" }}>
-      <Paper
+    <Box sx={{  mt: 6, display: "flex", justifyContent: "center",p: 3 }}>
+      <Box
         elevation={6}
           sx={{ 
           width: 250,
           height: '100%',
           borderRadius: 3,
-          boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px", 
+          boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
+          border: "0.1px solid #e0e0e0", 
+          backgroundColor:'#ffffff',
           p: 3,
           textAlign: "center",
         }}
@@ -261,14 +263,15 @@ const UserProfile = () => {
           {userData.userEmail}
         </Typography>
         
-      <Paper
-        elevation={0}
+      <Box
+       
         sx={{
           mt: 1,
           p: 3,
           borderRadius: 3,
-          backgroundColor:'#e9edfb',
+          border: "0.1px solid gray",
           // boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px", 
+          backgroundColor:'#ffffff',
         }}
       > 
           <Stack direction="row" justifyContent="flex-end">
@@ -316,76 +319,20 @@ const UserProfile = () => {
             
           </Stack>
         </Stack>
-      </Paper>
-      
+      </Box>
+      </Box>
 
-      </Paper>
-      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
-        <DialogTitle fontWeight="bold" sx={{ backgroundColor: '#8e44ad', color: '#ffffff' }}>
-          Edit Information
-          <IconButton
-            color="inherit"
-            onClick={handleCloseEditDialog}
-            sx={{ position: "absolute", right: 8, top: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Designation"
-            fullWidth
-            variant="outlined"
-            value={userData.userDesignation}
-            onChange={(e) => handleChange(e, "userDesignation")}
-            sx={{ mt: 2 }}
-          />
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel>Department</InputLabel>
-            <Select
-              label="Department"
-              value={userData.userDepartment}
-              onChange={(e) => handleChange(e, "userDepartment")}
-            >
-              <MenuItem value="Software Development">Software Development</MenuItem>
-              <MenuItem value="Human Resources">Human Resources</MenuItem>
-              <MenuItem value="Design">Design</MenuItem>
-            </Select>
-          </FormControl>
-
-          <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel>Job Location</InputLabel>
-            <Select
-              label="Job Location"
-              value={userData.userJobLocation}
-              onChange={(e) => handleChange(e, "userJobLocation")}
-            >
-              <MenuItem value="Hyderabad">Hyderabad</MenuItem>
-              <MenuItem value="Chennai">Chennai</MenuItem>
-              <MenuItem value="Kerala">Kerala</MenuItem>
-              <MenuItem value="Amaravati">Amaravati</MenuItem>
-              <MenuItem value="Delhi">Delhi</MenuItem>
-              <MenuItem value="Mumbai">Mumbai</MenuItem>
-              <MenuItem value="Kolkata">Kolkata</MenuItem>
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          
-          <Button onClick={handleSaveClick} color="primary" variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
   <Box display="flex" flexDirection="column" gap={3} >
-  <Paper
+  <Box
       elevation={6}
         sx={{
           ml:3,
-          width: 400,
+          width: 600,
           borderRadius: 3,
           p: 3,
-          boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px", 
+          boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
+          border: "1px solid #e0e0e0", 
+          backgroundColor:'#ffffff',
         }}
       >
         <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -444,9 +391,51 @@ const UserProfile = () => {
             </Stack>
           </Stack>
         </Stack>
-      </Paper>
+      </Box>
+
+      
+      <Box
+        elevation={6}
+        sx={{
+          ml:3,
+          width: 600,
+          height:210,
+          borderRadius: 3,
+          p: 3,
+          boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
+          border: "0.1px solid #e0e0e0",
+          backgroundColor:'#ffffff',
+        }}
+      >
+       
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Typography variant="h6" fontWeight="bold" fontSize={18}>
+            Technical Skills
+          </Typography>
+          <Button variant="outlined" size="small" startIcon={<Edit />} color="primary" onClick={openSkillDialog}>
+            edit
+          </Button>
+        </Stack>
+
+        <Divider sx={{ my: 2, flexGrow: 1 }} />
+
+        <Stack sx={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)", 
+        gap: 3.0, 
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 1,
+        mt:2
+      }}>
+          {skillsList.map((skill, index) => (
+              <Chip key={index} label={skill} color="primary" variant="outlined" size="small"  sx={{ height: 30, fontSize: '1rem', padding: '10px' }} />
+            ))}
+        </Stack>
+      </Box>  
+      </Box>
       <Dialog open={openEditDetailsDialog} onClose={handleCloseEditDetailsDialog}>
-        <DialogTitle fontWeight="bold" sx={{ backgroundColor: '#8e44ad', color: '#ffffff' }}>
+        <DialogTitle fontWeight="bold" >
           Edit Information
           <IconButton
             color="inherit"
@@ -456,7 +445,15 @@ const UserProfile = () => {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent 
+        sx={{
+          backgroundColor: '#fff',
+          borderRadius: 2,
+          p: 3,
+          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+        }}
+        >
+          
           <TextField
             label="Phone Number"
             fullWidth
@@ -507,57 +504,79 @@ const UserProfile = () => {
                 <MenuItem value="Female">Female</MenuItem>
               </Select>
           </FormControl>
-          
+          <DialogActions>          
+          <Button onClick={handleSaveClick} sx={{mt:2}}color="primary" variant="contained">
+            Save
+          </Button>
+        </DialogActions>          
         </DialogContent>
-        <DialogActions>
+      </Dialog>
+      <Dialog open={openEditDialog} onClose={handleCloseEditDialog}>
+        <DialogTitle fontWeight="bold">
+          Edit Information
+          <IconButton
+            color="inherit"
+            onClick={handleCloseEditDialog}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent
+        sx={{
+          backgroundColor: '#fff',
+          borderRadius: 2,
+          p: 3,
+          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+        }}        
+        >
+          <TextField
+            label="Designation"
+            fullWidth
+            variant="outlined"
+            value={userData.userDesignation}
+            onChange={(e) => handleChange(e, "userDesignation")}
+            sx={{ mt: 2 }}
+          />
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Department</InputLabel>
+            <Select
+              label="Department"
+              value={userData.userDepartment}
+              onChange={(e) => handleChange(e, "userDepartment")}
+            >
+              <MenuItem value="Software Development">Software Development</MenuItem>
+              <MenuItem value="Human Resources">Human Resources</MenuItem>
+              <MenuItem value="Design">Design</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth sx={{ mt: 2 }}>
+            <InputLabel>Job Location</InputLabel>
+            <Select
+              label="Job Location"
+              value={userData.userJobLocation}
+              onChange={(e) => handleChange(e, "userJobLocation")}
+            >
+              <MenuItem value="Hyderabad">Hyderabad</MenuItem>
+              <MenuItem value="Chennai">Chennai</MenuItem>
+              <MenuItem value="Kerala">Kerala</MenuItem>
+              <MenuItem value="Amaravati">Amaravati</MenuItem>
+              <MenuItem value="Delhi">Delhi</MenuItem>
+              <MenuItem value="Mumbai">Mumbai</MenuItem>
+              <MenuItem value="Kolkata">Kolkata</MenuItem>
+            </Select>
+          </FormControl>
+          <DialogActions>
           
           <Button onClick={handleSaveClick} color="primary" variant="contained">
             Save
           </Button>
         </DialogActions>
-      </Dialog>
-
-      
-      <Paper
-        elevation={6}
-        sx={{
-          ml:3,
-          width: 400,
-         height:210,
-          borderRadius: 3,
-          p: 3,
-          boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
-        }}
-      >
-       
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6" fontWeight="bold" fontSize={18}>
-            Technical Skills
-          </Typography>
-          <Button variant="outlined" size="small" startIcon={<Edit />} color="primary" onClick={openSkillDialog}>
-            edit
-          </Button>
-        </Stack>
-
-        <Divider sx={{ my: 2, flexGrow: 1 }} />
-
-        <Stack sx={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)", 
-        gap: 2.0, 
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 1,
-        mt:2
-      }}>
-          {skillsList.map((skill, index) => (
-              <Chip key={index} label={skill} color="primary" variant="outlined"   sx={{ height: 30, fontSize: '1rem', padding: '10px' }} />
-            ))}
-        </Stack>
-      </Paper>  
-      </Box>
+        </DialogContent>
+      </Dialog>      
       <Dialog open={openSkills} onClose={onClose}>
-        <DialogTitle fontWeight="bold" sx={{ backgroundColor: '#8e44ad', color: '#ffffff' }}>Edit Technical Skills
+        <DialogTitle >Edit Technical Skills
         <IconButton
           color="inherit"
           onClick={onClose}
@@ -571,7 +590,14 @@ const UserProfile = () => {
           <CloseIcon />
         </IconButton>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent 
+          sx={{
+            backgroundColor: '#fff',
+            borderRadius: 2,
+            p: 3,
+            boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+          }}
+        >
         <Stack direction="row" spacing={1} alignItems="center" mb={2} mt={4}>
           <TextField
             fullWidth
@@ -607,10 +633,10 @@ const UserProfile = () => {
             />
           ))}
         </Box>
-        </DialogContent>
         <DialogActions>
           <Button variant="contained" color="success" onClick={handleSaveClick}>Save</Button>
         </DialogActions>
+        </DialogContent>
       </Dialog>
       <Snackbar
         open={openSnackbar}
