@@ -70,10 +70,10 @@ const Reports = () => {
       }}>
         <Table>
           <TableHead sx={{ height:"80px" }}>
-            <TableRow>
+            <TableRow>  
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Date</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Department</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Date</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Task Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Hours Worked</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Status</TableCell>
@@ -85,9 +85,9 @@ const Reports = () => {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((report, index) => (
                 <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' }, height:"70px" }}>
+                  <TableCell>{new Date(report.date).toLocaleDateString('en-GB')}</TableCell>
                   <TableCell>{report.employeeId}</TableCell>
                   <TableCell>{report.department}</TableCell>
-                  <TableCell>{new Date(report.date).toLocaleDateString('en-GB')}</TableCell>
                   <TableCell>{report.taskName}</TableCell>
                   <TableCell>{report.hoursWorked}</TableCell>
                   <TableCell>{report.status}</TableCell>
@@ -108,74 +108,105 @@ const Reports = () => {
       />
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle
-          style={{
-            color: 'black',
+          sx={{
             fontWeight: 'bold',
             fontSize: '20px',
-            textAlign: 'left',
-            padding: '16px',
+            color: '#000000',
+            px: 3,
+            py: 2,
+            position: 'relative',
           }}
         >
           Report Details
           <IconButton
-            color="inherit"
             onClick={handleCloseDialog}
             aria-label="close"
             sx={{
               position: 'absolute',
-              right: 8,
-              top: 14,
+              right: 16,
+              top: 12,
+              color: '#333',
             }}
-            >
-              <CloseIcon />
+          >
+            <CloseIcon />
           </IconButton>
-
         </DialogTitle>
 
-          <DialogContent dividers style={{ padding: '24px' }}>
-            {selectedReport && (
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <strong>Employee ID:</strong>
-                  <p>{selectedReport.employeeId}</p>
+        <DialogContent dividers sx={{ px: 4, py: 3 }}>
+          {selectedReport && (
+            <Grid container spacing={3}>
+              {[
+                { label: 'Employee ID', value: selectedReport.employeeId },
+                { label: 'Department', value: selectedReport.department },
+                { label: 'Date', value: new Date(selectedReport.date).toLocaleDateString('en-GB') },
+                { label: 'Task Name', value: selectedReport.taskName },
+                { label: 'Hours Worked', value: selectedReport.hoursWorked },
+              ].map((item, index) => (
+                <Grid item xs={12} sm={6} key={index}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    {item.label}
+                  </Typography>
+                  <Typography variant="body1">{item.value}</Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <strong>Department:</strong>
-                  <p>{selectedReport.department}</p>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <strong>Date:</strong>
-                  <p>{new Date(selectedReport.date).toLocaleDateString('en-GB')}</p>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <strong>Task Name:</strong>
-                  <p>{selectedReport.taskName}</p>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <strong>Hours Worked:</strong>
-                  <p>{selectedReport.hoursWorked}</p>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <strong>Status:</strong>
-                  <p>
-                    <span style={{
-                      backgroundColor: selectedReport.status === 'Completed' ? '#4caf50' :
-                                      selectedReport.status === 'Pending' ? '#ff9800' : '#9e9e9e',
-                      color: 'white',
-                      padding: '2px 10px',
-                      borderRadius: '4px',
-                      fontWeight: 'bold',
-                      fontSize: '14px'
-                    }}>
-                      {selectedReport.status}
-                    </span>
-                  </p>
-                </Grid>
-              </Grid>
-            )}
-          </DialogContent>
-      </Dialog>
+              ))}
 
+              <Grid item xs={12} sm={6}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Status
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    display: 'inline-block',
+                    backgroundColor:
+                      selectedReport.status === 'Completed'
+                        ? '#4caf50'
+                        : selectedReport.status === 'Pending'
+                        ? '#ff9800'
+                        : '#9e9e9e',
+                    color: 'white',
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: '4px',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                  }}
+                >
+                  {selectedReport.status}
+                </Typography>
+              </Grid>
+
+              <Grid item xs={12}>
+                <Typography variant="subtitle2" color="text.secondary">
+                  Work Description
+                </Typography>
+                <Box
+                  sx={{
+                    maxHeight: 200,
+                    overflowY: 'auto',
+                    backgroundColor: '#f4f7fe',
+                    p: 2,
+                    borderRadius: 1,
+                    border: '1px solid #ddd',
+                  }}
+                >
+                  {Array.isArray(JSON.parse(selectedReport.workDescription)) ? (
+                    JSON.parse(selectedReport.workDescription).map((line, index) => (
+                      <Typography key={index} variant="body2" gutterBottom>
+                        {line}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography variant="body2">
+                      {selectedReport.workDescription}
+                    </Typography>
+                  )}
+                </Box>
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

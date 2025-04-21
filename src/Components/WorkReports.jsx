@@ -142,16 +142,16 @@ const WorkReports = () => {
                 <TableCell align="center">{new Date(report.date).toLocaleDateString("en-GB")}</TableCell>
                 <TableCell align="left">{report.taskName}</TableCell>
                 <TableCell align="left">
-                        {Array.isArray(JSON.parse(report.workDescription)) ? (
-                          JSON.parse(report.workDescription).map((line, index) => (
-                            <Typography key={index} variant="body2">
-                              {line}
-                            </Typography>
-                          ))
-                        ) : (
-                          <Typography variant="body2">{report.workDescription}</Typography>
-                        )}
-                      </TableCell>
+                  {Array.isArray(JSON.parse(report.workDescription)) ? (
+                    JSON.parse(report.workDescription).map((line, index) => (
+                    <Typography key={index} variant="body2">
+                      {line}
+                    </Typography>
+                    ))
+                    ) : (
+                    <Typography variant="body2">{report.workDescription}</Typography>
+                    )}
+                </TableCell>
 
                 <TableCell align="center">{report.hoursWorked}</TableCell>
                 <TableCell>

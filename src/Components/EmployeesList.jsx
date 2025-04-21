@@ -293,6 +293,7 @@ const EmployeesList = ({ onClose }) => {
                     <Button
                       variant="outlined"
                       color="primary"
+                      size='small'
                       onClick={() => handleViewUser(user)}
                       sx={{ mr: 1 }}
                     >
