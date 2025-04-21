@@ -131,6 +131,7 @@ const WorkReports = () => {
             <TableRow>
               <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Date</TableCell>
               <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Task Name</TableCell>
+              <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Work Description</TableCell>
               <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Hours Worked</TableCell>
               <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
             </TableRow>
@@ -140,6 +141,18 @@ const WorkReports = () => {
               <TableRow key={report.id}>
                 <TableCell align="center">{new Date(report.date).toLocaleDateString("en-GB")}</TableCell>
                 <TableCell align="left">{report.taskName}</TableCell>
+                <TableCell align="left">
+                        {Array.isArray(JSON.parse(report.workDescription)) ? (
+                          JSON.parse(report.workDescription).map((line, index) => (
+                            <Typography key={index} variant="body2">
+                              {line}
+                            </Typography>
+                          ))
+                        ) : (
+                          <Typography variant="body2">{report.workDescription}</Typography>
+                        )}
+                      </TableCell>
+
                 <TableCell align="center">{report.hoursWorked}</TableCell>
                 <TableCell>
                   <Chip label={report.status} color={getStatusColor(report.status)} />
