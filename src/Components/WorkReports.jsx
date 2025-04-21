@@ -108,7 +108,7 @@ const WorkReports = () => {
               setNewReport({ date: today, taskName: "",workDescription: "1. ", hoursWorked: "", status: "Pending" });
               setOpenDialog(true);
             }}
-          >
+          > 
             Add Report
           </Button>
         </Grid>
