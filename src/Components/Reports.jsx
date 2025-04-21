@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Box, Typography, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination,IconButton, Button, Grid, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import axios from 'axios';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Reports = () => {
   const [reports, setReports] = useState([]);
@@ -104,25 +105,77 @@ const Reports = () => {
           rowsPerPage={rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           rowsPerPageOptions={[5, 10, 25, 50]}
-        />
-        <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Report Details</DialogTitle>
-        <DialogContent>
-          {selectedReport && (
-            <>
-              <Typography variant="body1"><strong>Employee ID:</strong> {selectedReport.employeeId}</Typography>
-              <Typography variant="body1"><strong>Department:</strong> {selectedReport.department}</Typography>
-              <Typography variant="body1"><strong>Date:</strong> {new Date(selectedReport.date).toLocaleDateString()}</Typography>
-              <Typography variant="body1"><strong>Tasks:</strong> {selectedReport.taskName}</Typography>
-              <Typography variant="body1"><strong>Hours Worked:</strong> {selectedReport.hoursWorked}</Typography>
-              <Typography variant="body1"><strong>Status:</strong> {selectedReport.status}</Typography>
-            </>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">Close</Button>
-        </DialogActions>
+      />
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <DialogTitle
+          style={{
+            color: 'black',
+            fontWeight: 'bold',
+            fontSize: '20px',
+            textAlign: 'left',
+            padding: '16px',
+          }}
+        >
+          Report Details
+          <IconButton
+            color="inherit"
+            onClick={handleCloseDialog}
+            aria-label="close"
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 14,
+            }}
+            >
+              <CloseIcon />
+          </IconButton>
+
+        </DialogTitle>
+
+          <DialogContent dividers style={{ padding: '24px' }}>
+            {selectedReport && (
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <strong>Employee ID:</strong>
+                  <p>{selectedReport.employeeId}</p>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <strong>Department:</strong>
+                  <p>{selectedReport.department}</p>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <strong>Date:</strong>
+                  <p>{new Date(selectedReport.date).toLocaleDateString('en-GB')}</p>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <strong>Task Name:</strong>
+                  <p>{selectedReport.taskName}</p>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <strong>Hours Worked:</strong>
+                  <p>{selectedReport.hoursWorked}</p>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <strong>Status:</strong>
+                  <p>
+                    <span style={{
+                      backgroundColor: selectedReport.status === 'Completed' ? '#4caf50' :
+                                      selectedReport.status === 'Pending' ? '#ff9800' : '#9e9e9e',
+                      color: 'white',
+                      padding: '2px 10px',
+                      borderRadius: '4px',
+                      fontWeight: 'bold',
+                      fontSize: '14px'
+                    }}>
+                      {selectedReport.status}
+                    </span>
+                  </p>
+                </Grid>
+              </Grid>
+            )}
+          </DialogContent>
       </Dialog>
+
     </Box>
   );
 };

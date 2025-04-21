@@ -10,7 +10,7 @@ const ViewEmployeeDialog = ({ open, onClose, user }) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle fontWeight="bold" sx={{ backgroundColor: '#8e44ad', color: '#ffffff' }}>
+      <DialogTitle fontWeight="bold" sx={{  color: '#000000' }}>
         Employee Details
         <IconButton
           color="inherit"
