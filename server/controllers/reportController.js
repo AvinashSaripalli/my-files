@@ -22,6 +22,26 @@ exports.getTheReports = (req, res) => {
   });
 };
 
+exports.updateFeedbackByEmployeeId = (req, res) => {
+  const { employeeId } = req.body;
+  const { feedback } = req.body;
+  const { id } = req.params;       
+
+  if (!feedback) {
+    return res.status(400).json({ error: 'Feedback is required' });
+  }
+
+  const query = 'UPDATE reports SET feedback = ? WHERE id = ? AND employeeId = ?';
+  db.query(query, [feedback, id, employeeId], (err, result) => {
+    if (err) return res.status(500).json({ error: 'Failed to update feedback' });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Employee report not found' });
+    }
+
+    res.status(200).json({ message: 'Feedback updated successfully' });
+  });
+};
 
 exports.createReport = (req, res) => {
   const { employeeId, department, date, taskName, workDescription, hoursWorked, status } = req.body;

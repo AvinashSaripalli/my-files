@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination,IconButton, Button, Grid, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Box, Typography, Paper, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, TablePagination, IconButton, Button, Grid, Dialog, DialogActions, DialogContent, DialogTitle, TextField,InputAdornment } from '@mui/material';
 import axios from 'axios';
 import CloseIcon from '@mui/icons-material/Close';
+import SendIcon from '@mui/icons-material/Send';
 
 const Reports = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [feedback, setFeedback] = useState(''); 
+  const [feedbackError, setFeedbackError] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/reports')
@@ -37,11 +39,39 @@ const Reports = () => {
   const handleViewClick = (report) => {
     setSelectedReport(report);
     setOpenDialog(true);
+    setFeedback(''); 
+    setFeedbackError(''); 
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedReport(null);
+    setFeedback(''); 
+    setFeedbackError(''); 
+  };
+
+  const handleFeedbackChange = (event) => {
+    setFeedback(event.target.value);
+    setFeedbackError(''); 
+  };
+
+  const handleFeedbackSubmit = () => {
+    if (!feedback.trim()) {
+      setFeedbackError('Feedback cannot be empty');
+      return;
+    }
+
+    axios.put(`http://localhost:5000/api/reports/feedback/${selectedReport.id}`, {
+      employeeId: selectedReport.employeeId,
+      feedback: feedback.trim(),
+    })
+      .then(() => {
+        alert('Feedback updated successfully!');
+        handleCloseDialog(); 
+      })
+      .catch(() => {
+        setFeedbackError('Error updating feedback');
+      });
   };
 
   if (loading) {
@@ -69,8 +99,9 @@ const Reports = () => {
         boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
       }}>
         <Table>
-          <TableHead sx={{ height:"80px" }}>
-            <TableRow>  
+          <TableHead sx={{ height: "80px" }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Report ID</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Date</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Department</TableCell>
@@ -83,7 +114,8 @@ const Reports = () => {
             {reports
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((report, index) => (
-                <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' }, height:"70px" }}>
+                <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' }, height: "70px" }}>
+                  <TableCell>{report.id}</TableCell>
                   <TableCell>{new Date(report.date).toLocaleDateString('en-GB')}</TableCell>
                   <TableCell>{report.employeeId}</TableCell>
                   <TableCell>{report.department}</TableCell>
@@ -94,15 +126,15 @@ const Reports = () => {
               ))}
           </TableBody>
         </Table>
-        </TableContainer>
+      </TableContainer>
       <TablePagination
-          component="div"
-          count={reports.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25, 50]}
+        component="div"
+        count={reports.length}
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[5, 10, 25, 50]}
       />
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle
@@ -201,6 +233,32 @@ const Reports = () => {
                   )}
                 </Box>
               </Grid>
+
+
+              {selectedReport.feedback === 'Pending' && (
+                <Grid item xs={12}>
+                  <Typography variant="subtitle2" color="text.secondary">Feedback</Typography>
+                  <TextField
+                    multiline
+                    rows={2}
+                    value={feedback}
+                    onChange={handleFeedbackChange}
+                    placeholder="Enter your feedback here..."
+                    error={!!feedbackError}
+                    helperText={feedbackError}
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={handleFeedbackSubmit}>
+                            <SendIcon color="primary" />
+                          </IconButton>
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </Grid>
+              )}
             </Grid>
           )}
         </DialogContent>
