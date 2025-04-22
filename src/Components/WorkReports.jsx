@@ -6,6 +6,8 @@ import {
   Grid, Card, CardContent, Chip, TablePagination
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import axios from "axios";
+
 
 const WorkReports = () => {
   const [reports, setReports] = useState([]);
@@ -21,17 +23,19 @@ const WorkReports = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const employeeId = localStorage.getItem("userEmployeeId");
   const department = localStorage.getItem("userDepartment");
+  const employeeId = localStorage.getItem("userEmployeeId");
   const workedTime = localStorage.getItem("workedTime")
 
   useEffect(() => {
-    if (!employeeId) return;
-    fetch(`http://localhost:5000/api/reports?employeeId=${employeeId}`)
-      .then((res) => res.json())
-      .then((data) => setReports(data))
-      .catch((err) => console.error("Fetch error:", err));
+    if (!employeeId) return; 
+  
+    axios
+      .get(`http://localhost:5000/api/reports/getAll?employeeId=${employeeId}`)
+      .then((res) => setReports(res.data)) 
+      .catch((err) => console.error("Axios GET error:", err));
   }, [employeeId]);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,30 +45,21 @@ const WorkReports = () => {
     .filter((line) => line.trim() !== "");
 
     try {
-      const res = await fetch("http://localhost:5000/api/reports", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...newReport,
-          workDescription: JSON.stringify(workDescriptionArray),
-          employeeId,
-          department,
-        }),
+      const response = await axios.post("http://localhost:5000/api/reports", {
+        ...newReport,
+        workDescription: JSON.stringify(workDescriptionArray),
+        employeeId,
+        department,
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setReports([...reports, { ...newReport, id: data.id }]);
-        setNewReport({ date: "", taskName: "", workDescription:"", hoursWorked: "", status: "Pending" });
-        setOpenSnackbar(true);
-        setOpenDialog(false);
-      } else {
-        console.error(data.error);
-      }
+    
+      setReports([...reports, { ...newReport, id: response.data.id }]);
+      setNewReport({ date: "", taskName: "", workDescription:"", hoursWorked: "", status: "Pending" });
+      setOpenSnackbar(true);
+      setOpenDialog(false);
     } catch (error) {
-      console.error("Submit error:", error);
+      console.error("Axios POST error:", error.response?.data || error.message);
     }
+    
   };
 
   const filteredReports = filter === "All" ? reports : reports.filter((r) => r.status === filter);

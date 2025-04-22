@@ -227,7 +227,6 @@ const UserProfile = () => {
           sx={{ 
           width: 250,
           height: '100%',
-          borderRadius: 3,
           boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
           border: "0.1px solid #e0e0e0", 
           backgroundColor:'#ffffff',
@@ -268,7 +267,6 @@ const UserProfile = () => {
         sx={{
           mt: 1,
           p: 3,
-          borderRadius: 3,
           border: "0.1px solid gray",
           // boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px", 
           backgroundColor:'#ffffff',
@@ -327,7 +325,6 @@ const UserProfile = () => {
         sx={{
           ml:3,
           width: 600,
-          borderRadius: 3,
           p: 3,
           boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
           border: "1px solid #e0e0e0", 
@@ -399,7 +396,6 @@ const UserProfile = () => {
           ml:3,
           width: 600,
           height:210,
-          borderRadius: 3,
           p: 3,
           boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
           border: "0.1px solid #e0e0e0",

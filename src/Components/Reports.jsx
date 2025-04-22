@@ -76,7 +76,6 @@ const Reports = () => {
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Department</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Task Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Hours Worked</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Status</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -90,7 +89,6 @@ const Reports = () => {
                   <TableCell>{report.department}</TableCell>
                   <TableCell>{report.taskName}</TableCell>
                   <TableCell>{report.hoursWorked}</TableCell>
-                  <TableCell>{report.status}</TableCell>
                   <TableCell><Button variant='contained' size='small' onClick={() => handleViewClick(report)}>View</Button></TableCell>
                 </TableRow>
               ))}
