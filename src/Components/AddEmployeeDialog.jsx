@@ -133,14 +133,20 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
           delete newErrors.confirmPassword;
         }
       } else if (name === "email") {
+        const userCompany = localStorage.getItem("companyName")?.toLowerCase();
+        const expectedEmailSuffix = userCompany ? `@${userCompany}.com` : null;
+        
         if (!value) {
           newErrors.email = "Email is required";
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
           newErrors.email = "Invalid email address";
+        } else if (!value.toLowerCase().endsWith(expectedEmailSuffix)) {
+          newErrors.email = `Email must end with @${userCompany}.com`;
         } else {
           delete newErrors.email;
         }
-      } else if (name === "department" && !value) {
+      }
+       else if (name === "department" && !value) {
         newErrors.department = "Department is required";
       } else if (name === "role" && !value) {
         newErrors.role = "Role is required";
