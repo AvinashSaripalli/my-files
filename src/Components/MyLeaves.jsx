@@ -96,7 +96,7 @@ const MyLeaves = () => {
                             <Chip 
                               label={leave.status} 
                               color={getStatusColor(leave.status)}
-                              style={{ width: "100px", minWidth: "unset", padding: "4px 8px" }}
+                              style={{ width: "100px", minWidth: "unset" }}
                             />
                           </TableCell>
                         </TableRow>

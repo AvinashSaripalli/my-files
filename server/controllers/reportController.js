@@ -1,7 +1,7 @@
 const db = require("../db");
 
 exports.getReports = (req, res) => {
-  const sql = "SELECT * FROM reports ORDER BY created_at DESC";
+  const sql = "SELECT * FROM reports ORDER BY id DESC";
   db.query(sql, (err, results) => {
     if (err) return res.status(500).json({ error: err });
     res.json(results);
@@ -15,7 +15,7 @@ exports.getTheReports = (req, res) => {
     return res.status(400).json({ error: "employeeId is required" });
   }
 
-  const sql = "SELECT * FROM reports WHERE employeeId = ? ORDER BY created_at DESC";
+  const sql = "SELECT * FROM reports WHERE employeeId = ? ORDER BY id DESC";
   db.query(sql, [employeeId], (err, results) => {
     if (err) return res.status(500).json({ error: err });
     res.json(results);

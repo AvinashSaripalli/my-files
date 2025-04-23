@@ -150,7 +150,9 @@ const WorkReports = () => {
 
                 <TableCell align="center">{report.hoursWorked}</TableCell>
                 <TableCell>
-                  <Chip label={report.status} color={getStatusColor(report.status)} />
+                  <Chip label={report.status} color={getStatusColor(report.status)} 
+                  style={{ width: "100px", minWidth: "unset", }}
+                  />
                 </TableCell>
               </TableRow>
             ))}

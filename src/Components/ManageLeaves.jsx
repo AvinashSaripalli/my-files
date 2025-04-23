@@ -102,6 +102,7 @@ const ManageLeaves = () => {
                             leave.status === 'Approved' ? 'success' :
                               leave.status === 'Rejected' ? 'error' : 'warning'
                           }
+                          style={{ width: "100px", minWidth: "unset"}}
                         />
                       )}
                     </TableCell>
