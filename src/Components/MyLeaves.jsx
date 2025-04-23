@@ -60,8 +60,8 @@ const MyLeaves = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-      <Card sx={{ maxWidth: 900, width: '100%', p: 2, boxShadow: 3 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}>
+      <Card sx={{ maxWidth: 1300, width: '100%', p: 2, boxShadow: 3 }}>
         <CardContent>
           <Typography variant="h5" align="center" sx={{ fontWeight: 'bold', mb: 2, color: 'black' }}>
             My Leave Requests

@@ -3,7 +3,7 @@ import {
   Container, TextField, Button, Typography, Snackbar, Select, MenuItem,
   Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, FormControl,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Grid, Card, CardContent, Chip, TablePagination
+  Grid, Card, CardContent, Chip, TablePagination,Box
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import axios from "axios";
@@ -87,7 +87,7 @@ const WorkReports = () => {
   const paginatedReports = filteredReports.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
-    <Container maxWidth="lg" sx={{ py: 2 }}>
+    <Box sx={{ pl: 10, pr: 10, mt:6 }}>
       <Typography variant="h4" align="center" gutterBottom>
         My Work Reports
       </Typography>
@@ -272,7 +272,7 @@ const WorkReports = () => {
         onClose={() => setOpenSnackbar(false)}
         message="Report saved successfully!"
       />
-    </Container>
+    </Box>
   );
 };
 
