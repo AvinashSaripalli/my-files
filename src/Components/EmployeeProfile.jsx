@@ -30,6 +30,8 @@ const EmployeeProfile = () => {
   });
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
+
 
   const [userData, setUserData] = useState({
     userPhoto: localStorage.getItem("userPhoto") || "",
@@ -57,7 +59,46 @@ const EmployeeProfile = () => {
 
   const [openSkills, setOpenSkills] = useState(false);
   const [newSkill, setNewSkill] = useState("");
-
+  const validateFields = () => {
+    const errors = {};
+  
+    // Basic details
+    if (!userData.userDesignation?.trim()) {
+      errors.userDesignation = "Designation is required.";
+    }
+  
+    if (!userData.userDepartment?.trim()) {
+      errors.userDepartment = "Department is required.";
+    }
+  
+    if (!userData.userJobLocation?.trim()) {
+      errors.userJobLocation = "Job Location is required.";
+    }
+  
+    // Personal details
+    if (!userData.userPhoneNumber?.trim()) {
+      errors.userPhoneNumber = "Phone number is required.";
+    } else if (!/^\d{10}$/.test(userData.userPhoneNumber)) {
+      errors.userPhoneNumber = "Enter a valid 10-digit phone number.";
+    }
+  
+    if (!userData.userDateofBirth) {
+      errors.userDateofBirth = "Date of birth is required.";
+    }
+  
+    if (!userData.userBloodGroup?.trim()) {
+      errors.userBloodGroup = "Blood group is required.";
+    }
+  
+    if (!userData.userGender?.trim()) {
+      errors.userGender = "Gender is required.";
+    }
+  
+    setValidationErrors(errors);
+  
+    return Object.keys(errors).length === 0;
+  };
+  
   const handleAddSkill = () => {
     if (newSkill.trim() !== "" && !skillsList.includes(newSkill)) {
       setSkillsList([...skillsList, newSkill]);
@@ -75,6 +116,7 @@ const EmployeeProfile = () => {
       ...prev,
       userTechnicalSkills: localStorage.getItem("userTechnicalSkills")? localStorage.getItem("userTechnicalSkills").split(",") : [],
     }));
+    setValidationErrors({});
     setOpenSkills(false);
   }
   
@@ -102,6 +144,7 @@ const EmployeeProfile = () => {
       userDepartment: localStorage.getItem("userDepartment") || "",
       userJobLocation: localStorage.getItem("userJobLocation") || "",
     }));
+    setValidationErrors({});
     setOpenEditDialog(false);
   };
   
@@ -125,10 +168,14 @@ const EmployeeProfile = () => {
       userBloodGroup: localStorage.getItem("userBloodGroup") || "",
       userGender: localStorage.getItem("userGender") || "",
     }));
+    setValidationErrors({});
     setOpenEditDetailsDialog(false);
   };  
 
   const handleSaveClick = async () => {
+    if (!validateFields()) {
+      return;
+    }
     const userId = userData.userId;
     const token = localStorage.getItem("token");
     const dataToUpdate = {
@@ -456,6 +503,8 @@ const EmployeeProfile = () => {
             value={userData.userPhoneNumber}
             onChange={(e) => handleChange(e, "userPhoneNumber")}
             sx={{ mt: 2 }}
+            error={!!validationErrors.userPhoneNumber}
+            helperText={validationErrors.userPhoneNumber}
           />
 
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -466,10 +515,13 @@ const EmployeeProfile = () => {
               onChange={(newValue) =>
                 setUserData({ ...userData, userDateofBirth: newValue ? newValue.format("YYYY-MM-DD") : null })
               }
-              renderInput={(params) => <TextField {...params} fullWidth sx={{ mt: 2 }} />}
+              renderInput={(params) => <TextField {...params} fullWidth sx={{ mt: 2 }} 
+              error={!!validationErrors.userDateofBirth}
+              helperText={validationErrors.userDateofBirth}
+              />}
             />
           </LocalizationProvider>
-          <FormControl sx={{ width:552,mt:2}} margin="dense"  variant="outlined">
+          <FormControl sx={{ width:552,mt:2}} margin="dense"  variant="outlined" error={!!validationErrors.userBloodGroup}>
             <InputLabel>Blood Group</InputLabel>
               <Select
                 name="bloodGroup"
@@ -486,8 +538,11 @@ const EmployeeProfile = () => {
                 <MenuItem value="AB +ve">AB +</MenuItem>
                 <MenuItem value="AB -ve">AB -</MenuItem>
               </Select>
+              {validationErrors.userGender && (
+        <Typography variant="caption" color="error">{validationErrors.userBloodGroup}</Typography>
+      )}
           </FormControl>
-          <FormControl sx={{ width:552,mt:2}} margin="dense"  variant="outlined">
+          <FormControl sx={{ width:552,mt:2}} margin="dense"  variant="outlined" error={!!validationErrors.userGender}>
             <InputLabel>Gender</InputLabel>
               <Select
                 name="gender"
@@ -498,6 +553,9 @@ const EmployeeProfile = () => {
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
               </Select>
+              {validationErrors.userGender && (
+        <Typography variant="caption" color="error">{validationErrors.userGender}</Typography>
+      )}
           </FormControl>
           <DialogActions>          
           <Button onClick={handleSaveClick} sx={{mt:2}}color="primary" variant="contained">
@@ -532,8 +590,10 @@ const EmployeeProfile = () => {
             value={userData.userDesignation}
             onChange={(e) => handleChange(e, "userDesignation")}
             sx={{ mt: 2 }}
+            error={!!validationErrors.userDesignation}
+            helperText={validationErrors.userDesignation}
           />
-          <FormControl fullWidth sx={{ mt: 2 }}>
+          <FormControl fullWidth sx={{ mt: 2 }} error={!!validationErrors.userDepartment}>
             <InputLabel>Department</InputLabel>
             <Select
               label="Department"
@@ -546,9 +606,13 @@ const EmployeeProfile = () => {
               <MenuItem value="Testing">Testing</MenuItem>
               <MenuItem value="Accounting">Accounting</MenuItem>
             </Select>
+            {validationErrors.userDepartment && (
+        <Typography variant="caption" color="error">{validationErrors.userDepartment}</Typography>
+      )}
+
           </FormControl>
 
-          <FormControl fullWidth sx={{ mt: 2 }}>
+          <FormControl fullWidth sx={{ mt: 2 }} error={!!validationErrors.userJobLocation}>
             <InputLabel>Job Location</InputLabel>
             <Select
               label="Job Location"
@@ -563,6 +627,10 @@ const EmployeeProfile = () => {
               <MenuItem value="Mumbai">Mumbai</MenuItem>
               <MenuItem value="Kolkata">Kolkata</MenuItem>
             </Select>
+            {validationErrors.userGender && (
+        <Typography variant="caption" color="error">{validationErrors.userJobLocation}</Typography>
+      )}
+
           </FormControl>
           <DialogActions>
           
@@ -653,4 +721,4 @@ const EmployeeProfile = () => {
    </Box>
   );
 };
-export default EmployeeProfile; 
+export default EmployeeProfile;  
