@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical,} from "iconsax-react";
 import ManageLeaves from './ManageLeaves';
 import Reports from './Reports';
+import { ThreeDot } from 'react-loading-indicators';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('EmployeesList');
@@ -37,12 +38,14 @@ const Sidebar = () => {
     setTimeout(() => {
       setSelectedComponent(component);
       setLoading(false);
-    }, 500);
+    }, 1000);
   };
 
   const renderComponent = () => {
     if (loading) {
-      return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</Box>;
+      return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <ThreeDot variant="bob" color="#14286d" size="small" text="" textColor="" />
+      </Box>;
     }
     switch (selectedComponent) {
       case 'Dashboard': return <Dashboard />;

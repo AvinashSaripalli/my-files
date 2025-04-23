@@ -12,6 +12,7 @@ import {
   Activity, ArrowCircleLeft, ArrowCircleRight, LogoutCurve, Note,
   Notepad2, Profile
 } from "iconsax-react";
+import { ThreeDot } from 'react-loading-indicators';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('My Leaves');
@@ -56,14 +57,14 @@ const Sidebar = () => {
     setTimeout(() => {
       setSelectedComponent(component);
       setLoading(false);
-    }, 500);
+    }, 1000);
   };
 
   const renderComponent = () => {
     if (loading) {
       return (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          Loading...
+          <ThreeDot variant="bob" color="#14286d" size="small" text="" textColor="" />
         </Box>
       );
     }
