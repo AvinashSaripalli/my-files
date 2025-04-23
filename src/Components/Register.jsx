@@ -222,14 +222,14 @@ function Register() {
             <FormControl fullWidth margin="dense" error={!!errors.bloodGroup}>
               <InputLabel>Blood Group</InputLabel>
               <Select name="bloodGroup" value={formValues.bloodGroup} onChange={handleChange} label="Blood Group">
-                <MenuItem value="A+">A+</MenuItem>
-                <MenuItem value="A-">A-</MenuItem>
-                <MenuItem value="B+">B+</MenuItem>
-                <MenuItem value="B-">B-</MenuItem>
-                <MenuItem value="AB+">AB+</MenuItem>
-                <MenuItem value="AB-">AB-</MenuItem>
-                <MenuItem value="O+">O+</MenuItem>
-                <MenuItem value="O-">O-</MenuItem>
+                <MenuItem value="A +ve">A +</MenuItem>
+                <MenuItem value="A -ve">A -</MenuItem>
+                <MenuItem value="B +ve">B +</MenuItem>
+                <MenuItem value="B -ve">B -</MenuItem>
+                <MenuItem value="O +ve">O +</MenuItem>
+                <MenuItem value="O -ve">O -</MenuItem>
+                <MenuItem value="AB +ve">AB +</MenuItem>
+                <MenuItem value="AB -ve">AB -</MenuItem>
               </Select>
               {errors.bloodGroup && <Typography color="error" sx={{ fontSize: '0.75rem', mt: 0.5, ml:2 }}>{errors.bloodGroup}</Typography>}
             </FormControl>
