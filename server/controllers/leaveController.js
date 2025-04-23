@@ -13,7 +13,7 @@ exports.leaveApply=(req, res) => {
 };
 
 exports.getAllLeaves = (req, res) => {
-    const sql = 'SELECT * FROM leaves';
+    const sql = 'SELECT * FROM leaves ORDER BY created_at DESC';
     db.query(sql, (err, results) => {
         if (err) {
             console.error('Error fetching leave records:', err);
@@ -47,7 +47,7 @@ exports.getLeavesByEmployee = (req, res) => {
         return res.status(400).json({ message: "Employee ID is required" });
     }
 
-    const query = "SELECT * FROM leaves WHERE employeeId = ?";
+    const query = "SELECT * FROM leaves WHERE employeeId = ? ORDER BY created_at DESC";
     db.query(query, [employeeId], (err, results) => {
         if (err) {
             console.error("Error fetching leaves:", err);
