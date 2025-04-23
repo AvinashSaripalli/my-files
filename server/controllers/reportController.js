@@ -44,9 +44,9 @@ exports.updateFeedbackByEmployeeId = (req, res) => {
 };
 
 exports.createReport = (req, res) => {
-  const { employeeId, department, date, taskName, workDescription, hoursWorked, status } = req.body;
-  const sql = "INSERT INTO reports (employeeId, department, date, taskName, workDescription, hoursWorked, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-  db.query(sql, [employeeId, department, date, taskName, workDescription, hoursWorked, status], (err, result) => {
+  const { employeeId, department, date, taskName, workDescription, hoursWorked} = req.body;
+  const sql = "INSERT INTO reports (employeeId, department, date, taskName, workDescription, hoursWorked) VALUES (?, ?, ?, ?, ?, ?)";
+  db.query(sql, [employeeId, department, date, taskName, workDescription, hoursWorked], (err, result) => {
     if (err) return res.status(500).json({ error: err });
     res.json({ message: "Report added successfully", id: result.insertId });
   });
