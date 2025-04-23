@@ -30,7 +30,6 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
   const [user, setUser] = useState(initialUserState);
   const [errors, setErrors] = useState({});
   const [skillsOption, setSkillsOption] = useState([]);
-  //const [newEmployeeId, setNewEmployeeId] = useState(employeeId || "");
 
   useEffect(() => {
     if (open) {
@@ -83,14 +82,118 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
     } else {
       setUser((prev) => ({ ...prev, [name]: value }));
     }
+
+    setErrors((prev) => {
+      let newErrors = { ...prev };
+      if (name === "firstName") {
+        if (!value) {
+          newErrors.firstName = "First name is required";
+        } else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(value)) {
+          newErrors.firstName = "Only letters and a single space between words allowed";
+        } else {
+          delete newErrors.firstName;
+        }
+      } else if (name === "lastName") {
+        if (!value) {
+          newErrors.lastName = "Last name is required";
+        } else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(value)) {
+          newErrors.lastName = "Only letters and a single space between words allowed";
+        } else {
+          delete newErrors.lastName;
+        }
+      } else if (name === "phoneNumber") {
+        if (!value) {
+          newErrors.phoneNumber = "Phone number is required";
+        } else if (!/^\d{0,10}$/.test(value)) {
+          newErrors.phoneNumber = "Phone number must be 10 digits";
+        } else {
+          delete newErrors.phoneNumber;
+        }
+      } else if (name === "designation") {
+        if (!value) {
+          newErrors.designation = "Designation is required";
+        } else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(value)) {
+          newErrors.designation = "Only letters and a single space between words allowed";
+        } else {
+          delete newErrors.designation;
+        }
+      } else if (name === "password") {
+        if (!value) {
+          newErrors.password = "Password is required";
+        } else if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(value)) {
+          newErrors.password = "Password must be 8-16 characters, include at least one letter, one number, and one special character";
+        } else {
+          delete newErrors.password;
+        }
+        newErrors.confirmPassword = user.confirmPassword === value ? "" : "Passwords do not match";
+      } else if (name === "confirmPassword") {
+        if (value !== user.password) {
+          newErrors.confirmPassword = "Passwords do not match";
+        } else {
+          delete newErrors.confirmPassword;
+        }
+      } else if (name === "email") {
+        if (!value) {
+          newErrors.email = "Email is required";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          newErrors.email = "Invalid email address";
+        } else {
+          delete newErrors.email;
+        }
+      } else if (name === "department" && !value) {
+        newErrors.department = "Department is required";
+      } else if (name === "role" && !value) {
+        newErrors.role = "Role is required";
+      } else if (name === "jobLocation" && !value) {
+        newErrors.jobLocation = "Job location is required";
+      } else if (name === "bloodGroup" && !value) {
+        newErrors.bloodGroup = "Blood group is required";
+      } else if (name === "gender" && !value) {
+        newErrors.gender = "Gender is required";
+      } else {
+        delete newErrors[name];
+      }
+      return newErrors;
+    });
   };
 
   const handleSkillsChange = (e, value) => {
     setUser((prev) => ({ ...prev, technicalSkills: value }));
+    setErrors((prev) => {
+      let newErrors = { ...prev };
+      if (value.length === 0) {
+        newErrors.technicalSkills = "Please select at least one technical skill";
+      } else {
+        delete newErrors.technicalSkills;
+      }
+      return newErrors;
+    });
   };
 
   const handleDateChange = (date) => {
-    setUser((prev) => ({ ...prev, dateOfBirth: date ? dayjs(date).format("YYYY-MM-DD") : null }));
+    const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : null;
+    setUser((prev) => ({ ...prev, dateOfBirth: formattedDate }));
+
+    setErrors((prev) => {
+      let newErrors = { ...prev };
+      if (!formattedDate) {
+        newErrors.dateOfBirth = "Date of birth is required";
+      } else {
+        const dob = new Date(formattedDate);
+        const today = new Date();
+        const age = today.getFullYear() - dob.getFullYear() - 
+                    (today.getMonth() < dob.getMonth() || 
+                    (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate()) ? 1 : 0);
+        if (dob > today) {
+          newErrors.dateOfBirth = "Date of birth cannot be in the future";
+        } else if (age < 18) {
+          newErrors.dateOfBirth = "You must be at least 18 years old";
+        } else {
+          delete newErrors.dateOfBirth;
+        }
+      }
+      return newErrors;
+    });
   };
 
   const handleSave = async () => {
@@ -161,6 +264,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               label="First Name"
               name="firstName"
               variant="outlined"
+              value={user.firstName}
               onChange={handleChange}
               inputProps={{ maxLength: 30 }}
               error={!!errors.firstName}
@@ -171,6 +275,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               variant="outlined"
               name="lastName"
               label="Last Name"
+              value={user.lastName}
               onChange={handleChange}
               inputProps={{ maxLength: 30 }}
               error={!!errors.lastName}
@@ -190,7 +295,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
             />
             <FormControl sx={{ ml: 2.25, width: '350px', mt: 1, mr: 1 }} margin="dense" variant="outlined" error={!!errors.department}>
               <InputLabel>Department</InputLabel>
-              <Select name="department" onChange={handleChange} label="Department">
+              <Select name="department" value={user.department} onChange={handleChange} label="Department">
                 <MenuItem value="Software Development">Software Development</MenuItem>
                 <MenuItem value="Human Resources">Human Resources</MenuItem>
                 <MenuItem value="Design">Design</MenuItem>
@@ -203,7 +308,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
           <div style={{ display: "flex", alignItems: "flex-start" }}>
             <FormControl sx={{ ml: 1, width: '350px', mr: 2.25 }} margin="dense" variant="outlined" error={!!errors.role}>
               <InputLabel>Role</InputLabel>
-              <Select name="role" onChange={handleChange} label="Role">
+              <Select name="role" value={user.role} onChange={handleChange} label="Role">
                 <MenuItem value="Employee">Employee</MenuItem>
               </Select>
               {errors.role && <Typography color="error" sx={{ fontSize: '0.8rem', mt: 0.5, ml: 2 }}>{errors.role}</Typography>}
@@ -212,6 +317,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               variant="outlined"
               name="designation"
               label="Designation"
+              value={user.designation}
               inputProps={{ maxLength: 50 }}
               onChange={handleChange}
               error={!!errors.designation}
@@ -222,7 +328,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
           <div style={{ display: "flex", alignItems: "flex-start" }}>
             <FormControl sx={{ ml: 1, width: '350px', mr: 2.25, mt: 1 }} margin="dense" variant="outlined" error={!!errors.jobLocation}>
               <InputLabel>Job Location</InputLabel>
-              <Select name="jobLocation" onChange={handleChange} label="Job Location">
+              <Select name="jobLocation" value={user.jobLocation} onChange={handleChange} label="Job Location">
                 <MenuItem value="Hyderabad">Hyderabad</MenuItem>
                 <MenuItem value="Chennai">Chennai</MenuItem>
                 <MenuItem value="Kerala">Kerala</MenuItem>
@@ -237,6 +343,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               variant="outlined"
               name="email"
               label="Email"
+              value={user.email}
               onChange={handleChange}
               inputProps={{ maxLength: 50 }}
               error={!!errors.email}
@@ -264,6 +371,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               label="Phone Number"
               name="phoneNumber"
               variant="outlined"
+              value={user.phoneNumber}
               inputProps={{ maxLength: 10 }}
               onChange={handleChange}
               error={!!errors.phoneNumber}
@@ -274,7 +382,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
           <div style={{ display: "flex", alignItems: "flex-start" }}>
             <FormControl sx={{ ml: 1, width: '350px', mt: 1, mr: 2.25 }} margin="dense" variant="outlined" error={!!errors.bloodGroup}>
               <InputLabel>Blood Group</InputLabel>
-              <Select name="bloodGroup" onChange={handleChange} label="Blood Group">
+              <Select name="bloodGroup" value={user.bloodGroup} onChange={handleChange} label="Blood Group">
                 <MenuItem value="A +ve">A +</MenuItem>
                 <MenuItem value="A -ve">A -</MenuItem>
                 <MenuItem value="B +ve">B +</MenuItem>
@@ -288,7 +396,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
             </FormControl>
             <FormControl sx={{ width: '350px', ml: 2.25, mt: 1, mr: 1 }} margin="dense" error={!!errors.gender} variant="outlined">
               <InputLabel>Gender</InputLabel>
-              <Select name="gender" onChange={handleChange} label="Gender">
+              <Select name="gender" value={user.gender} onChange={handleChange} label="Gender">
                 <MenuItem value="Male">Male</MenuItem>
                 <MenuItem value="Female">Female</MenuItem>
               </Select>
@@ -301,6 +409,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               name="password"
               type="password"
               variant="outlined"
+              value={user.password}
               onChange={handleChange}
               error={!!errors.password}
               helperText={errors.password}
@@ -311,6 +420,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               name="confirmPassword"
               type="password"
               variant="outlined"
+              value={user.confirmPassword}
               onChange={handleChange}
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword}
@@ -339,13 +449,21 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               freeSolo
               sx={{ ml: 1, width: '740px', mt: 1, mr: 1 }}
               options={skillsOption}
+              value={user.technicalSkills}
               onChange={handleSkillsChange}
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
                   <Chip variant="contained" label={option} {...getTagProps({ index })} key={index} />
                 ))
               }
-              renderInput={(params) => <TextField {...params} label="Technical Skills" />}
+              renderInput={(params) => (
+                <TextField 
+                  {...params} 
+                  label="Technical Skills" 
+                  error={!!errors.technicalSkills}
+                  helperText={errors.technicalSkills}
+                />
+              )}
             />
           </div>
         </Box>
