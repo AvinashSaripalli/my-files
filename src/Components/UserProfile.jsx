@@ -37,9 +37,9 @@ const UserProfile = () => {
     userPhoto: localStorage.getItem("userPhoto") || "",
     userDesignation: localStorage.getItem("userDesignation") || "",
     userEmail: localStorage.getItem("userEmail") || "",
-    userFirstName: localStorage.getItem("userFirstName") || "",
+    userFirstuserData: localStorage.getItem("userFirstuserData") || "",
     userJobLocation: localStorage.getItem("userJobLocation"),
-    userLastName: localStorage.getItem("userLastName") || "",
+    userLastuserData: localStorage.getItem("userLastuserData") || "",
     userPhoneNumber: localStorage.getItem("userPhoneNumber") || "",
     userDepartment: localStorage.getItem("userDepartment"),
     userId: localStorage.getItem("userId") || "",
@@ -228,9 +228,56 @@ const UserProfile = () => {
     }
   };
   
-  
   const handleChange = (e, field) => {
-    setUserData({ ...userData, [field]: e.target.value });
+    const value = e.target.value;
+    setUserData({ ...userData, [field]: value });
+    setValidationErrors((prev) => {
+      const newErrors = { ...prev };
+  
+      if (field === "userPhoneNumber") {
+        if (!value) {
+          newErrors.userPhoneNumber = "Phone number is required.";
+        } else if (!/^\d{10}$/.test(value)) {
+          newErrors.userPhoneNumber = "Phone Number must be in 10 digits.";
+        } else {
+          delete newErrors.userPhoneNumber;
+        }
+      } else if (field === "userDesignation") {
+        if (!value.trim()) {
+          newErrors.userDesignation = "Designation is required.";
+        } else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(value)) {
+          newErrors.userDesignation = "Only letters and a single space between words allowed.";
+        } else {
+          delete newErrors.userDesignation;
+        }
+      } else if (field === "userDepartment") {
+        if (!value.trim()) {
+          newErrors.userDepartment = "Department is required.";
+        } else {
+          delete newErrors.userDepartment;
+        }
+      } else if (field === "userJobLocation") {
+        if (!value.trim()) {
+          newErrors.userJobLocation = "Job Location is required.";
+        } else {
+          delete newErrors.userJobLocation;
+        }
+      } else if (field === "userBloodGroup") {
+        if (!value.trim()) {
+          newErrors.userBloodGroup = "Blood group is required.";
+        } else {
+          delete newErrors.userBloodGroup;
+        }
+      } else if (field === "userGender") {
+        if (!value.trim()) {
+          newErrors.userGender = "Gender is required.";
+        } else {
+          delete newErrors.userGender;
+        }
+      }
+  
+      return newErrors;
+    });
   };
 
   const handlePhotoChange = async (e) => {
@@ -284,7 +331,7 @@ const UserProfile = () => {
         <Box sx={{ position: "relative", display: "inline-block" }}>
           <Avatar
             src={userData.userPhoto}
-            alt={`${userData.userFirstName} ${userData.userLastName}`}
+            alt={`${userData.userFirstuserData} ${userData.userLastuserData}`}
             sx={{ width: 140, height: 140, mx: "auto", mb: 2, border: "4px solid #2196f3", borderRadius: "50%",  }}
           />
           <IconButton
@@ -303,7 +350,7 @@ const UserProfile = () => {
           </IconButton>
         </Box>
         <Typography variant="h6" sx={{ fontWeight: "bold", color: "#333" }}>
-          {userData.userLastName} {userData.userFirstName}
+          {userData.userLastuserData} {userData.userFirstuserData}
         </Typography>
         <Typography variant="body1" sx={{ color: "#666" }}>
           {userData.userEmail}
@@ -524,7 +571,7 @@ const UserProfile = () => {
           <FormControl sx={{ width:552,mt:2}} margin="dense"  variant="outlined" error={!!validationErrors.userBloodGroup}>
             <InputLabel>Blood Group</InputLabel>
               <Select
-                name="bloodGroup"
+                userData="bloodGroup"
                 onChange={(e) => handleChange(e, "userBloodGroup")}
                 label="Blood Group"
                 value={userData.userBloodGroup}
@@ -545,7 +592,7 @@ const UserProfile = () => {
           <FormControl sx={{ width:552,mt:2}} margin="dense"  variant="outlined" error={!!validationErrors.userGender}>
             <InputLabel>Gender</InputLabel>
               <Select
-                name="gender"
+                userData="gender"
                 onChange={(e) => handleChange(e, "userGender")}
                 label="Gender"
                 value={userData.userGender}
