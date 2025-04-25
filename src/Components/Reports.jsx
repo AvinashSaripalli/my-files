@@ -101,13 +101,13 @@ const Reports = () => {
         <Table>
           <TableHead sx={{ height: "80px" }}>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Report ID</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Report ID</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Date</TableCell>
+              <TableCell align="center"sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Department</TableCell>
               <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Task Name</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Hours Worked</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Hours Worked</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -115,13 +115,13 @@ const Reports = () => {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((report, index) => (
                 <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' }, height: "70px" }}>
-                  <TableCell>{report.id}</TableCell>
-                  <TableCell>{new Date(report.date).toLocaleDateString('en-GB')}</TableCell>
-                  <TableCell>{report.employeeId}</TableCell>
+                  <TableCell align="center">{report.id}</TableCell>
+                  <TableCell align="center" >{new Date(report.date).toLocaleDateString('en-GB')}</TableCell>
+                  <TableCell align="center">{report.employeeId}</TableCell>
                   <TableCell>{report.department}</TableCell>
                   <TableCell>{report.taskName}</TableCell>
-                  <TableCell>{report.hoursWorked}</TableCell>
-                  <TableCell><Button variant='contained' size='small' onClick={() => handleViewClick(report)}>View</Button></TableCell>
+                  <TableCell align="center">{report.hoursWorked}</TableCell>
+                  <TableCell align="center"><Button variant='contained' size='small' onClick={() => handleViewClick(report)}>View</Button></TableCell>
                 </TableRow>
               ))}
           </TableBody>

@@ -121,7 +121,6 @@ const ApplyLeave = () => {
                   value={leaveType}
                   onChange={(e) => setLeaveType(e.target.value)}
                   fullWidth
-                  required
                   error={!!errors.leaveType}
                   helperText={errors.leaveType}
                 >
@@ -156,7 +155,6 @@ const ApplyLeave = () => {
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   fullWidth
-                  required
                   error={!!errors.startDate}
                   helperText={errors.startDate}
                   inputProps={{ min: today.toISOString().split("T")[0] }}
@@ -172,7 +170,6 @@ const ApplyLeave = () => {
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   fullWidth
-                  required
                   error={!!errors.endDate}
                   helperText={errors.endDate}
                   inputProps={{ min: startDate || today.toISOString().split("T")[0] }}
@@ -186,7 +183,6 @@ const ApplyLeave = () => {
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               fullWidth
-              required
               multiline
               rows={3}
               margin="normal"

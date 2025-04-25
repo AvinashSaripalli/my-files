@@ -57,12 +57,12 @@ const ManageLeaves = () => {
         <Table stickyHeader aria-label="leaves table">
           <TableHead sx={{ backgroundColor: '#f4f7fe', height:"80px" }} >
             <TableRow>
-              <TableCell align='center' sx={{ fontWeight: 'bold' }}>Employee ID</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold' }}>Leave Type</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold' }}>Start Date</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold' }}>End Date</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold' }}>Reason</TableCell>
-              <TableCell align="left" sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Leave Type</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Start Date</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>End Date</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Reason</TableCell>
+              <TableCell align="left" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

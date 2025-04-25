@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Container, TextField, Button, Typography, Snackbar,
   Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, FormControl,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,Chip,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip,
   Grid, TablePagination, Box
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -20,10 +20,20 @@ const WorkReports = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [errors, setErrors] = useState({});
   const department = localStorage.getItem("userDepartment");
   const employeeId = localStorage.getItem("userEmployeeId");
-  const worked =localStorage.getItem("workedTime");
+  const worked = localStorage.getItem("workedTime");
 
+  const getWorkedTimeColor = (timeString) => {
+    const [hours, minutes, seconds] = timeString.split(":").map(Number);
+    const totalMinutes = hours * 60 + minutes + seconds / 60;
+  
+    if (totalMinutes < 30) return "#f44336"; // red for < 30 mins
+    if (totalMinutes < 60) return "#ff9800"; // orange for 30-59 mins
+    return "#4caf50"; // green for 1 hour or more
+  };
+  
   useEffect(() => {
     if (!employeeId) return;
 
@@ -33,8 +43,21 @@ const WorkReports = () => {
       .catch((err) => console.error("Axios GET error:", err));
   }, [employeeId]);
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!newReport.date) newErrors.date = "Date is required";
+    if (!newReport.taskName) newErrors.taskName = "Task name is required";
+    if (!newReport.workDescription) newErrors.workDescription = "Work description is required";
+    if (!newReport.hoursWorked)
+      newErrors.hoursWorked = "Please Clock Out to submit the Report";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
 
     const workDescriptionArray = newReport.workDescription
       .split("\n")
@@ -70,10 +93,10 @@ const WorkReports = () => {
 
   return (
     <Box sx={{ pl: 10, pr: 10, mt: 8 }}>
-      <Grid container spacing={3} justifyContent= "space-between" alignItems="center" sx={{ mb: 3 }}>
-      <Typography variant="h5" sx={{ fontWeight: 'bold' }} align="center" gutterBottom>
-        My Work Reports
-      </Typography>
+      <Grid container spacing={3} justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }} align="center" gutterBottom>
+          My Work Reports
+        </Typography>
         <Grid>
           <Button
             variant="contained"
@@ -98,12 +121,12 @@ const WorkReports = () => {
               <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Task Name</TableCell>
               <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Work Description</TableCell>
               <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Hours Worked</TableCell>
-              <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
+              <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {paginatedReports.map((report) => (
-              <TableRow key={report.id}>
+              <TableRow key={report.id} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
                 <TableCell align="center">{new Date(report.date).toLocaleDateString("en-GB")}</TableCell>
                 <TableCell align="left">{report.taskName}</TableCell>
                 <TableCell align="left">
@@ -116,13 +139,13 @@ const WorkReports = () => {
                   ) : (
                     <Typography variant="body2">{report.workDescription}</Typography>
                   )}
+                </TableCell >
+                <TableCell align="center">{report.hoursWorked}
                 </TableCell>
-                <TableCell align="center">{report.hoursWorked}</TableCell>
-                <TableCell>
+                <TableCell align="center">
                   <Chip label={report.status}
-                  style={{ width: "100px", minWidth: "unset"}}
-                  />
-                </TableCell> 
+                    style={{ width: "100px", minWidth: "unset" }} />
+                </TableCell>
               </TableRow>
             ))}
             {paginatedReports.length === 0 && (
@@ -146,7 +169,11 @@ const WorkReports = () => {
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
 
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+      <Dialog open={openDialog} 
+        onClose={() => { setOpenDialog(false); 
+          setErrors({});
+        }} 
+      fullWidth maxWidth="sm">
         <DialogTitle>Add Report</DialogTitle>
         <DialogContent>
           <TextField
@@ -158,6 +185,8 @@ const WorkReports = () => {
             onChange={(e) => setNewReport({ ...newReport, date: e.target.value })}
             InputLabelProps={{ shrink: true }}
             required
+            error={!!errors.date}
+            helperText={errors.date}
             InputProps={{
               inputProps: {
                 min: new Date().toISOString().split("T")[0],
@@ -171,6 +200,8 @@ const WorkReports = () => {
             value={newReport.taskName}
             onChange={(e) => setNewReport({ ...newReport, taskName: e.target.value })}
             required
+            error={!!errors.taskName}
+            helperText={errors.taskName}
           />
           <TextField
             label="Work Description"
@@ -197,6 +228,8 @@ const WorkReports = () => {
               }
             }}
             required
+            error={!!errors.workDescription}
+            helperText={errors.workDescription}
           />
           <TextField
             label="Hours Worked"
@@ -205,10 +238,15 @@ const WorkReports = () => {
             value={newReport.hoursWorked}
             onChange={(e) => setNewReport({ ...newReport, hoursWorked: e.target.value })}
             required
+            error={!!errors.hoursWorked}
+            helperText={errors.hoursWorked}
           />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setOpenDialog(false)} color="inherit">
+        <Button onClick={() => { 
+          setOpenDialog(false);
+          setErrors({}); 
+          }} color="inherit">
             Cancel
           </Button>
           <Button onClick={handleSubmit} variant="contained">
