@@ -24,15 +24,6 @@ const WorkReports = () => {
   const department = localStorage.getItem("userDepartment");
   const employeeId = localStorage.getItem("userEmployeeId");
   const worked = localStorage.getItem("workedTime");
-
-  const getWorkedTimeColor = (timeString) => {
-    const [hours, minutes, seconds] = timeString.split(":").map(Number);
-    const totalMinutes = hours * 60 + minutes + seconds / 60;
-  
-    if (totalMinutes < 30) return "#f44336"; // red for < 30 mins
-    if (totalMinutes < 60) return "#ff9800"; // orange for 30-59 mins
-    return "#4caf50"; // green for 1 hour or more
-  };
   
   useEffect(() => {
     if (!employeeId) return;
