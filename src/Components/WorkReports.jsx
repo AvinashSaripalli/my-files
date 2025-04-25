@@ -38,7 +38,15 @@ const WorkReports = () => {
     const newErrors = {};
     if (!newReport.date) newErrors.date = "Date is required";
     if (!newReport.taskName) newErrors.taskName = "Task name is required";
-    if (!newReport.workDescription) newErrors.workDescription = "Work description is required";
+    
+    const cleanedDescription = newReport.workDescription
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line && !/^\d+\.\s*$/.test(line));
+
+    if (cleanedDescription.length === 0) {
+      newErrors.workDescription = "Please enter at least one work item.";
+    }
     if (!newReport.hoursWorked)
       newErrors.hoursWorked = "Please Clock Out to submit the Report";
     setErrors(newErrors);
@@ -201,7 +209,13 @@ const WorkReports = () => {
             fullWidth
             margin="dense"
             value={newReport.workDescription}
-            onChange={(e) => setNewReport({ ...newReport, workDescription: e.target.value })}
+            onChange={(e) => {
+              let value = e.target.value;
+              if (!value.startsWith("1. ")) {
+                value = "1. ";
+              }
+              setNewReport({ ...newReport, workDescription: value });
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -218,10 +232,10 @@ const WorkReports = () => {
                 setNewReport({ ...newReport, workDescription: newValue });
               }
             }}
-            required
             error={!!errors.workDescription}
             helperText={errors.workDescription}
           />
+
           <TextField
             label="Hours Worked"
             fullWidth
