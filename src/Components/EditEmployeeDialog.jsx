@@ -48,7 +48,9 @@ const EditEmployeeDialog = ({ open, onClose, user, onSave }) => {
         dateOfBirth:dayjs(user.dateOfBirth),
         photo: user.photo,
       });
+      setErrors({});
     }
+    
   }, [user]);
 
   useEffect(() => {
@@ -169,6 +171,11 @@ const EditEmployeeDialog = ({ open, onClose, user, onSave }) => {
     } catch (error) {
       console.error('Error updating user:', error);
     }
+  };
+
+  const handleClose = () => {
+    setErrors({}); 
+    onClose(); 
   };
   return (
     <Dialog open={open} onClose={onClose} >
@@ -411,7 +418,7 @@ const EditEmployeeDialog = ({ open, onClose, user, onSave }) => {
             
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="error" variant="contained">Cancel</Button>
+        <Button onClick={handleClose} color="error" variant="contained">Cancel</Button>
         <Button onClick={handleSave} color="primary" variant="contained">Save</Button>
       </DialogActions>
     </Dialog>
