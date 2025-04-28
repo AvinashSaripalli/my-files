@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import {
   Container, TextField, Button, Typography, Snackbar,
   Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, FormControl,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip,IconButton,
   Grid, TablePagination, Box
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 
 const WorkReports = () => {
@@ -21,6 +22,8 @@ const WorkReports = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [errors, setErrors] = useState({});
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [openFeedbackDialog, setOpenFeedbackDialog] = useState(false);
   const department = localStorage.getItem("userDepartment");
   const employeeId = localStorage.getItem("userEmployeeId");
   const worked = localStorage.getItem("workedTime");
@@ -121,6 +124,7 @@ const WorkReports = () => {
               <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Work Description</TableCell>
               <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Hours Worked</TableCell>
               <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
+              <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Feedback</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -144,6 +148,15 @@ const WorkReports = () => {
                 <TableCell align="center">
                   <Chip label={report.status}
                     style={{ width: "100px", minWidth: "unset" }} />
+                </TableCell>
+                <TableCell align="left">
+                  <Button variant="contained" size="small"
+                    onClick={() => {
+                      setSelectedReport(report); 
+                      setOpenFeedbackDialog(true);
+                    }}>
+                    View
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -260,6 +273,27 @@ const WorkReports = () => {
         </DialogActions>
       </Dialog>
 
+      <Dialog
+        open={openFeedbackDialog}
+        onClose={() => setOpenFeedbackDialog(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle fontWeight="bold">Feedback
+        <IconButton
+            color="inherit"
+            onClick={() => setOpenFeedbackDialog(false)}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            {selectedReport?.feedback || "No Feedback available"}
+          </Typography>
+        </DialogContent>
+      </Dialog>
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}
