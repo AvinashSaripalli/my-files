@@ -123,7 +123,6 @@ const WorkReports = () => {
               <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Task Name</TableCell>
               <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Work Description</TableCell>
               <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Hours Worked</TableCell>
-              <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
               <TableCell align="left" sx={{ color: '#000', fontWeight: 'bold' }}>Feedback</TableCell>
             </TableRow>
           </TableHead>
@@ -144,10 +143,6 @@ const WorkReports = () => {
                   )}
                 </TableCell >
                 <TableCell align="center">{report.hoursWorked}
-                </TableCell>
-                <TableCell align="center">
-                  <Chip label={report.status}
-                    style={{ width: "100px", minWidth: "unset" }} />
                 </TableCell>
                 <TableCell align="left">
                   <Button variant="contained" size="small"
