@@ -646,6 +646,7 @@ const UserProfile = () => {
               label="Department"
               value={userData.userDepartment}
               onChange={(e) => handleChange(e, "userDepartment")}
+              disabled
             >
               <MenuItem value="Software Development">Software Development</MenuItem>
               <MenuItem value="Human Resources">Human Resources</MenuItem>
