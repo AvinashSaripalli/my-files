@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Container, TextField, Button, Typography, Snackbar,
   Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, FormControl,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip,IconButton,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip,IconButton,Divider,
   Grid, TablePagination, Box
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -288,6 +288,7 @@ const WorkReports = () => {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
+        <Divider />
         <DialogContent>
           <Typography variant="body1">
             {selectedReport?.feedback || "No Feedback available"}
