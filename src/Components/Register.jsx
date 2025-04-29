@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { 
   TextField, Button, Box, Typography, FormControl, Container, 
-  MenuItem, Select, InputLabel, Tabs, Tab, Snackbar, Alert, Stepper, Step, StepLabel,Autocomplete,Chip,Grid
+  MenuItem, Select, InputLabel, Tabs, Tab, Snackbar, Alert, Stepper, Step, StepLabel,Autocomplete,Chip,Grid,IconButton,InputAdornment
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { keyframes } from '@emotion/react';
-
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 function Register() {
   const [formValues, setFormValues] = useState({
@@ -33,6 +33,8 @@ function Register() {
   const [activeStep, setActiveStep] = useState(0);
   const navigate = useNavigate();
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const steps = ['Personal Info', 'Professional Info', 'Account Info'];
 
@@ -54,19 +56,41 @@ function Register() {
     
     if (activeStep === 0) {
       if (!formValues.firstName) newErrors.firstName = "Enter the First Name";
+      else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(formValues.firstName.trim())) {
+        newErrors.firstName = "Only letters and a single space between words allowed";
+      }
       if (!formValues.lastName) newErrors.lastName = "Enter the Last Name";
+      else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(formValues.lastName.trim())) {
+        newErrors.lastName = "Only letters and a single space between words allowed";
+      }
       if (!formValues.gender) newErrors.gender = "Please select your Gender";
       if (!formValues.phoneNumber) newErrors.phoneNumber = "Please enter your Phone number";
+      else if (!/^\d{10}$/.test(formValues.phoneNumber)) {
+        newErrors.phoneNumber = "Phone number must be 10 digits";
+      }
       if (!formValues.bloodGroup) newErrors.bloodGroup = "Please select your Blood Group";
       if (!formValues.dateOfBirth) newErrors.dateOfBirth = "Please enter your Date of Birth";
+      else {
+        const dob = new Date(formValues.dateOfBirth);
+        const today = new Date();
+        const age = today.getFullYear() - dob.getFullYear() -
+                    (today.getMonth() < dob.getMonth() ||
+                    (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate()) ? 1 : 0);
+        if (dob > today) {
+          newErrors.dateOfBirth = "Date of Birth cannot be in the future";
+        } else if (age < 18) {
+          newErrors.dateOfBirth = "You must be at least 18 years old";
+        }
+      }
     }
     
     if (activeStep === 1) { 
       if (!formValues.companyName) newErrors.companyName = "Company Name is required";
       if (!formValues.department) newErrors.department = "Please select your Department";
       if (!formValues.jobLocation) newErrors.jobLocation = "Please select your Job Location";
-      if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(formValues.designation.trim())) {
-        newErrors.designation = "Designation must contain only letters and single spaces";
+      if (!formValues.designation) newErrors.designation = "Enter the First Name";
+      else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(formValues.designation.trim())) {
+        newErrors.designation = "Only letters and a single space between words allowed";
       }
       if (formValues.technicalSkills.length === 0) newErrors.technicalSkills = "Please enter your technical skills";
     }
@@ -85,7 +109,13 @@ function Register() {
         }
       }
       if (!formValues.password) newErrors.password = "Password is required";
+      else if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(formValues.password)) {
+        newErrors.password = "Password must be 8-16 characters, include at least one letter, one number, and one special character";
+      }
       if (!formValues.confirmPassword) newErrors.confirmPassword = "Confirm Password is required";
+      else if (formValues.confirmPassword !== formValues.password) {
+        newErrors.confirmPassword = "Passwords do not match";
+      }
       if (!formValues.photo) newErrors.photo = "Please upload an image";
     }
 
@@ -152,6 +182,14 @@ function Register() {
     }));
   };
 
+  const handleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+  
+  const handleShowConfirmPassword = () => {
+    setShowConfirmPassword((prev) => !prev);
+  };
+
   const handleNext = () => {
     if (validateStep()) {
       if (activeStep < steps.length - 1) {
@@ -183,7 +221,7 @@ function Register() {
     formData.append("photo", formValues.photo);
     formData.append("bloodGroup", formValues.bloodGroup);
     formData.append("dateOfBirth", formValues.dateOfBirth);
-    formData.append("technicalSkills", formValues.technicalSkills.join(",")); // Send as comma-separated string
+    formData.append("technicalSkills", formValues.technicalSkills.join(",")); 
 
     try {
       const response = await axios.post(
@@ -264,7 +302,17 @@ function Register() {
               </Select>
               {errors.companyName && <Typography color="error" sx={{ fontSize: '0.75rem', mt: 0.5, ml:2 }}>{errors.companyName}</Typography>}
             </FormControl>
-            <TextField label="Designation" name="designation" margin="dense" fullWidth value={formValues.designation} inputProps={{maxLength:50}} onChange={handleChange} error={!!errors.designation} helperText={errors.designation} sx={{ width: '500px' }}/>
+            <TextField 
+              label="Designation" 
+              name="designation" 
+              margin="dense" fullWidth 
+              value={formValues.designation} 
+              inputProps={{maxLength:50}} 
+              onChange={handleChange} 
+              error={!!errors.designation} 
+              helperText={errors.designation} 
+              sx={{ width: '500px' }}
+            />
             <FormControl fullWidth margin="dense" error={!!errors.department}>
               <InputLabel>Department</InputLabel>
               <Select name="department" onChange={handleChange} label="Department" value={formValues.department}>
@@ -312,7 +360,7 @@ function Register() {
                   margin="dense"
                   fullWidth
                   error={!!errors.technicalSkills}
-                  helperText={errors.technicalSkills || "Type a skill and press Enter or comma"}
+                  helperText={errors.technicalSkills || "Type a skill and press Enter"}
                 />
               )}
             />
@@ -321,9 +369,63 @@ function Register() {
       case 2:
         return (
           <>
-            <TextField label="Email" name="email" margin="dense" fullWidth value={formValues.email} inputProps={{maxLength:50}} onChange={handleChange} error={!!errors.email} helperText={errors.email} />
-            <TextField label="Password" name="password" margin="dense" fullWidth value={formValues.password} inputProps={{maxLength:10}} onChange={handleChange} error={!!errors.password} helperText={errors.password} />
-            <TextField label="Confirm Password" name="confirmPassword" margin="dense" fullWidth value={formValues.confirmPassword} inputProps={{ maxLength: 10 }} onChange={handleChange} error={!!errors.confirmPassword} helperText={errors.confirmPassword} />
+            <TextField 
+              label="Email" 
+              name="email" 
+              margin="dense" fullWidth 
+              value={formValues.email} 
+              inputProps={{maxLength:50}} 
+              onChange={handleChange} 
+              error={!!errors.email} 
+              helperText={errors.email} 
+            />
+            <TextField label="Password" 
+              name="password"
+              type={showPassword ? "text" : "password"} 
+              margin="dense" fullWidth 
+              value={formValues.password} 
+              inputProps={{maxLength:10}} 
+              onChange={handleChange} 
+              error={!!errors.password} 
+              helperText={errors.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }} 
+            />
+            <TextField 
+              label="Confirm Password" 
+              name="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"} 
+              margin="dense" fullWidth 
+              value={formValues.confirmPassword} 
+              inputProps={{ maxLength: 10 }} 
+              onChange={handleChange} 
+              error={!!errors.confirmPassword} 
+              helperText={errors.confirmPassword}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle confirm password visibility"
+                      onClick={handleShowConfirmPassword}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }} 
+            />
             <Button variant="outlined" component="label" sx={{ mt: 1, height:56, width: '100%' }}>
               <input type="file" name="photo" onChange={handlePhotoChange} />
             </Button>
@@ -380,14 +482,21 @@ function Register() {
             <Box component="form" noValidate autoComplete="off">
               {renderStepContent(activeStep)}
     
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                <Button
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  variant="contained"
-                >
-                  Back
-                </Button>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: activeStep === 0 ? 'flex-end' : 'space-between',
+                  mt: 2,
+                }}
+              >
+                {activeStep !== 0 && (
+                  <Button
+                    onClick={handleBack}
+                    variant="contained"
+                  >
+                    Back
+                  </Button>
+                )}
                 <Button
                   onClick={handleNext}
                   variant="contained"

@@ -147,6 +147,7 @@ function Login() {
                 fullWidth
                 required
                 margin="normal"
+                inputProps={{ maxLength: 16 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">

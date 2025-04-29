@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl, InputLabel, Select, MenuItem, Typography, Box, Autocomplete, Chip } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, FormControl,IconButton,
+  InputAdornment, InputLabel, Select, MenuItem, Typography, Box, Autocomplete, Chip } from "@mui/material";
 import axios from "axios";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
   const initialUserState = {
@@ -30,6 +32,8 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
   const [user, setUser] = useState(initialUserState);
   const [errors, setErrors] = useState({});
   const [skillsOption, setSkillsOption] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -54,23 +58,49 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
   const validate = () => {
     const newErrors = {};
 
-    if (!user.firstName) newErrors.firstName = "First name is required";
-    if (!user.lastName) newErrors.lastName = "Last name is required";
+    if (!user.firstName) newErrors.firstName = "Enter the First Name";
+    else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(user.firstName.trim())) {
+      newErrors.firstName = "Only letters and a single space between words allowed";
+    }
+    if (!user.lastName) newErrors.lastName = "Enter the Last Name";
+    else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(user.lastName.trim())) {
+      newErrors.lastName = "Only letters and a single space between words allowed";
+    }
     if (!user.email) newErrors.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) newErrors.email = "Invalid email address";
     if (!user.phoneNumber) newErrors.phoneNumber = "Phone number is required";
     else if (!/^\d{10}$/.test(user.phoneNumber)) newErrors.phoneNumber = "Phone number must be 10 digits";
-    if (!user.designation) newErrors.designation = "Designation is required";
+    if (!user.designation) newErrors.designation = "Enter your Designation";
+    else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(user.designation.trim())) {
+      newErrors.designation = "Only letters and a single space between words allowed";
+    }
     if (!user.department) newErrors.department = "Department is required";
     if (!user.role) newErrors.role = "Role is required";
     if (!user.jobLocation) newErrors.jobLocation = "Job location is required";
     if (!user.bloodGroup) newErrors.bloodGroup = "Blood group is required";
     if (!user.gender) newErrors.gender = "Gender is required";
-    if (!user.dateOfBirth) newErrors.dateOfBirth = "Date of birth is required";
+    if (!user.dateOfBirth) newErrors.dateOfBirth = "Please enter your Date of Birth";
+    else {
+      const dob = new Date(user.dateOfBirth);
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear() -
+                  (today.getMonth() < dob.getMonth() ||
+                  (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate()) ? 1 : 0);
+      if (dob > today) {
+        newErrors.dateOfBirth = "Date of Birth cannot be in the future";
+      } else if (age < 18) {
+        newErrors.dateOfBirth = "You must be at least 18 years old";
+      }
+    }    
     if (!user.photo) newErrors.photo = "Photo is required";
     if (!user.password) newErrors.password = "Password is required";
-    if (user.password !== user.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
-
+    else if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(user.password)) {
+      newErrors.password = "Password must be 8-16 characters, include at least one letter, one number, and one special character";
+    }
+    if (!user.confirmPassword) newErrors.confirmPassword = "Confirm Password is required";
+    else if (user.confirmPassword !== user.password) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -161,6 +191,14 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
       }
       return newErrors;
     });
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+  
+  const handleClickShowConfirmPassword = () => {
+    setShowConfirmPassword((prev) => !prev);
   };
 
   const handleSkillsChange = (e, value) => {
@@ -324,7 +362,7 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               name="designation"
               label="Designation"
               value={user.designation}
-              inputProps={{ maxLength: 50 }}
+              inputProps={{ maxLength: 30 }}
               onChange={handleChange}
               error={!!errors.designation}
               helperText={errors.designation}
@@ -413,24 +451,52 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
             <TextField
               label="Password"
               name="password"
-              type="password"
               variant="outlined"
               value={user.password}
               onChange={handleChange}
+              type={showPassword ? "text" : "password"}
+              inputProps={{ maxLength: 16 }}
               error={!!errors.password}
               helperText={errors.password}
               sx={{ ml: 1, width: '350px', mt: 1, mr: 2.25 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               label="Confirm Password"
               name="confirmPassword"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               variant="outlined"
               value={user.confirmPassword}
+              inputProps={{ maxLength: 16 }}
               onChange={handleChange}
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword}
               sx={{ ml: 2.25, width: '350px', mt: 1, mr: 1 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle confirm password visibility"
+                      onClick={handleClickShowConfirmPassword}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
           </div>
           <div style={{ display: "flex", alignItems: "flex-start" }}>

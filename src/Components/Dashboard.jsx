@@ -105,7 +105,7 @@ const Dashboard = () => {
         setCardData([
           { title: "Total Employees", value: totalEmployees + totalDeletedEmployees  },
           { title: "Active Employees", value: totalEmployees},
-          { title: "Inactive Employees", value: totalDeletedEmployees },
+          { title: "Left Employees", value: totalDeletedEmployees },
           { title: "On Leave ", value: leaveData.leaveCount},
           { title: "New Joinees ", value: newJoinees },
         ]);
