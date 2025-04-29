@@ -13,8 +13,15 @@ exports.leaveApply=(req, res) => {
 };
 
 exports.getAllLeaves = (req, res) => {
-    const sql = 'SELECT * FROM leaves ORDER BY created_at DESC';
-    db.query(sql, (err, results) => {
+    const { companyName } = req.query; 
+
+    if (!companyName) {
+        return res.status(400).json({ error: 'Company name is required' });
+    }
+
+    const sql = 'SELECT * FROM leaves WHERE companyName = ? ORDER BY created_at DESC';
+    
+    db.query(sql, [companyName], (err, results) => {
         if (err) {
             console.error('Error fetching leave records:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -22,6 +29,7 @@ exports.getAllLeaves = (req, res) => {
         res.json(results);
     });
 };
+
 
 exports.updateLeaveStatus = (req, res) => {
     const { leaveId, status } = req.body;
@@ -41,14 +49,14 @@ exports.updateLeaveStatus = (req, res) => {
 };
 
 exports.getLeavesByEmployee = (req, res) => {
-    const { employeeId } = req.query;
+    const { employeeId,companyName } = req.query;
 
     if (!employeeId) {
         return res.status(400).json({ message: "Employee ID is required" });
     }
 
-    const query = "SELECT * FROM leaves WHERE employeeId = ? ORDER BY created_at DESC";
-    db.query(query, [employeeId], (err, results) => {
+    const query = "SELECT * FROM leaves WHERE employeeId = ? AND companyName = ? ORDER BY created_at DESC";
+    db.query(query, [employeeId, companyName], (err, results) => {
         if (err) {
             console.error("Error fetching leaves:", err);
             return res.status(500).json({ message: "Internal Server Error" });

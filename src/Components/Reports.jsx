@@ -16,7 +16,10 @@ const Reports = () => {
   const [feedbackError, setFeedbackError] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/reports')
+    const companyName = localStorage.getItem('companyName');
+    axios.get('http://localhost:5000/api/reports',{
+      params: { companyName }
+    })
       .then((response) => {
         setReports(response.data);
         setLoading(false);

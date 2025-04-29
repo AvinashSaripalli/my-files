@@ -14,6 +14,7 @@ const MyLeaves = () => {
 
   const fetchMyLeaves = async () => {
     const employeeId = localStorage.getItem('userEmployeeId');
+    const companyName = localStorage.getItem('companyName');
     
     if (!employeeId) {
       console.error('No employee ID found in localStorage');
@@ -22,7 +23,7 @@ const MyLeaves = () => {
 
     try {
       const response = await axios.get('http://localhost:5000/api/leaves', {
-        params: { employeeId },
+        params: { employeeId, companyName },
       });
       setLeaves(response.data);
       console.log("Fetched Leaves Successfully", response.data);

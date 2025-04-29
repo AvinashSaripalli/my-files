@@ -1,12 +1,18 @@
 const db = require("../db");
 
 exports.getReports = (req, res) => {
-  const sql = "SELECT * FROM reports ORDER BY id DESC";
-  db.query(sql, (err, results) => {
+  const { companyName } = req.query;
+  if (!companyName) {
+    return res.status(400).json({ error: 'Company name is required' }); 
+  }
+
+  const sql = "SELECT * FROM reports WHERE companyName = ? ORDER BY id DESC"; 
+  db.query(sql, [companyName], (err, results) => {
     if (err) return res.status(500).json({ error: err });
     res.json(results);
   });
 };
+
 
 exports.getTheReports = (req, res) => {
   const { employeeId } = req.query; 
@@ -44,9 +50,9 @@ exports.updateFeedbackByEmployeeId = (req, res) => {
 };
 
 exports.createReport = (req, res) => {
-  const { employeeId, department, date, taskName, workDescription, hoursWorked} = req.body;
-  const sql = "INSERT INTO reports (employeeId, department, date, taskName, workDescription, hoursWorked) VALUES (?, ?, ?, ?, ?, ?)";
-  db.query(sql, [employeeId, department, date, taskName, workDescription, hoursWorked], (err, result) => {
+  const { employeeId, department, date, taskName, workDescription, hoursWorked,companyName} = req.body;
+  const sql = "INSERT INTO reports (employeeId, department, date, taskName, workDescription, hoursWorked,companyName) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  db.query(sql, [employeeId, department, date, taskName, workDescription, hoursWorked, companyName], (err, result) => {
     if (err) return res.status(500).json({ error: err });
     res.json({ message: "Report added successfully", id: result.insertId });
   });

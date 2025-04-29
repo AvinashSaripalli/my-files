@@ -27,6 +27,7 @@ const WorkReports = () => {
   const department = localStorage.getItem("userDepartment");
   const employeeId = localStorage.getItem("userEmployeeId");
   const worked = localStorage.getItem("workedTime");
+  const companyName = localStorage.getItem("companyName");
   
   useEffect(() => {
     if (!employeeId) return;
@@ -71,6 +72,7 @@ const WorkReports = () => {
         workDescription: JSON.stringify(workDescriptionArray),
         employeeId,
         department,
+        companyName,
       });
 
       setReports([...reports, { ...newReport, id: response.data.id }]);

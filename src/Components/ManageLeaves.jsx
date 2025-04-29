@@ -13,8 +13,11 @@ const ManageLeaves = () => {
   const fetchLeaves = async () => {
     try {
       const token = localStorage.getItem("token");
+      const companyName = localStorage.getItem("companyName"); 
+      
       const response = await axios.get('http://localhost:5000/api/leaves/leave', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
+        params: { companyName },
       });
       setLeaves(response.data);
     } catch (error) {
