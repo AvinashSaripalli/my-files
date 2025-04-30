@@ -108,27 +108,50 @@ const EditEmployeeDialog = ({ open, onClose, user, onSave }) => {
 
   const validate = () => {
     let tempErrors = {};
+  
     if (!formData.firstName) {
-      tempErrors.firstName = "First name is required.";
+      tempErrors.firstName = "Please enter your first name.";
+    } else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(formData.firstName)) {
+      tempErrors.firstName = "First name should only contain letters and single spaces.";
     }
-
-    if (!formData.lastName) 
-      {tempErrors.lastName = "Last name is required.";
-
-    }if (!/^[a-zA-Z ]+$/.test(formData.firstName)) {
-      tempErrors.firstName="Name must contain only letters and spaces";
+  
+    if (!formData.lastName) {
+      tempErrors.lastName = "Please enter your last name.";
+    } else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(formData.lastName)) {
+      tempErrors.lastName = "Last name should only contain letters and single spaces.";
     }
-    if (!formData.designation) tempErrors.designation = "Designation is required.";
-    
-
+  
+    if (!formData.designation) {
+      tempErrors.designation = "Please enter your designation.";
+    } else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(formData.designation)) {
+      tempErrors.designation = "Designation should only contain letters and single spaces.";
+    }
+  
     if (!formData.phoneNumber) {
-      tempErrors.phoneNumber = "Phone number is required.";
+      tempErrors.phoneNumber = "Please enter your phone number.";
     } else if (!/^\d{10}$/.test(formData.phoneNumber)) {
-      tempErrors.phoneNumber = "Phone number must be 10 digits.";
+      tempErrors.phoneNumber = "Phone number must be exactly 10 digits.";
     }
-     setErrors(tempErrors);
+  
+    if (!formData.dateOfBirth) {
+      tempErrors.dateOfBirth = "Please select your date of birth.";
+    } else {
+      const dob = new Date(formData.dateOfBirth);
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear() -
+        (today.getMonth() < dob.getMonth() ||
+          (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate()) ? 1 : 0);
+  
+      if (dob > today) {
+        tempErrors.dateOfBirth = "Date of birth cannot be in the future.";
+      } else if (age < 18) {
+        tempErrors.dateOfBirth = "You must be at least 18 years old.";
+      }
+    }
+  
+    setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
-  };
+  };  
 
   const handleSave = async () => {
     if (!validate()) return;
@@ -326,6 +349,12 @@ const EditEmployeeDialog = ({ open, onClose, user, onSave }) => {
             value={formData.dateOfBirth ?dayjs (formData.dateOfBirth):null}
             onChange={handleDateChange} margin='dense' fullWidth 
             maxDate={dayjs()}
+            slotProps={{
+              textField: {
+                error: !!errors.dateOfBirth,
+                helperText: errors.dateOfBirth,
+              },
+            }}
             />
           </DemoContainer>
         </LocalizationProvider> 

@@ -58,21 +58,21 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
   const validate = () => {
     const newErrors = {};
 
-    if (!user.firstName) newErrors.firstName = "Enter the First Name";
-    else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(user.firstName.trim())) {
-      newErrors.firstName = "Only letters and a single space between words allowed";
+    if (!user.firstName) newErrors.firstName = "Please enter your First Name.";
+    else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(user.firstName)) {
+      newErrors.firstName = "First name can only contain letters and single spaces.";
     }
-    if (!user.lastName) newErrors.lastName = "Enter the Last Name";
-    else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(user.lastName.trim())) {
-      newErrors.lastName = "Only letters and a single space between words allowed";
+    if (!user.lastName) newErrors.lastName = "Please enter your Last Name.";
+    else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(user.lastName)) {
+      newErrors.lastName = "Last Name can only contain letters and single spaces.";
     }
-    if (!user.email) newErrors.email = "Email is required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) newErrors.email = "Invalid email address";
-    if (!user.phoneNumber) newErrors.phoneNumber = "Phone number is required";
-    else if (!/^\d{10}$/.test(user.phoneNumber)) newErrors.phoneNumber = "Phone number must be 10 digits";
-    if (!user.designation) newErrors.designation = "Enter your Designation";
-    else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(user.designation.trim())) {
-      newErrors.designation = "Only letters and a single space between words allowed";
+    if (!user.email) newErrors.email = "Please provide your email address.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)) newErrors.email = "Enter a valid email address (e.g., user@example.com).";
+    if (!user.phoneNumber) newErrors.phoneNumber = "Phone number is required.";
+    else if (!/^\d{10}$/.test(user.phoneNumber)) newErrors.phoneNumber = "Phone number must be exactly 10 digits.";
+    if (!user.designation) newErrors.designation = "Please enter your job designation.";
+    else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(user.designation.trim())) {
+      newErrors.designation = "Designation can only contain letters and single spaces.";
     }
     if (!user.department) newErrors.department = "Department is required";
     if (!user.role) newErrors.role = "Role is required";

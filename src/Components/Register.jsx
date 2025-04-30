@@ -56,12 +56,12 @@ function Register() {
     
     if (activeStep === 0) {
       if (!formValues.firstName) newErrors.firstName = "Enter the First Name";
-      else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(formValues.firstName.trim())) {
-        newErrors.firstName = "Only letters and a single space between words allowed";
+      else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(formValues.firstName)) {
+        newErrors.firstName = "First name should only contain letters and single spaces.";
       }
       if (!formValues.lastName) newErrors.lastName = "Enter the Last Name";
-      else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(formValues.lastName.trim())) {
-        newErrors.lastName = "Only letters and a single space between words allowed";
+      else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(formValues.lastName)) {
+        newErrors.lastName = "Last name should only contain letters and single spaces.";
       }
       if (!formValues.gender) newErrors.gender = "Please select your Gender";
       if (!formValues.phoneNumber) newErrors.phoneNumber = "Please enter your Phone number";
@@ -89,8 +89,8 @@ function Register() {
       if (!formValues.department) newErrors.department = "Please select your Department";
       if (!formValues.jobLocation) newErrors.jobLocation = "Please select your Job Location";
       if (!formValues.designation) newErrors.designation = "Enter the First Name";
-      else if (!/^[a-zA-Z]+( [a-zA-Z]+)*$/.test(formValues.designation.trim())) {
-        newErrors.designation = "Only letters and a single space between words allowed";
+      else if (!/^[A-Za-z]+(?: [A-Za-z]+)*$/.test(formValues.designation)) {
+        newErrors.designation = "Designation should only contain letters and single spaces.";
       }
       if (formValues.technicalSkills.length === 0) newErrors.technicalSkills = "Please enter your technical skills";
     }
