@@ -296,6 +296,11 @@ const WorkReports = () => {
         open={openSnackbar}
         autoHideDuration={3000}
         onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{
+          backgroundColor: "#4CAF50", 
+          color: "#fff",   
+        }}
         message="Report saved successfully!"
       />
     </Box>

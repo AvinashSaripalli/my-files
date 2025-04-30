@@ -499,18 +499,18 @@ const AddEmployeeDialog = ({ open, onClose, onSave, employeeId }) => {
               }}
             />
           </div>
+          <Typography>Upload Photo</Typography>
           <div style={{ display: "flex", alignItems: "flex-start" }}>
             <Button
               variant="outlined"
               component="label"
               sx={{ display: 'flex', justifyContent: 'flex-start', height: 56, width: '740px', ml: 1, mt: 1, mr: 1 }}
             >
-              {user.photo ? user.photo.name : "Upload Photo"}
+              
               <input
                 type="file"
                 name="photo"
                 onChange={handleChange}
-                hidden
               />
             </Button>
           </div>

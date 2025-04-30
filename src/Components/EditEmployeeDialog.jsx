@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogTitle,Alert, Button, TextField,  FormControl, InputLabel, Select, MenuItem, Chip, Autocomplete } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle,Alert, Button, TextField,  FormControl, InputLabel, Select, MenuItem, Chip, Autocomplete, Typography } from '@mui/material';
 import axios from 'axios';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -377,6 +377,7 @@ const EditEmployeeDialog = ({ open, onClose, user, onSave }) => {
               </Select>
              
         </FormControl>
+        <Typography>Upload Photo</Typography>
         <Button
           variant="outlined"
           component="label"

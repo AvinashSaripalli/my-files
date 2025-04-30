@@ -426,6 +426,7 @@ function Register() {
                 ),
               }} 
             />
+            <Typography>Upload Photo</Typography>
             <Button variant="outlined" component="label" sx={{ mt: 1, height:56, width: '100%' }}>
               <input type="file" name="photo" onChange={handlePhotoChange} />
             </Button>

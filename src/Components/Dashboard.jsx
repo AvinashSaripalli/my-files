@@ -8,7 +8,7 @@ const Dashboard = () => {
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const employeesAlias = "Active Employees";
-  const deletedEmployeesAlias = "Inactive Employees";
+  const deletedEmployeesAlias = "Left Employees";
   const locationAlias = "Office Locations";
   const departmentAlias = "Departments";
   const genderAlias = "Gender Distribution";
@@ -16,9 +16,9 @@ const Dashboard = () => {
   const [cardData, setCardData] = useState([
     { title: "Total Employees", value: "150" },
     { title: "Active Employees", value: "130" },
-    { title: "Inactive Employees", value: "20" },
-    { title: "On Leave (Today)", value: "0" },
-    { title: "New Joinees (This Month)", value: '0' },
+    { title: "Left Employees", value: "20" },
+    { title: "On Leave", value: "0" },
+    { title: "New Joinees", value: '0' },
   ]);
 
   const [monthOrder, setMonthOrder] = useState([
@@ -106,8 +106,8 @@ const Dashboard = () => {
           { title: "Total Employees", value: totalEmployees + totalDeletedEmployees  },
           { title: "Active Employees", value: totalEmployees},
           { title: "Left Employees", value: totalDeletedEmployees },
-          { title: "On Leave ", value: leaveData.leaveCount},
-          { title: "New Joinees ", value: newJoinees },
+          { title: "On Leave", value: leaveData.leaveCount},
+          { title: "New Joinees", value: newJoinees },
         ]);
 
         const { data: usersByLocationData } = await axios.get('http://localhost:5000/api/users-by-location', {
@@ -259,7 +259,7 @@ const Dashboard = () => {
                   borderRadius: 2,
                   //boxShadow: 3,
                   boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
-                  minHeight: 100,
+                  minHeight: 140,
                   minWidth: 200,
                 }}
               >
@@ -276,6 +276,16 @@ const Dashboard = () => {
                     {card.value}
                   </Typography>
                   <Typography variant="body1">{card.title}</Typography>
+                  {card.title === "On Leave" && (
+                    <Typography sx={{ color: "#777", fontSize: "12px" }}>
+                      (Today)
+                    </Typography>
+                  )}
+                  {card.title === "New Joinees" && (
+                    <Typography sx={{ color: "#777", fontSize: "12px"}}>
+                      (This Month)
+                    </Typography>
+                  )}
                 </CardContent>
               </Card>
             </Grid2>
@@ -283,7 +293,7 @@ const Dashboard = () => {
         </Grid2>
       </Box>
       
-      <Box sx={{ml:5,mr:5,mt:2, display: 'flex', flexDirection: 'row', gap: 4.9 ,}}>
+      <Box sx={{ml:5,mr:5,mt:6, display: 'flex', flexDirection: 'row', gap: 4.9 ,}}>
         <Paper elevation={6} sx={{ flex: 1, height: 400, borderRadius: 2,boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",  }}> 
         <ResponsiveContainer width={775} height={350} >
             <h3 style={{ textAlign: 'center' }}>Employee Count</h3>
