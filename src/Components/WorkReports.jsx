@@ -288,7 +288,9 @@ const WorkReports = () => {
         <Divider />
         <DialogContent>
           <Typography variant="body1">
-            {selectedReport?.feedback || "No Feedback available"}
+          {selectedReport?.feedback?.toLowerCase() === "pending" || !selectedReport?.feedback
+          ? "No Feedback available"
+          : selectedReport.feedback}
           </Typography>
         </DialogContent>
       </Dialog>
