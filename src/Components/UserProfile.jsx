@@ -444,7 +444,7 @@ const UserProfile = () => {
               <Typography variant="body2" fontWeight="bold" fontSize={14}>
                 Phone Number:
               </Typography>
-              <Typography variant="body4" color="gray" sx={{ml:3}}>
+              <Typography variant="body4" color="gray" >
                {userData.userPhoneNumber}
               </Typography>
             </Box>
@@ -453,7 +453,7 @@ const UserProfile = () => {
                 <Typography variant="body2" fontWeight="bold" fontSize={14} sx={{mr:9}}>
                   Blood Group:
                 </Typography>
-                <Typography variant="body4" color="gray"sx={{ml:3}}>
+                <Typography variant="body4" color="gray">
                 {userData.userBloodGroup}
                 </Typography>
               </Box>
@@ -465,7 +465,7 @@ const UserProfile = () => {
               <Typography variant="body2" fontWeight="bold" fontSize={14}>
                 Date of Birth:
               </Typography>
-              <Typography variant="body4" color="gray" sx={{ml:3}}>  
+              <Typography variant="body4" color="gray" >  
                 {dayjs(userData.userDateofBirth).format("DD-MM-YYYY")}
               </Typography>
             </Box>
@@ -474,7 +474,7 @@ const UserProfile = () => {
                 <Typography variant="body2" fontWeight="bold" fontSize={14} sx={{mr:13}}>
                   Gender:
                 </Typography>
-                <Typography variant="body4" color="gray"sx={{ml:3}}>
+                <Typography variant="body4" color="gray">
                   {userData.userGender}
                 </Typography>
               </Box>
@@ -485,43 +485,68 @@ const UserProfile = () => {
 
       
       <Box
-        elevation={6}
+      elevation={6}
+      sx={{
+        ml: 3,
+        width: 600,
+        height: 210,
+        p: 3,
+        boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
+        border: "0.1px solid #e0e0e0",
+        backgroundColor: '#ffffff',
+      }}
+    >
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h6" fontWeight="bold" fontSize={18}>
+          Technical Skills
+        </Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<Edit />}
+          color="primary"
+          onClick={openSkillDialog}
+        >
+          edit
+        </Button>
+      </Stack>
+
+      <Divider sx={{ my: 2, flexGrow: 1 }} />
+      <Box
         sx={{
-          ml:3,
-          width: 600,
-          height:210,
-          p: 3,
-          boxShadow: "rgba(0, 0, 0, 0.1) 0px 4px 12px",
-          border: "0.1px solid #e0e0e0",
-          backgroundColor:'#ffffff',
+          maxHeight: 120, 
+          overflowY: 'auto',
+          padding: 1,
+          mt: 2,
         }}
       >
-       
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6" fontWeight="bold" fontSize={18}>
-            Technical Skills
-          </Typography>
-          <Button variant="outlined" size="small" startIcon={<Edit />} color="primary" onClick={openSkillDialog}>
-            edit
-          </Button>
-        </Stack>
-
-        <Divider sx={{ my: 2, flexGrow: 1 }} />
-
-        <Stack sx={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)", 
-        gap: 3.0, 
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 1,
-        mt:2
-      }}>
+        <Stack
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 3.0,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           {skillsList.map((skill, index) => (
-              <Chip key={index} label={skill} color="primary" variant="outlined" size="small"  sx={{ height: 30, fontSize: '1rem', padding: '10px' }} />
-            ))}
+            <Chip
+              key={index}
+              label={skill}
+              color="primary"
+              variant="outlined"
+              size="small"
+              sx={{
+                borderRadius: 1,
+                fontSize: '0.875rem',
+                height: 32,
+                '& .MuiChip-label': { fontWeight: 500 },
+              }}
+            />
+          ))}
         </Stack>
-      </Box>  
+      </Box>
+    </Box> 
       </Box>
       <Dialog open={openEditDetailsDialog} onClose={handleCloseEditDetailsDialog}>
         <DialogTitle fontWeight="bold" >
@@ -742,7 +767,12 @@ const UserProfile = () => {
               onDelete={() => handleRemoveSkill(index)}
               color="primary"
               variant="outlined"
-              
+              sx={{
+                borderRadius: 1,
+                fontSize: '0.875rem',
+                height: 32,
+                '& .MuiChip-label': { fontWeight: 500 },
+              }}
             />
           ))}
         </Box>
