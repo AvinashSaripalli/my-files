@@ -3,6 +3,7 @@ import Register from './Components/Register';
 import Login from './Components/Login';
 import Sidebar from './Components/Sidebar';
 import EmployeeSidebar from './Components/EmployeeSidebar';
+import HrSidebar from './Components/HrSidebar';
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/sidebar" element={<Sidebar />} />
         <Route path="/employeesidebar" element={<EmployeeSidebar />} />
+        <Route path="/hrsidebar" element={<HrSidebar />} />
         <Route path="/" element={<Register />} />
       </Routes>
     </Router>
