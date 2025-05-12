@@ -13,6 +13,7 @@ import {
   Notepad2, Profile
 } from "iconsax-react";
 import { ThreeDot } from 'react-loading-indicators';
+import axios from 'axios';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('My Leaves');
@@ -31,21 +32,81 @@ const Sidebar = () => {
     setUserPhoto(localStorage.getItem('userPhoto') || '');
   }, []);
 
+
   const handleClockIn = () => {
+  try {
     setClockedIn(true);
     const interval = setInterval(() => {
       setElapsedSeconds((prev) => prev + 1);
     }, 1000);
     setClockInterval(interval);
-  };
 
-  const handleClockOut = () => {
+    const employeeData = {
+      employeeId: localStorage.getItem('userEmployeeId'),
+      companyName: localStorage.getItem('companyName'),
+      department: localStorage.getItem('userDepartment'),
+      firstName: localStorage.getItem('userFirstName'),
+      lastName: localStorage.getItem('userLastName'),
+      email: localStorage.getItem('userEmail'),
+      date: new Date().toISOString().split('T')[0],
+      clockInTime: new Date().toISOString(),
+    };
+    
+    axios
+      .post('http://localhost:5000/api/attendance/clock-in', employeeData)
+      .then((response) => {
+        console.log('Clock-in data sent successfully:', response.data);
+      })
+      .catch((error) => {
+        console.error('Error sending clock-in data:', error);
+        setClockedIn(false);
+        clearInterval(clockInterval);
+      });
+  } catch (error) {
+    console.error('Unexpected error during clock-in:', error);
     setClockedIn(false);
     clearInterval(clockInterval);
+  }
+};
+
+  // const handleClockOut = () => {
+  //   setClockedIn(false);
+  //   clearInterval(clockInterval);
+  //   const totalWorkedTime = formatElapsedTime(elapsedSeconds);
+  //   localStorage.setItem('workedTime', totalWorkedTime);
+  //   console.log("Total Worked Time:", totalWorkedTime);
+  // };
+
+  const handleClockOut = () => {
+  try {
+    setClockedIn(false);
+    clearInterval(clockInterval);
+    
     const totalWorkedTime = formatElapsedTime(elapsedSeconds);
     localStorage.setItem('workedTime', totalWorkedTime);
     console.log("Total Worked Time:", totalWorkedTime);
-  };
+
+    const employeeData = {
+      employeeId: localStorage.getItem('userEmployeeId'),
+      date: new Date().toISOString().split('T')[0],
+      clockOutTime: new Date().toISOString(),
+      workedHours: totalWorkedTime,
+    };
+
+    axios
+      .put('http://localhost:5000/api/attendance/clock-out', employeeData)
+      .then((response) => {
+        console.log('Clock-out data sent successfully:', response.data);
+      })
+      .catch((error) => {
+        console.error('Error sending clock-out data:', error);
+      });
+    
+  } catch (error) {
+    console.error('Unexpected error during clock-out:', error);
+  }
+};
+
 
   const handleLogout = () => {
     localStorage.clear();

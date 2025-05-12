@@ -5,18 +5,14 @@ import {
 } from '@mui/material';
 import {  ExitToApp as ExitToAppIcon, List as ListIcon,  Person as PersonIcon } from '@mui/icons-material';
 import Dashboard from './Dashboard';
-import EmployeesList from './EmployeesList';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router-dom';
-import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical,} from "iconsax-react";
-import ManageLeaves from './ManageLeaves';
-import Reports from './Reports';
+import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,Profile2User,ArchiveBook} from "iconsax-react";
 import { ThreeDot } from 'react-loading-indicators';
 import EmployeeManagement from './EmployeeManagement';
 import Attendance from './Attendance';
 import LeaveManagement from './LeaveManagement';
 import EmployeesReports from './EmployeesReports';
+import HrDashboard from './HrDashboard';
 
 const HrSidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('EmployeesList');
@@ -52,12 +48,12 @@ const HrSidebar = () => {
       </Box>;
     }
     switch (selectedComponent) {
-      case 'Employee Management': return <EmployeeManagement />;
-      case 'Attendance Management': return <Attendance />;
-      case 'Leaves Management': return <LeaveManagement />;
+      case 'HrDashboard': return <HrDashboard />;
+      case 'Employee': return <EmployeeManagement />;
+      case 'Attendance': return <Attendance />;
+      case 'Leaves': return <LeaveManagement />;
       case 'Employees Reports': return <EmployeesReports />;
-      //case 'Profile': return <UserProfile />;
-      default: return <EmployeeManagement />;
+      default: return <Dashboard />;
     }
   };
 
@@ -108,28 +104,29 @@ const HrSidebar = () => {
         </ListItem>
         <Divider/>
           {[
-            { text: 'Employee Management', icon: selectedComponent === 'Employee Management'
-                ?  <Element4 size="24" variant="Bold"/>
-                :  <Element4 size="24" variant="Outline"/>
+            
+            { 
+              text: 'HrDashboard', 
+              icon: selectedComponent === 'HrDashboard' 
+                ? <Element4 size="25" color="#14286d" variant="Bold"/>  
+                : <Element4 size="25" color="#14286d" variant="Outline"/> 
             },
-            { text: 'Attendance Management', icon:  selectedComponent === 'Attendance Management' 
-                ?  <RowVertical size="25" variant="Bold"/>
-                :   <RowVertical size="25" variant="Outline"/> 
+            { text: 'Employee', icon: selectedComponent === 'Employee'
+                ?  <Profile2User size="24" variant="Bold"/>
+                :  <Profile2User size="24" variant="Outline"/>
             },
-            { text: 'Leaves Management', icon: selectedComponent === 'Leaves Management' 
+            { text: 'Attendance', icon:  selectedComponent === 'Attendance' 
+                ?  <ArchiveBook size="25" variant="Bold"/>
+                :   <ArchiveBook size="25" variant="Outline"/> 
+            },
+            { text: 'Leaves', icon: selectedComponent === 'Leaves' 
                 ? <Notepad2 size="25" color="#14286d" variant="Bold"/>  
                 : <Notepad2 size="25" color="#14286d" variant="Outline"/> 
             },
             { text: 'Employees Reports', icon: selectedComponent === 'Employees Reports' 
               ? <ChartSquare size="25" color="#14286d" variant="Bold"/>
               : <ChartSquare size="25" color="#14286d" variant="Outline"/>
-            },
-            // { 
-            //   text: 'Profile', 
-            //   icon: selectedComponent === 'Profile' 
-            //     ? <Profile size="25" color="#14286d" variant="Bold"/>  
-            //     : <Profile size="25" color="#14286d" variant="Outline"/> 
-            // }
+            }
           ].map(({ text, icon }) => (
             <ListItem sx={{ justifyContent: 'center',height:'50px' }} disablePadding key={text}>
               <ListItemButton onClick={() => handleListItemOnClick(text)}>
