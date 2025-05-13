@@ -30,6 +30,32 @@ exports.getAllLeaves = (req, res) => {
     });
 };
 
+exports.getLeaveCounts = (req, res) => {
+  const { companyName } = req.query;
+
+  if (!companyName) {
+    return res.status(400).json({ error: 'Company name is required' });
+  }
+
+  const query = `
+    SELECT 
+      COUNT(*) as total,
+      SUM(CASE WHEN status = 'Approved' THEN 1 ELSE 0 END) as approved,
+      SUM(CASE WHEN status = 'Pending' THEN 1 ELSE 0 END) as pending,
+      SUM(CASE WHEN status = 'Rejected' THEN 1 ELSE 0 END) as rejected
+    FROM leaves
+    WHERE companyName = ?
+  `;
+
+  db.query(query, [companyName], (err, results) => {
+    if (err) {
+      console.error('Database query error:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results[0]);
+  });
+};
+
 
 exports.updateLeaveStatus = (req, res) => {
     const { leaveId, status } = req.body;

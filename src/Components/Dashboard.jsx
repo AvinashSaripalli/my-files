@@ -256,8 +256,6 @@ const Dashboard = () => {
                   justifyContent: "center",
                   textAlign: "center",
                   p: 2,
-                  borderRadius: 2,
-                  //boxShadow: 3,
                   boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
                   minHeight: 140,
                   minWidth: 200,

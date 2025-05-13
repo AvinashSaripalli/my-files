@@ -1,74 +1,88 @@
-const db = require('../db'); 
+const db = require('../db');
 
 exports.clockIn = (req, res) => {
   const {
-    employeeId,
-    companyName,
-    firstName,
-    lastName,
-    email,
-    date,
-    clockInTime,
+    companyName, department, firstName, lastName, email, employeeId, designation, clockInDate, clockInTime
   } = req.body;
 
   db.query(
-    'SELECT * FROM attendance WHERE employeeId = ? AND date = ?',
-    [employeeId, date],
-    (err, results) => {
-      if (err) {
-        console.error('Database error during check:', err.message);
-        return res.status(500).json({ message: 'Server error during clock-in.' });
+    `INSERT INTO attendance (companyName, department, firstName, lastName, email, employeeId, designation, clockInDate, clockInTime)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [companyName, department, firstName, lastName, email, employeeId, designation, clockInDate, clockInTime],
+    (error, results) => {
+      if (error) {
+        console.error('Clock-in error:', error);
+        return res.status(500).json({ error: 'Failed to record clock-in' });
       }
-
-      if (results.length > 0) {
-        return res.status(400).json({ message: 'Already clocked in for today.' });
-      }
-      db.query(
-        'INSERT INTO attendance (employeeId, companyName, firstName, lastName, email, date, clockInTime) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [employeeId, companyName, firstName, lastName, email, date, clockInTime],
-        (insertErr) => {
-          if (insertErr) {
-            console.error('Error during clock-in insertion:', insertErr.message);
-            return res.status(500).json({ message: 'Error inserting clock-in data.' });
-          }
-
-          res.status(201).json({ message: 'Clock-in successful!' });
-        }
-      );
+      res.status(201).json({ message: 'Clock-in recorded' });
     }
   );
 };
 
 exports.clockOut = (req, res) => {
-  const { employeeId, date, clockOutTime, workedHours } = req.body;
+  const { employeeId, companyName, clockOutTime, workedTime } = req.body;
 
-  db.query(
-    'SELECT * FROM attendance WHERE employeeId = ? AND date = ?',
-    [employeeId, date],
-    (err, results) => {
-      if (err) {
-        console.error('Database error during check:', err.message);
-        return res.status(500).json({ message: 'Server error during clock-out.' });
-      }
+  if (!employeeId || !companyName || !clockOutTime || !workedTime) {
+    return res.status(400).json({ error: 'Missing required fields for clock-out.' });
+  }
 
-      if (results.length === 0) {
-        return res.status(404).json({ message: 'No clock-in record found for today.' });
-      }
+  const query = `
+    SELECT clockInTime FROM attendance 
+    WHERE employeeId = ? AND companyName = ? AND clockOutTime IS NULL 
+    ORDER BY clockInTime DESC LIMIT 1
+  `;
 
-      db.query(
-        'UPDATE attendance SET clockOutTime = ?, workedHours = ? WHERE employeeId = ? AND date = ?',
-        [clockOutTime, workedHours, employeeId, date],
-        (updateErr) => {
-          if (updateErr) {
-            console.error('Error during clock-out update:', updateErr.message);
-            return res.status(500).json({ message: 'Error updating clock-out data.' });
-          }
-
-          res.status(200).json({ message: 'Clock-out successful!' });
-        }
-      );
+  db.query(query, [employeeId, companyName], (error, results) => {
+    if (error) {
+      console.error('Database error during clock-out fetch:', error.message);
+      return res.status(500).json({ error: 'Failed to fetch clock-in record.' });
     }
-  );
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'No active clock-in found for this user.' });
+    }
+
+    const clockInTime = results[0].clockInTime;
+    if (new Date(`1970-01-01T${clockOutTime}Z`) <= new Date(`1970-01-01T${clockInTime}Z`)) {
+      return res.status(400).json({ error: 'Clock-out time must be after clock-in time.' });
+    }
+
+    const updateQuery = `
+      UPDATE attendance
+      SET clockOutTime = ?, workedTime = ?
+      WHERE employeeId = ? AND companyName = ? AND clockOutTime IS NULL
+      ORDER BY clockInTime DESC LIMIT 1
+    `;
+
+    db.query(updateQuery, [clockOutTime, workedTime, employeeId, companyName], (error, results) => {
+      if (error) {
+        console.error('Database error during clock-out update:', error.message);
+        return res.status(500).json({ error: 'Failed to record clock-out.' });
+      }
+      
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ error: 'No active clock-in found to update.' });
+      }
+
+      res.json({ message: 'Clock-out successfully recorded.' });
+    });
+  });
 };
 
+exports.getAllAttendances = (req, res) => {
+    const { companyName } = req.query; 
 
+    if (!companyName) {
+        return res.status(400).json({ error: 'Company name is required' });
+    }
+
+    const sql = 'SELECT * FROM attendance WHERE companyName = ?';
+    
+    db.query(sql, [companyName], (err, results) => {
+        if (err) {
+            console.error('Error fetching attendance records:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
+};

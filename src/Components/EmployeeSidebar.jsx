@@ -21,7 +21,6 @@ const Sidebar = () => {
   const [userPhoto, setUserPhoto] = useState('');
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const [clockedIn, setClockedIn] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [clockInterval, setClockInterval] = useState(null);
@@ -32,79 +31,77 @@ const Sidebar = () => {
     setUserPhoto(localStorage.getItem('userPhoto') || '');
   }, []);
 
+const handleClockIn = () => {
+  setLoading(true);
 
-  const handleClockIn = () => {
-  try {
-    setClockedIn(true);
-    const interval = setInterval(() => {
-      setElapsedSeconds((prev) => prev + 1);
-    }, 1000);
-    setClockInterval(interval);
+  const formatDateForMySQL = (date) => {
+    return date.toISOString().slice(0, 10); 
+  };
 
-    const employeeData = {
-      employeeId: localStorage.getItem('userEmployeeId'),
-      companyName: localStorage.getItem('companyName'),
-      department: localStorage.getItem('userDepartment'),
-      firstName: localStorage.getItem('userFirstName'),
-      lastName: localStorage.getItem('userLastName'),
-      email: localStorage.getItem('userEmail'),
-      date: new Date().toISOString().split('T')[0],
-      clockInTime: new Date().toISOString(),
-    };
-    
-    axios
-      .post('http://localhost:5000/api/attendance/clock-in', employeeData)
-      .then((response) => {
-        console.log('Clock-in data sent successfully:', response.data);
-      })
-      .catch((error) => {
-        console.error('Error sending clock-in data:', error);
-        setClockedIn(false);
-        clearInterval(clockInterval);
-      });
-  } catch (error) {
-    console.error('Unexpected error during clock-in:', error);
-    setClockedIn(false);
-    clearInterval(clockInterval);
-  }
+  const formatTimeForMySQL = (date) => {
+    return date.toTimeString().split(' ')[0]; 
+  };
+
+  const userDetails = {
+    companyName: localStorage.getItem('companyName'),
+    department: localStorage.getItem('userDepartment'),
+    firstName: localStorage.getItem('userFirstName'),
+    lastName: localStorage.getItem('userLastName'),
+    email: localStorage.getItem('userEmail'),
+    employeeId: localStorage.getItem('userEmployeeId'),
+    designation: localStorage.getItem('userDesignation'),
+    clockInDate: formatDateForMySQL(new Date()),   
+    clockInTime: formatTimeForMySQL(new Date()),  
+  };
+
+  axios.post('http://localhost:5000/api/attendance/clock-in', userDetails)
+    .then(() => {
+      setClockedIn(true);
+      const interval = setInterval(() => {
+        setElapsedSeconds((prev) => prev + 1);
+      }, 1000);
+      setClockInterval(interval);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.error('Clock-in failed:', error);
+      alert('Failed to clock in. Please try again.');
+      setClockedIn(false);
+      setLoading(false);
+    });
 };
 
-  // const handleClockOut = () => {
-  //   setClockedIn(false);
-  //   clearInterval(clockInterval);
-  //   const totalWorkedTime = formatElapsedTime(elapsedSeconds);
-  //   localStorage.setItem('workedTime', totalWorkedTime);
-  //   console.log("Total Worked Time:", totalWorkedTime);
-  // };
-
   const handleClockOut = () => {
-  try {
-    setClockedIn(false);
-    clearInterval(clockInterval);
-    
-    const totalWorkedTime = formatElapsedTime(elapsedSeconds);
-    localStorage.setItem('workedTime', totalWorkedTime);
-    console.log("Total Worked Time:", totalWorkedTime);
+  setLoading(true);
+  clearInterval(clockInterval);
 
-    const employeeData = {
-      employeeId: localStorage.getItem('userEmployeeId'),
-      date: new Date().toISOString().split('T')[0],
-      clockOutTime: new Date().toISOString(),
-      workedHours: totalWorkedTime,
-    };
+  const formatTimeForMySQL = (date) => {
+    return date.toTimeString().split(' ')[0]; 
+  };
 
-    axios
-      .put('http://localhost:5000/api/attendance/clock-out', employeeData)
-      .then((response) => {
-        console.log('Clock-out data sent successfully:', response.data);
-      })
-      .catch((error) => {
-        console.error('Error sending clock-out data:', error);
-      });
-    
-  } catch (error) {
-    console.error('Unexpected error during clock-out:', error);
-  }
+  const totalWorkedTime = formatElapsedTime(elapsedSeconds);
+
+  const clockOutData = {
+    employeeId: localStorage.getItem('userEmployeeId'),
+    companyName: localStorage.getItem('companyName'),
+    clockOutTime: formatTimeForMySQL(new Date()),  // Correct format
+    workedTime: totalWorkedTime,
+  };
+
+  axios.patch('http://localhost:5000/api/attendance/clock-out', clockOutData)
+    .then(() => {
+      setClockedIn(false);
+      localStorage.setItem('workedTime', totalWorkedTime);
+      console.log('Total Worked Time:', totalWorkedTime);
+      setClockInterval(null);
+      setElapsedSeconds(0);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.error('Clock-out failed:', error);
+      alert('Failed to clock out. Please try again.');
+      setLoading(false);
+    });
 };
 
 
@@ -158,15 +155,14 @@ const Sidebar = () => {
       <AppBar position="fixed" sx={{ background: '#fff', boxShadow: 'none', borderBottom: '1px solid #e0e0e0', zIndex: 1201 }}>
         <Toolbar>
           <Box sx={{ flexGrow: 1 }} />
-
           <Box sx={{ display: 'flex', alignItems: 'center', mr: 2, gap: 2 }}>
             <Button
-              size="small" variant={clockedIn ? "outlined" : "outlined"}
+              size="small"
+              variant={clockedIn ? "outlined" : "outlined"}
               onClick={clockedIn ? handleClockOut : handleClockIn}
               sx={{
                 color: clockedIn ? "#f11005" : "#14286D",
-                //backgroundColor: clockedIn ? "#14286D" : "#fff",
-                borderColor: "#14286D",
+                borderColor: clockedIn ? "#f11005" : "#14286D",
                 fontWeight: 600,
               }}
             >
@@ -176,7 +172,6 @@ const Sidebar = () => {
               {formatElapsedTime(elapsedSeconds)}
             </Typography>
           </Box>
-
           <Tooltip title="Profile">
             <Avatar src={userPhoto} sx={{ cursor: 'pointer' }} onClick={handleAvatarClick} />
           </Tooltip>
@@ -272,4 +267,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

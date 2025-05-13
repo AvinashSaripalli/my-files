@@ -1,112 +1,122 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
-  Container,
-  Typography,
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Grid,
-  Card,
-  CardContent,
-} from "@mui/material";
-import { PieChart, Pie, Cell, Legend } from "recharts";
-
-const attendanceRecords = [
-  { id: 1, employee: "John Doe", date: "2025-05-01", status: "Present" },
-  { id: 2, employee: "Jane Smith", date: "2025-05-01", status: "Absent" },
-  { id: 3, employee: "Emma Brown", date: "2025-05-01", status: "Present" }
-];
-
-const attendanceData = [
-  { name: "Present", value: attendanceRecords.filter(a => a.status === "Present").length },
-  { name: "Absent", value: attendanceRecords.filter(a => a.status === "Absent").length }
-];
-
-const COLORS = ["#4caf50", "#f44336"];
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Paper, Typography, Chip, CircularProgress, Box, TablePagination
+} from '@mui/material';
 
 const Attendance = () => {
+  const [attendances, setAttendances] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  const fetchAttendance = async () => {
+    const companyName = localStorage.getItem('companyName');
+    try {
+      const response = await axios.get('http://localhost:5000/api/attendance', {
+        params: { companyName },
+      });
+      setAttendances(response.data);
+      console.log("Fetched attendance Successfully", response.data);
+    } catch (error) {
+      console.error('Error fetching attendance data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAttendance();
+  }, []);
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-GB');
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Approved': return 'success';
+      case 'Rejected': return 'error';
+      case 'Pending': return 'warning';
+      default: return 'default';
+    }
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Attendance
-      </Typography>
-
-      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 4.9 }}>
-        <Paper elevation={6} sx={{ flex: 1, borderRadius: 2,boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",  }}>
-          <TableContainer >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Employee</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {attendanceRecords.map((attendance) => (
-                  <TableRow key={attendance.id}>
-                    <TableCell>{attendance.employee}</TableCell>
-                    <TableCell>{attendance.date}</TableCell>
-                    <TableCell>{attendance.status}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-
-        <Box sx={{display: 'flex', flexDirection: 'row'}}>
-          <Paper elevation={3} sx={{ flex: 1,  borderRadius: 2 ,boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",}}>
-            <Typography variant="h6" gutterBottom>
-              Attendance Summary
-            </Typography>
-            <PieChart width={300} height={200}>
-              <Pie
-                data={attendanceData}
-                cx="50%"
-                cy="70%"
-                startAngle={180}
-                endAngle={0}
-                innerRadius={60}
-                outerRadius={90}
-                dataKey="value"
-              >
-                {attendanceData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                ))}
-              </Pie>
-              <Legend />
-            </PieChart>
-          </Paper>
-        </Box>
-      </Box>
-
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h5" gutterBottom>
-          Attendance Records (Card View)
+    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5, px: 2 }}>
+      <Box sx={{ maxWidth: 1300, width: '100%' }}>
+        <Typography variant="h5" align="left" sx={{ fontWeight: 'bold', mb: 2, color: 'black' }}>
+          Attendance
         </Typography>
-        <Grid container spacing={3}>
-          {attendanceRecords.map((attendance) => (
-            <Grid item xs={12} md={4} key={attendance.id}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6">{attendance.employee}</Typography>
-                  <Typography color="textSecondary">{attendance.date}</Typography>
-                  <Typography variant="body1" sx={{ mt: 1 }}>
-                    Status: {attendance.status}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Leave Type</TableCell>
+                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Start Date</TableCell>
+                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>End Date</TableCell>
+                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Reason</TableCell>
+                    <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {attendances.length > 0 ? (
+                    attendances.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((attendance, index) => (
+                      <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
+                        <TableCell>{attendance.employeeId}</TableCell>
+                        <TableCell>{formatDate(attendance.clockInDate)}</TableCell>
+                        <TableCell>{attendance.department}</TableCell>
+                        <TableCell>{attendance.companyName}</TableCell>
+                        <TableCell align="center">
+                          <Chip
+                            label={attendance.clockInTime ? "Working" : "Not Working"}
+                            color={attendance.clockInTime ? "success" : "default"}
+                            sx={{ width: "100px", minWidth: "unset" }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center">
+                        No leave records found
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <TablePagination
+              rowsPerPageOptions={[5]}
+              component="div"
+              count={attendances.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </>
+        )}
       </Box>
-    </Container>
+    </Box>
   );
 };
 

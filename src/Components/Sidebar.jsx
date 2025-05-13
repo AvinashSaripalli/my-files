@@ -9,7 +9,7 @@ import EmployeesList from './EmployeesList';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router-dom';
-import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical,} from "iconsax-react";
+import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical,Activity} from "iconsax-react";
 import ManageLeaves from './ManageLeaves';
 import Reports from './Reports';
 import { ThreeDot } from 'react-loading-indicators';
@@ -117,8 +117,8 @@ const Sidebar = () => {
                 : <Notepad2 size="25" color="#14286d" variant="Outline"/> 
             },
             { text: 'Reports', icon: selectedComponent === 'Reports' 
-              ? <ChartSquare size="25" color="#14286d" variant="Bold"/>
-              : <ChartSquare size="25" color="#14286d" variant="Outline"/>
+              ? <Activity size="25" color="#14286d" variant="Bold"/>
+              : <Activity size="25" color="#14286d" variant="Outline"/>
             },
             { 
               text: 'Profile', 

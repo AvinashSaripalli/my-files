@@ -7,5 +7,6 @@ router.get('/', leaveController.getLeavesByEmployee);
 router.get('/leave', leaveController.getAllLeaves);
 router.put('/update-status', leaveController.updateLeaveStatus);
 router.get('/approved-leaves-today', leaveController.getApprovedLeavesToday);
+router.get('/leave-counts', leaveController.getLeaveCounts);
 
 module.exports = router;

@@ -48,7 +48,7 @@ const HrSidebar = () => {
       </Box>;
     }
     switch (selectedComponent) {
-      case 'HrDashboard': return <HrDashboard />;
+      case 'Dashboard': return <HrDashboard />;
       case 'Employee': return <EmployeeManagement />;
       case 'Attendance': return <Attendance />;
       case 'Leaves': return <LeaveManagement />;
@@ -106,8 +106,8 @@ const HrSidebar = () => {
           {[
             
             { 
-              text: 'HrDashboard', 
-              icon: selectedComponent === 'HrDashboard' 
+              text: 'Dashboard', 
+              icon: selectedComponent === 'Dashboard' 
                 ? <Element4 size="25" color="#14286d" variant="Bold"/>  
                 : <Element4 size="25" color="#14286d" variant="Outline"/> 
             },
