@@ -13,6 +13,7 @@ import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,N
 import ManageLeaves from './ManageLeaves';
 import Reports from './Reports';
 import { ThreeDot } from 'react-loading-indicators';
+import CompanyStructure from './companyStructure';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('EmployeesList');
@@ -50,6 +51,7 @@ const Sidebar = () => {
     switch (selectedComponent) {
       case 'Dashboard': return <Dashboard />;
       case 'Users List': return <EmployeesList />;
+      case 'Company Structure': return <CompanyStructure />;
       case 'Manage Leaves': return <ManageLeaves />;
       case 'Reports': return <Reports />;
       case 'Profile': return <UserProfile />;
@@ -85,7 +87,7 @@ const Sidebar = () => {
        // mt:'64px',
         '& .MuiDrawer-paper': {
           //mt:'56px',
-          width: sidebarOpen ? 220 : 60,
+          width: sidebarOpen ? 240 : 60,
           transition: 'width 0.3s',
           overflowX: 'hidden',
           boxSizing: 'border-box',
@@ -112,6 +114,10 @@ const Sidebar = () => {
                 ?  <RowVertical size="25" variant="Bold"/>
                 :   <RowVertical size="25" variant="Outline"/> 
             },
+            { text: 'Company Structure', icon:  selectedComponent === 'Company Structure' 
+                ?  <People size="25" variant="Bold"/>
+                :   <People size="25" variant="Outline"/> 
+            },
             { text: 'Manage Leaves', icon: selectedComponent === 'Manage Leaves' 
                 ? <Notepad2 size="25" color="#14286d" variant="Bold"/>  
                 : <Notepad2 size="25" color="#14286d" variant="Outline"/> 
@@ -127,7 +133,7 @@ const Sidebar = () => {
                 : <Profile size="25" color="#14286d" variant="Outline"/> 
             }
           ].map(({ text, icon }) => (
-            <ListItem sx={{ justifyContent: 'center',height:'50px' }} disablePadding key={text}>
+            <ListItem sx={{ justifyContent: 'center',height:'45px' }} disablePadding key={text}>
               <ListItemButton onClick={() => handleListItemOnClick(text)}>
                 <ListItemIcon sx={{ color: '#14286D' }}>{icon}</ListItemIcon>
                 <Collapse in={sidebarOpen} orientation="horizontal">
@@ -156,7 +162,7 @@ const Sidebar = () => {
           </ListItem>
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, mt:"64px",  ml: sidebarOpen ? '60px' : '60px',backgroundColor:'#f4f7fe',minHeight: "calc(100vh - 64px)",width: "100vh",   }}>
+      <Box component="main" sx={{ flexGrow: 1, mt:"64px",  ml: sidebarOpen ? '60px' : '60px',backgroundColor:'#ffffff',minHeight: "calc(100vh - 64px)",width: "100vh",   }}>
         {renderComponent()}
       </Box>
     </Box>

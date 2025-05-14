@@ -8,5 +8,6 @@ router.get('/leave', leaveController.getAllLeaves);
 router.put('/update-status', leaveController.updateLeaveStatus);
 router.get('/approved-leaves-today', leaveController.getApprovedLeavesToday);
 router.get('/leave-counts', leaveController.getLeaveCounts);
+router.get('/recent', leaveController.getRecentLeaves);
 
 module.exports = router;

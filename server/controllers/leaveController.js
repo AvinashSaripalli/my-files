@@ -30,6 +30,31 @@ exports.getAllLeaves = (req, res) => {
     });
 };
 
+exports.getRecentLeaves = (req, res) => {
+  const { employeeId, companyName } = req.query;
+
+  if (!employeeId || !companyName) {
+    return res.status(400).json({ error: "Employee ID and Company Name are required" });
+  }
+
+  const query = `
+    SELECT * FROM leaves 
+    WHERE employeeId = ? 
+    AND companyName = ?
+    AND (start_date < NOW() OR start_date > NOW()) 
+    ORDER BY start_date DESC 
+    LIMIT 4
+  `;
+
+  db.query(query, [employeeId, companyName], (err, results) => {
+    if (err) {
+      console.error("Error fetching recent leaves:", err);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+    res.status(200).json(results);
+  });
+};
+
 exports.getLeaveCounts = (req, res) => {
   const { companyName } = req.query;
 

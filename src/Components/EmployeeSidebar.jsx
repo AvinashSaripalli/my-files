@@ -229,7 +229,7 @@ const handleClockIn = () => {
                 : <Profile size="25" variant="Outline" />
             }
           ].map(({ text, icon }) => (
-            <ListItem sx={{ justifyContent: 'center', height: '60px' }} disablePadding key={text}>
+            <ListItem sx={{ justifyContent: 'center', height: '50px' }} disablePadding key={text}>
               <ListItemButton onClick={() => handleListItemOnClick(text)}>
                 <ListItemIcon sx={{ color: '#14286D' }}>{icon}</ListItemIcon>
                 <Collapse in={sidebarOpen} orientation="horizontal">
@@ -244,7 +244,7 @@ const handleClockIn = () => {
               <Collapse in={sidebarOpen} orientation="horizontal"><ListItemText primary="Logout" /></Collapse>
             </ListItemButton>
           </ListItem>
-          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '250px' }}>
+          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '280px' }}>
             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
               {sidebarOpen ? <ArrowCircleLeft size="22" color="#14286d" /> : <ArrowCircleRight size="24" color="#14286d" />}
             </IconButton>
