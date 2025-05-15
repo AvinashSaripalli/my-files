@@ -11,6 +11,8 @@ import {
   Card,
   CardContent,
   Divider,
+  Chip,
+  CircularProgress
 } from "@mui/material";
 import axios from "axios";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -186,12 +188,35 @@ const ApplyLeave = () => {
   };
 
   const upcomingHolidays = [
-    { date: "2025-12-25", name: "Christmas" },
-    { date: "2026-01-01", name: "New Year's Day" },
-  ];
+  { date: "2025-01-26", name: "Republic Day" },
+  { date: "2025-03-17", name: "Holi" },
+  { date: "2025-04-14", name: "Ambedkar Jayanti" },
+  { date: "2025-05-01", name: "Labour Day" },
+  { date: "2025-08-15", name: "Independence Day" },
+  { date: "2025-08-29", name: "Raksha Bandhan" },
+  { date: "2025-10-02", name: "Gandhi Jayanti" },
+  { date: "2025-10-22", name: "Dussehra" },
+  { date: "2025-11-01", name: "Diwali" },
+  { date: "2025-11-14", name: "Children's Day" },
+  { date: "2025-12-25", name: "Christmas" },
+  { date: "2026-01-01", name: "New Year's Day" },
+];
+
+  const getStatusChip = (status) => {
+    switch (status) {
+      case 'Approved':
+        return <Chip label="Approved" color="success" size="small" />;
+      case 'Pending':
+        return <Chip label="Pending" color="warning" size="small" />;
+      case 'Rejected':
+        return <Chip label="Rejected" color="error" size="small" />;
+      default:
+        return <Chip label={status} size="small" />;
+    }
+  };
 
   return (
-    <Box sx={{ maxWidth: 1200, margin: "auto", mt: 3, ml: 6 }}>
+    <Box sx={{ maxWidth: 1380, margin: "auto", mt: 3, ml: 6 }}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
           <Card elevation={3} sx={{ mb: 2 }}>
@@ -349,9 +374,9 @@ const ApplyLeave = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
             {/* Recent Leaves Card */}
-            <Card elevation={3}>
+            {/* <Card elevation={3}>
               <CardContent>
                 <Typography variant="h6" mb={2}>
                   Recent Leaves
@@ -376,27 +401,93 @@ const ApplyLeave = () => {
                 )}
 
               </CardContent>
+            </Card> */}
+
+            <Card elevation={3} sx={{ borderRadius: 3 }}>
+              <CardContent>
+                <Typography variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
+                  Recent Leaves
+                </Typography>
+                {loading ? (
+                  <Box display="flex" justifyContent="center" p={2}>
+                    <CircularProgress size={24} />
+                  </Box>
+                ) : recentLeaves.length > 0 ? (
+                  <Box sx={{ maxHeight: 200, overflowY: 'auto', pr: 1 }}>
+                    {recentLeaves.map((leave, index) => (
+                      <Box key={index} sx={{ mb: 2 }}>
+                        <Box display="flex" alignItems="center" mb={1} justifyContent="space-between">
+                          <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                            {leave.leave_type}
+                          </Typography>
+                          {getStatusChip(leave.status)}
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {dayjs(leave.start_date).format('MMM D, YYYY')} -{' '}
+                          {dayjs(leave.end_date).format('MMM D, YYYY')}
+                        </Typography>
+                        {leave.reason && (
+                          <Typography variant="body2" sx={{ mt: 1}}>
+                            "{leave.reason.substring(0, 50)}{leave.reason.length > 50 ? '...' : ''}"
+                          </Typography>
+                        )}
+                        <Divider sx={{ my: 2 }} />
+                      </Box>
+                    ))}
+                  </Box>
+                ) : (
+                  <Paper elevation={0} sx={{ p: 2, textAlign: 'center', bgcolor: '#fafafa' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No recent leave applications found.
+                    </Typography>
+                  </Paper>
+                )}
+              </CardContent>
             </Card>
 
-            <Card elevation={3}>
-              <CardContent>
+            {/* <Card elevation={3}>
+  `           <CardContent>
                 <Typography variant="h6" mb={2}>
                   Upcoming Holidays
                 </Typography>
-                {upcomingHolidays.length > 0 ? (
-                  upcomingHolidays.map((holiday, index) => (
+                <Box sx={{ maxHeight: 122, overflowY: 'auto', pr: 1 }}>
+                  {upcomingHolidays.length > 0 ? (
+                    upcomingHolidays.map((holiday, index) => (
+                      <Box key={index} sx={{ mb: 1 }}>
+                        <Typography variant="body2">
+                          {holiday.name}: {dayjs(holiday.date).format('MMM DD, YYYY')}
+                        </Typography>
+                        <Divider sx={{ my: 1 }} />
+                      </Box>
+                    ))
+                  ) : (
+                    <Typography variant="body2" color="text.secondary">
+                      No upcoming holidays.
+                    </Typography>
+                  )}
+                </Box>
+              </CardContent>
+            </Card> */}
+                        <Card elevation={3} sx={{ borderRadius: 3 }}>
+              <CardContent>
+                <Typography variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
+                  Upcoming Holidays
+                </Typography>
+                <Box sx={{ maxHeight: 180, overflowY: 'auto', pr: 1 }}>
+                  {upcomingHolidays.map((holiday, index) => (
                     <Box key={index} sx={{ mb: 1 }}>
-                      <Typography variant="body2">
-                        {holiday.name}: {dayjs(holiday.date).format('MMM DD, YYYY')}
-                      </Typography>
-                      <Divider sx={{ my: 1 }} />
+                      <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                          {holiday.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {dayjs(holiday.date).format('MMMM D, YYYY (dddd)')}
+                        </Typography>
+                      </Box>
+                      {index < upcomingHolidays.length - 1 && <Divider sx={{ my: 1.5 }} />}
                     </Box>
-                  ))
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    No upcoming holidays.
-                  </Typography>
-                )}
+                  ))}
+                </Box>
               </CardContent>
             </Card>
           </Box>

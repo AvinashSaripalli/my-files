@@ -142,7 +142,7 @@ const EmployeesList = ({ onClose }) => {
         )
       );
   
-      setUsers((prevUsers) => prevUsers.filter((user) => !selectedUsers.includes(user.id))); // Remove from UI
+      setUsers((prevUsers) => prevUsers.filter((user) => !selectedUsers.includes(user.id))); 
       setSelectedUsers([]);
       handleCloseDeleteUser();
       console.log('Selected users deleted successfully');

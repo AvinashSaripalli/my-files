@@ -69,10 +69,10 @@ const Attendance = () => {
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Leave Type</TableCell>
-                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Start Date</TableCell>
-                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>End Date</TableCell>
-                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Reason</TableCell>
+                    <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Employee ID</TableCell>
+                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Department</TableCell> 
+                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Clock_In Date</TableCell>
+                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Clock_In Time</TableCell>
                     <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
                   </TableRow>
                 </TableHead>
@@ -80,10 +80,10 @@ const Attendance = () => {
                   {attendances.length > 0 ? (
                     attendances.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((attendance, index) => (
                       <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
-                        <TableCell>{attendance.employeeId}</TableCell>
-                        <TableCell>{formatDate(attendance.clockInDate)}</TableCell>
+                        <TableCell align="center">{attendance.employeeId}</TableCell>
                         <TableCell>{attendance.department}</TableCell>
-                        <TableCell>{attendance.companyName}</TableCell>
+                        <TableCell>{formatDate(attendance.clockInDate)}</TableCell>
+                        <TableCell>{attendance.clockInTime}</TableCell>
                         <TableCell align="center">
                           <Chip
                             label={attendance.clockInTime ? "Working" : "Not Working"}
