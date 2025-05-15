@@ -71,8 +71,8 @@ const Attendance = () => {
                   <TableRow>
                     <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Employee ID</TableCell>
                     <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Department</TableCell> 
-                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Clock_In Date</TableCell>
-                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>Clock_In Time</TableCell>
+                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>ClockIn_Date</TableCell>
+                    <TableCell sx={{ color: '#000', fontWeight: 'bold' }}>ClockIn_Time</TableCell>
                     <TableCell align="center" sx={{ color: '#000', fontWeight: 'bold' }}>Status</TableCell>
                   </TableRow>
                 </TableHead>
@@ -116,6 +116,7 @@ const Attendance = () => {
           </>
         )}
       </Box>
+      
     </Box>
   );
 };

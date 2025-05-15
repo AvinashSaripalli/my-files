@@ -144,7 +144,7 @@ const LeaveManagement = () => {
         />
       </Box>
 
-      <Box sx={{ ml: 1,mt:6, width: '400px' }}>
+      <Box sx={{ ml: 1,mt:6, width: '390px' }}>
         <Grid container spacing={3}>
           <Grid item xs={6}>
             <Card sx={{
@@ -153,9 +153,10 @@ const LeaveManagement = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   textAlign: "center",
+                  borderRadius: 2,                  
                   p: 2,
                   boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
-                  minHeight: 60,
+                  minHeight: 30,
                   minWidth: 130,
                   borderBottom: `13px solid #11146a`
                 }}>
@@ -173,9 +174,10 @@ const LeaveManagement = () => {
                   alignItems: "center",
                   justifyContent: "center",
                   textAlign: "center",
+                  borderRadius:2,                
                   p: 2,
                   boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
-                  minHeight: 60,
+                  minHeight: 30,
                   minWidth: 130,
                   borderBottom: `13px solid green`
                 }}>
@@ -193,9 +195,10 @@ const LeaveManagement = () => {
                   justifyContent: "center",
                   textAlign: "center",
                   p: 2,
+                  borderRadius:2,
                   //boxShadow: 3,
                   boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
-                  minHeight: 60,
+                  minHeight: 30,
                   minWidth: 130,
                   borderBottom: `13px solid #fc4404 `
                 }}>
@@ -213,9 +216,10 @@ const LeaveManagement = () => {
                   justifyContent: "center",
                   textAlign: "center",
                   p: 2,
+                  borderRadius:2,
                   //boxShadow: 3,
                   boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
-                  minHeight: 60,
+                  minHeight: 30,
                   minWidth: 130,
                   borderBottom: `13px solid #da0704`
                 }}>

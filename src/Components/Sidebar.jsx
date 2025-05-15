@@ -13,7 +13,7 @@ import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,N
 import ManageLeaves from './ManageLeaves';
 import Reports from './Reports';
 import { ThreeDot } from 'react-loading-indicators';
-import CompanyStructure from './companyStructure';
+
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('EmployeesList');
@@ -51,7 +51,7 @@ const Sidebar = () => {
     switch (selectedComponent) {
       case 'Dashboard': return <Dashboard />;
       case 'Users List': return <EmployeesList />;
-      case 'Company Structure': return <CompanyStructure />;
+      case 'Company Structure': return <EmployeesList />;
       case 'Manage Leaves': return <ManageLeaves />;
       case 'Reports': return <Reports />;
       case 'Profile': return <UserProfile />;
