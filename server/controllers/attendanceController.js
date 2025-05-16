@@ -86,3 +86,33 @@ exports.getAllAttendances = (req, res) => {
         res.json(results);
     });
 };
+
+// Add this to your backend controller file
+exports.getAttendanceStats = (req, res) => {
+    const { companyName } = req.query;
+
+    if (!companyName) {
+        return res.status(400).json({ error: 'Company name is required' });
+    }
+
+    const sql = `
+        SELECT 
+            DATE(clockInDate) as date,
+            SUM(CASE WHEN TIME(clockInTime) <= '09:30:00' THEN 1 ELSE 0 END) as onTime,
+            SUM(CASE WHEN TIME(clockInTime) > '09:30:00' THEN 1 ELSE 0 END) as late,
+            COUNT(*) as total
+        FROM attendance
+        WHERE companyName = ? 
+          AND clockInDate >= DATE_SUB(CURRENT_DATE(), INTERVAL 6 DAY)
+        GROUP BY DATE(clockInDate)
+        ORDER BY date ASC
+    `;
+
+    db.query(sql, [companyName], (err, results) => {
+        if (err) {
+            console.error('Error fetching attendance stats:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json(results);
+    });
+};

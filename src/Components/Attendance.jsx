@@ -4,25 +4,34 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Typography, Chip, CircularProgress, Box, TablePagination
 } from '@mui/material';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
+} from 'recharts';
 
 const Attendance = () => {
   const [attendances, setAttendances] = useState([]);
+  const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const fetchAttendance = async () => {
     const companyName = localStorage.getItem('companyName');
     try {
-      const response = await axios.get('http://localhost:5000/api/attendance', {
-        params: { companyName },
-      });
-      setAttendances(response.data);
-      console.log("Fetched attendance Successfully", response.data);
+      const [attendanceRes, statsRes] = await Promise.all([
+        axios.get('http://localhost:5000/api/attendance', { params: { companyName } }),
+        axios.get('http://localhost:5000/api/attendance/stats', { params: { companyName } })
+      ]);
+
+      setAttendances(attendanceRes.data);
+      setStats(statsRes.data);
+      console.log("Fetched data successfully");
     } catch (error) {
-      console.error('Error fetching attendance data:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+      setStatsLoading(false);
     }
   };
 
@@ -34,15 +43,6 @@ const Attendance = () => {
     return new Date(dateString).toLocaleDateString('en-GB');
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'Approved': return 'success';
-      case 'Rejected': return 'error';
-      case 'Pending': return 'warning';
-      default: return 'default';
-    }
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -52,6 +52,16 @@ const Attendance = () => {
     setPage(0);
   };
 
+  const processChartData = () => {
+  return stats.map(item => ({
+    name: new Date(item.date).toLocaleDateString('en-GB', {day: 'numeric', month: 'short' }),
+    onTime: item.late,    
+    late: -item.onTime,   
+    total: item.total
+  }));
+};
+
+
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5, px: 2 }}>
       <Box sx={{ maxWidth: 1300, width: '100%' }}>
@@ -59,13 +69,41 @@ const Attendance = () => {
           Attendance
         </Typography>
 
+        {!statsLoading && stats.length > 0 && (
+          <Box sx={{ mb: 4, p: 2, backgroundColor: 'white', borderRadius: 2, boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",width:'600px' }}>
+            <Typography variant="h6" sx={{ mb: 2 }}>Attendance Trends (Last 7 Days)</Typography>
+            <ResponsiveContainer width={600} height={300}>
+              <BarChart
+                data={processChartData()}
+                margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
+                stackOffset="sign" 
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false}/>
+                {/* <CartesianGrid strokeOpacity={0.2} /> */}
+                <XAxis dataKey="name" fontSize={13} />
+                <YAxis fontSize={13}/>
+                <Tooltip 
+                  cursor={{ fill: "transparent" }}
+                  formatter={(value, name) => {
+                    if (name === 'Late (> 09:30)') return Math.abs(value);
+                    return value;
+                  }}
+                />
+                <Legend />
+                <Bar dataKey="onTime" name="Late ClockIn" fill=" #F44336" stackId="a" barSize={35} />
+                <Bar dataKey="late" name="Early ClockIn" fill="#4CAF50" stackId="a"  barSize={35}/>
+              </BarChart>
+            </ResponsiveContainer>
+          </Box>
+        )}
+
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', p: 3, }}>
             <CircularProgress />
           </Box>
         ) : (
           <>
-            <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+            <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: 'hidden' , boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",}}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
@@ -96,7 +134,7 @@ const Attendance = () => {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={5} align="center">
-                        No leave records found
+                        No attendance records found
                       </TableCell>
                     </TableRow>
                   )}
@@ -105,7 +143,7 @@ const Attendance = () => {
             </TableContainer>
 
             <TablePagination
-              rowsPerPageOptions={[5]}
+              rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={attendances.length}
               rowsPerPage={rowsPerPage}
@@ -116,10 +154,8 @@ const Attendance = () => {
           </>
         )}
       </Box>
-      
     </Box>
   );
 };
 
 export default Attendance;
-

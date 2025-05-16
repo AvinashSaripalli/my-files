@@ -255,6 +255,7 @@ const WorkReports = () => {
             required
             error={!!errors.hoursWorked}
             helperText={errors.hoursWorked}
+            disabled
           />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
