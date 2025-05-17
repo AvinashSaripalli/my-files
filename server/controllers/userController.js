@@ -204,7 +204,7 @@ exports.loginUser = (req, res) => {
     const token = jwt.sign(
       { id: user.id, role: user.role, companyName: user.companyName, department: user.department },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" } 
+      { expiresIn: "8h" } 
     );
     const photoUrl = user.photo ? `${req.protocol}://${req.get("host")}${user.photo}` : null;
     res.status(200).json({

@@ -375,34 +375,6 @@ const ApplyLeave = () => {
 
         <Grid item xs={12} md={4}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            {/* Recent Leaves Card */}
-            {/* <Card elevation={3}>
-              <CardContent>
-                <Typography variant="h6" mb={2}>
-                  Recent Leaves
-                </Typography>
-                {recentLeaves.length > 0 ? (
-                  recentLeaves.map((leave, index) => (
-                    <Box key={index} sx={{ mb: 1 }}>
-                      <Typography variant="body2">
-                        {leave.leave_type}:
-                      </Typography>
-                      <Typography>
-                        {dayjs(leave.start_date).format('MMM DD, YYYY')} -{' '}
-                        {dayjs(leave.end_date).format('MMM DD, YYYY')} ({leave.status})
-                      </Typography>
-                      <Divider sx={{ my: 1 }} />
-                    </Box>
-                  ))
-                ) : (
-                  <Typography variant="body2" color="text.secondary">
-                    No recent leaves.
-                  </Typography>
-                )}
-
-              </CardContent>
-            </Card> */}
-
             <Card elevation={3} sx={{ borderRadius: 3 }}>
               <CardContent>
                 <Typography variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>

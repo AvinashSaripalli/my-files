@@ -34,6 +34,7 @@
     "dayjs": "^1.11.13",
     "googleapis": "^148.0.0",
     "iconsax-react": "^0.0.8",
+    "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primereact": "^10.9.5",
     "quill": "^2.0.3",
@@ -44,6 +45,7 @@
     "react-quill": "^2.0.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.5",
+    "react-zoom-pan-pinch": "^3.7.0",
     "recharts": "^2.15.1"
   },
   "devDependencies": {

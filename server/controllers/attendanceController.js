@@ -76,7 +76,7 @@ exports.getAllAttendances = (req, res) => {
         return res.status(400).json({ error: 'Company name is required' });
     }
 
-    const sql = 'SELECT * FROM attendance WHERE companyName = ?';
+    const sql = 'SELECT * FROM attendance WHERE companyName = ? ORDER BY clockInDate DESC';
     
     db.query(sql, [companyName], (err, results) => {
         if (err) {
