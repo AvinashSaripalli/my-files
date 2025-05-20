@@ -279,7 +279,7 @@ exports.getUsers = (req, res) => {
   if (role === 'Manager') {
     query = 'SELECT * FROM users WHERE companyName = ? AND `exists` = 1'; 
   } else {
-    query = `SELECT * FROM users WHERE companyName = ? AND (role = 'User' OR role = 'Manager')`;
+    query = `SELECT * FROM users WHERE companyName = ? AND (role = 'Employee' OR role = 'Manager' OR role = 'Admin') AND \`exists\` = 1`;
   } 
 
   db.query(query, values, (err, results) => {
