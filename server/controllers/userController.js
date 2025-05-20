@@ -427,3 +427,33 @@ exports.toggleUserExists = (req, res) => {
     });
   });
 };
+
+exports.getNextEmployeeId = (req, res) => {
+  const { companyName } = req.query;
+
+  if (!companyName) {
+    return res.status(400).json({ error: 'Company name is required' });
+  }
+
+  const getLastEmployeeQuery = `
+    SELECT employeeId FROM users WHERE companyName = ? ORDER BY employeeId DESC LIMIT 1
+  `;
+  db.query(getLastEmployeeQuery, [companyName], (err, results) => {
+    if (err) {
+      console.error('MySQL error:', err);
+      return res.status(500).json({ error: 'Error fetching last employee ID' });
+    }
+
+    let newEmployeeId;
+    if (results.length > 0) {
+      const lastEmployeeId = results[0].employeeId;
+      const prefix = lastEmployeeId.slice(0, 2);
+      const number = parseInt(lastEmployeeId.slice(2)) + 1;
+      newEmployeeId = `${prefix}${number.toString().padStart(3, '0')}`;
+    } else {
+      newEmployeeId = companyName === 'Karncy' ? 'KC001' : 'KN001';
+    }
+
+    res.status(200).json({ employeeId: newEmployeeId });
+  });
+};

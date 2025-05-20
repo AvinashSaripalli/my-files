@@ -16,5 +16,6 @@ router.get('/users-by-genders', userController.getUsersByGenders);
 router.get('/users-by-departments', userController.getUsersByDepartments);
 router.put('/users/:id', upload.single('photo'), userController.updateUserDetails);
 router.patch('/users/:id', userController.toggleUserExists);
+router.get('/users/next-employee-id', userController.getNextEmployeeId);
 
 module.exports = router;

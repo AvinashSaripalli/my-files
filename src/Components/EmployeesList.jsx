@@ -69,33 +69,24 @@ const EmployeesList = ({ onClose }) => {
     setOpenDeleteUser(false);
   };
 
-  const handleClickOpenAddUser = () => {
-    const companyName = localStorage.getItem('companyName');
-    const companyPrefixes = {
-        "Karncy": "KC",
-        "Karnipuna": "KN"
-    };
-  
-    const prefix = companyPrefixes[companyName] || "EMP"; 
+  const handleClickOpenAddUser = async () => {
+  const companyName = localStorage.getItem('companyName');
+  const token = localStorage.getItem('token');
 
-    const employeeIds = users
-      .map((user) => user.employeeId)
-      // .filter((id) => id.startsWith(prefix));
-      .filter((id) => typeof id === "string" && id.startsWith(prefix)); 
-    
-    const allEmployeesIds = employeeIds
-      .map((id) => parseInt(id.replace(prefix, "").match(/\d+/)?.[0], 10))
-      .filter((num) => !isNaN(num));
-    
-    const maxEmployeeId = allEmployeesIds.length > 0 ? Math.max(...allEmployeesIds) : 0;
-    
-    const nextEmployeeId = `${prefix}${(maxEmployeeId + 1).toString().padStart(3, '0')}`;
-  
-    //console.log("Next Employee ID:", nextEmployeeId);
-    console.log("Employee ID generated");
+  try {
+    const response = await axios.get('http://localhost:5000/api/users/next-employee-id', {
+      params: { companyName },
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const nextEmployeeId = response.data.employeeId;
+    console.log('Next Employee ID from backend:', nextEmployeeId);
     setOpenAddUser(true);
     setSelectedUser({ employeeId: nextEmployeeId });
-  };
+  } catch (error) {
+    console.error('Error fetching next employee ID:', error);
+  }
+};
 
   const handleCloseAddUser = () => {
     setOpenAddUser(false);

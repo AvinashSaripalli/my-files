@@ -12,7 +12,8 @@ import {
   CardContent,
   Divider,
   Chip,
-  CircularProgress
+  CircularProgress,
+  Paper
 } from "@mui/material";
 import axios from "axios";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -33,11 +34,25 @@ const ApplyLeave = () => {
   const [loading, setLoading] = useState(true);
   const [recentLeaves, setRecentLeaves] = useState([]);
 
-
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
   const tomorrowDate = tomorrow.toISOString().split("T")[0];
+
+  const upcomingHolidays = [
+    { date: "2025-01-26", name: "Republic Day" },
+    { date: "2025-03-17", name: "Holi" },
+    { date: "2025-04-14", name: "Ambedkar Jayanti" },
+    { date: "2025-05-01", name: "Labour Day" },
+    { date: "2025-08-15", name: "Independence Day" },
+    { date: "2025-08-29", name: "Raksha Bandhan" },
+    { date: "2025-10-02", name: "Gandhi Jayanti" },
+    { date: "2025-10-22", name: "Dussehra" },
+    { date: "2025-11-01", name: "Diwali" },
+    { date: "2025-11-14", name: "Children's Day" },
+    { date: "2025-12-25", name: "Christmas" },
+    { date: "2026-01-01", name: "New Year's Day" },
+  ];
 
   useEffect(() => {
     const fetchLeaves = async () => {
@@ -56,7 +71,6 @@ const ApplyLeave = () => {
           params: { employeeId, companyName },
         });
         setRecentLeaves(recentResponse.data);
-
       } catch (error) {
         console.error("Error fetching leaves:", error);
       } finally {
@@ -147,29 +161,23 @@ const ApplyLeave = () => {
     setHalfDay(e.target.checked);
   };
 
-  const isLeaveDate = (date) => {
+  const isHoliday = (date) => {
     const currentDate = dayjs(date).format('YYYY-MM-DD');
-    return leaves.some((leave) => {
-      const start = dayjs(leave.start_date).format('YYYY-MM-DD');
-      const end = dayjs(leave.end_date).format('YYYY-MM-DD');
-      return (
-        leave.status === "Approved" &&
-        currentDate >= start &&
-        currentDate <= end
-      );
-    });
+    return upcomingHolidays.some((holiday) => holiday.date === currentDate);
   };
 
   const CustomDay = (props) => {
     const { day, outsideCurrentMonth, ...other } = props;
-
-    const isLeave = !outsideCurrentMonth && isLeaveDate(day);
+    const isHolidayDate = !outsideCurrentMonth && isHoliday(day);
+    const holidayName = isHolidayDate
+      ? upcomingHolidays.find((holiday) => holiday.date === dayjs(day).format('YYYY-MM-DD'))?.name
+      : '';
 
     return (
       <Box
         sx={{
           position: 'relative',
-          '& .leave-indicator': {
+          '& .holiday-indicator': {
             position: 'absolute',
             bottom: 4,
             left: '50%',
@@ -177,30 +185,20 @@ const ApplyLeave = () => {
             width: 6,
             height: 6,
             borderRadius: '50%',
-            backgroundColor: '#4caf50',
+            backgroundColor: '#ff9800', 
           },
         }}
       >
         <PickersDay {...other} day={day} outsideCurrentMonth={outsideCurrentMonth} />
-        {isLeave && <div className="leave-indicator" />}
+        {isHolidayDate && (
+          <Box
+            className="holiday-indicator"
+            title={holidayName}
+          />
+        )}
       </Box>
     );
   };
-
-  const upcomingHolidays = [
-  { date: "2025-01-26", name: "Republic Day" },
-  { date: "2025-03-17", name: "Holi" },
-  { date: "2025-04-14", name: "Ambedkar Jayanti" },
-  { date: "2025-05-01", name: "Labour Day" },
-  { date: "2025-08-15", name: "Independence Day" },
-  { date: "2025-08-29", name: "Raksha Bandhan" },
-  { date: "2025-10-02", name: "Gandhi Jayanti" },
-  { date: "2025-10-22", name: "Dussehra" },
-  { date: "2025-11-01", name: "Diwali" },
-  { date: "2025-11-14", name: "Children's Day" },
-  { date: "2025-12-25", name: "Christmas" },
-  { date: "2026-01-01", name: "New Year's Day" },
-];
 
   const getStatusChip = (status) => {
     switch (status) {
@@ -417,30 +415,7 @@ const ApplyLeave = () => {
               </CardContent>
             </Card>
 
-            {/* <Card elevation={3}>
-  `           <CardContent>
-                <Typography variant="h6" mb={2}>
-                  Upcoming Holidays
-                </Typography>
-                <Box sx={{ maxHeight: 122, overflowY: 'auto', pr: 1 }}>
-                  {upcomingHolidays.length > 0 ? (
-                    upcomingHolidays.map((holiday, index) => (
-                      <Box key={index} sx={{ mb: 1 }}>
-                        <Typography variant="body2">
-                          {holiday.name}: {dayjs(holiday.date).format('MMM DD, YYYY')}
-                        </Typography>
-                        <Divider sx={{ my: 1 }} />
-                      </Box>
-                    ))
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No upcoming holidays.
-                    </Typography>
-                  )}
-                </Box>
-              </CardContent>
-            </Card> */}
-                        <Card elevation={3} sx={{ borderRadius: 3 }}>
+            <Card elevation={3} sx={{ borderRadius: 3 }}>
               <CardContent>
                 <Typography variant="h6" mb={2} sx={{ fontWeight: 'bold' }}>
                   Upcoming Holidays
