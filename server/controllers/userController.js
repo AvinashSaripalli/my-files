@@ -130,65 +130,6 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-exports.registerUser = async (req, res) => {
-  const {firstName, lastName, email, phoneNumber, password, companyName,role, designation, department, jobLocation, dateOfBirth,bloodGroup, technicalSkills, gender, confirmPassword} = req.body;
-  
-  const photo = req.file ? `/uploads/${req.file.filename}` : null;
-
-  try {
-    const checkEmailQuery = "SELECT email FROM users WHERE email = ?";
-    db.query(checkEmailQuery, [email], async (err, results) => {
-      if (err) {
-        console.error("MySQL error:", err);
-        return res.status(500).json({ error: "Database error" });
-      }
-      if (results.length > 0) {
-        return res.status(400).json({ error: "Email already exists" });
-      }
-
-      const getLastEmployeeQuery = `
-        SELECT employeeId FROM users WHERE companyName = ?  ORDER BY employeeId DESC LIMIT 1
-      `;
-      db.query(getLastEmployeeQuery, [companyName], async (err, results) => {
-        if (err) {
-          console.error("MySQL error:", err);
-          return res.status(500).json({ error: "Error fetching last employee ID" });
-        }
-
-        let newEmployeeId;
-        if (results.length > 0) {
-          const lastEmployeeId = results[0].employeeId;
-          const prefix = lastEmployeeId.slice(0, 2);
-          const number = parseInt(lastEmployeeId.slice(2)) + 1;
-          newEmployeeId = `${prefix}${number.toString().padStart(3, '0')}`;
-        } else {
-          newEmployeeId = companyName === "Karncy" ? "KC001" : "KN001";
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const insertQuery = `INSERT INTO users 
-          (firstName, lastName, email, phoneNumber, password, companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, employeeId, gender, confirmPassword) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-        db.query(insertQuery, 
-          [firstName, lastName, email, phoneNumber, hashedPassword, companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, newEmployeeId, gender, confirmPassword], 
-          (err, result) => {
-            if (err) {
-              console.error("MySQL error:", err);
-              return res.status(500).json({ error: "Failed to add user" });
-            }
-            res.status(201).json({ message: "User added successfully", employeeId: newEmployeeId });
-          }
-        );
-      });
-    });
-  } catch (error) {
-    console.error("Error hashing password:", error);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
 exports.loginUser = (req, res) => {
   const { email, password } = req.body;
   const query = "SELECT * FROM users WHERE email = ? AND `exists` = 1";

@@ -14,6 +14,7 @@ import ManageLeaves from './ManageLeaves';
 import Reports from './Reports';
 import { ThreeDot } from 'react-loading-indicators';
 import CompanyStructure from './CompanyStructure';
+import Workgroups from './Workgroups';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('EmployeesList');
@@ -52,6 +53,7 @@ const Sidebar = () => {
       case 'Dashboard': return <Dashboard />;
       case 'Users List': return <EmployeesList />;
       case 'Company Structure': return <CompanyStructure />;
+      case 'Work Groups': return <Workgroups />;
       case 'Manage Leaves': return <ManageLeaves />;
       case 'Reports': return <Reports />;
       case 'Profile': return <UserProfile />;
@@ -118,6 +120,10 @@ const Sidebar = () => {
                 ?  <People size="25" variant="Bold"/>
                 :   <People size="25" variant="Outline"/> 
             },
+            { text: 'Work Groups', icon:  selectedComponent === 'Work Groups' 
+                ?  <People size="25" variant="Bold"/>
+                :   <People size="25" variant="Outline"/> 
+            },
             { text: 'Manage Leaves', icon: selectedComponent === 'Manage Leaves' 
                 ? <Notepad2 size="25" color="#14286d" variant="Bold"/>  
                 : <Notepad2 size="25" color="#14286d" variant="Outline"/> 
@@ -155,7 +161,7 @@ const Sidebar = () => {
               {sidebarOpen ?  <ArrowCircleLeft size="22" color="#14286d"/> : <ArrowCircleRight size="24" color="#14286d"/>}
             </IconButton>
           </ListItem> */}
-          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '220px' }}>
+          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '200px' }}>
             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
               {sidebarOpen ? <ArrowCircleLeft size="22" color="#14286d"/> : <ArrowCircleRight size="24" color="#14286d"/>}
             </IconButton>
