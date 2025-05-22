@@ -6,7 +6,7 @@ import {
 import {  ExitToApp as ExitToAppIcon, List as ListIcon,  Person as PersonIcon } from '@mui/icons-material';
 import Dashboard from './Dashboard';
 import { useNavigate } from 'react-router-dom';
-import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,Profile2User,ArchiveBook} from "iconsax-react";
+import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,Profile2User,ArchiveBook, Activity} from "iconsax-react";
 import { ThreeDot } from 'react-loading-indicators';
 import EmployeeManagement from './EmployeeManagement';
 import Attendance from './Attendance';
@@ -124,8 +124,8 @@ const HrSidebar = () => {
                 : <Notepad2 size="25" color="#14286d" variant="Outline"/> 
             },
             { text: 'Employees Reports', icon: selectedComponent === 'Employees Reports' 
-              ? <ChartSquare size="25" color="#14286d" variant="Bold"/>
-              : <ChartSquare size="25" color="#14286d" variant="Outline"/>
+              ? <Activity size="25" color="#14286d" variant="Bold"/>
+              : <Activity size="25" color="#14286d" variant="Outline"/>
             }
           ].map(({ text, icon }) => (
             <ListItem sx={{ justifyContent: 'center',height:'50px' }} disablePadding key={text}>

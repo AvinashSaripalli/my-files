@@ -9,7 +9,7 @@ import EmployeesList from './EmployeesList';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router-dom';
-import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical,Activity} from "iconsax-react";
+import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical,Activity, HierarchySquare2} from "iconsax-react";
 import ManageLeaves from './ManageLeaves';
 import Reports from './Reports';
 import { ThreeDot } from 'react-loading-indicators';
@@ -117,8 +117,8 @@ const Sidebar = () => {
                 :   <RowVertical size="25" variant="Outline"/> 
             },
             { text: 'Company Structure', icon:  selectedComponent === 'Company Structure' 
-                ?  <People size="25" variant="Bold"/>
-                :   <People size="25" variant="Outline"/> 
+                ?  <HierarchySquare2 size="25" variant="Bold"/>
+                :   <HierarchySquare2 size="25" variant="Outline"/> 
             },
             { text: 'Work Groups', icon:  selectedComponent === 'Work Groups' 
                 ?  <People size="25" variant="Bold"/>

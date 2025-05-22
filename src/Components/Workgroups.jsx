@@ -9,28 +9,30 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Chip,
 } from '@mui/material';
-
-const sampleWorkgroups = [
-  { id: 1, companyName: 'Tech Corp', createdOn: '2025-01-15', privacyType: 'public' },
-  { id: 2, companyName: 'Innovate Ltd', createdOn: '2025-02-20', privacyType: 'private' },
-  { id: 3, companyName: 'Global Solutions', createdOn: '2025-03-10', privacyType: 'public' },
-  { id: 4, companyName: 'NextGen Systems', createdOn: '2025-03-25', privacyType: 'private' },
-  { id: 5, companyName: 'Quantum Works', createdOn: '2025-04-05', privacyType: 'public' },
-  { id: 6, companyName: 'Cybernetic Labs', createdOn: '2025-04-18', privacyType: 'private' },
-  { id: 7, companyName: 'AI Pioneers', createdOn: '2025-05-02', privacyType: 'public' },
-  { id: 8, companyName: 'NeoTech Solutions', createdOn: '2025-05-10', privacyType: 'private' },
-  { id: 9, companyName: 'Digital Minds', createdOn: '2025-05-15', privacyType: 'public' },
-  { id: 10, companyName: 'CodeFusion Inc', createdOn: '2025-05-20', privacyType: 'private' }
-];
-
+import axios from 'axios';
 
 const Workgroups = () => {
   const [workgroups, setWorkgroups] = useState([]);
 
+    const fetechWorkGroups = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const companyName = localStorage.getItem("companyName"); 
+      
+      const response = await axios.get('http://localhost:5000/api/workgroups', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { companyName },
+      });
+      setWorkgroups(response.data);
+    } catch (error) {
+      console.error('Error fetching leave data:', error);
+    }
+  };
+
   useEffect(() => {
-    // Set example data
-    setWorkgroups(sampleWorkgroups);
+    fetechWorkGroups();
   }, []);
 
   return (
@@ -58,8 +60,11 @@ const Workgroups = () => {
               <TableCell align="left" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
                 Created On
               </TableCell>
-              <TableCell align="left" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
                 Privacy Type
+              </TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
+                Total Emplooyees
               </TableCell>
             </TableRow>
           </TableHead>
@@ -68,9 +73,16 @@ const Workgroups = () => {
               workgroups.map((workgroup) => (
                 <TableRow key={workgroup.id}>
                   <TableCell align="center">{workgroup.id}</TableCell>
-                  <TableCell align="left">{workgroup.companyName}</TableCell>
-                  <TableCell align="left">{workgroup.createdOn}</TableCell>
-                  <TableCell align="left">{workgroup.privacyType}</TableCell>
+                  <TableCell align="left">{workgroup.partnerCompanyName}</TableCell>
+                  <TableCell align="left">{new Date(workgroup.createdOn).toLocaleDateString('en-GB')}</TableCell>
+                  <TableCell align="center">
+                    
+                      <Chip
+                        label={workgroup.privacyType}
+                          style={{ width: "100px", minWidth: "unset"}}
+                      />                        
+                  </TableCell>
+                  <TableCell align="center">{workgroup.employees}</TableCell>
                 </TableRow>
               ))
             ) : (
