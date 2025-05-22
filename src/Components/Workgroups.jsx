@@ -58,7 +58,7 @@ const Workgroups = () => {
                 Company Name
               </TableCell>
               <TableCell align="left" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
-                Created On
+                Date Created
               </TableCell>
               <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
                 Privacy Type
