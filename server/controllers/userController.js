@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const db = require("../db");
 require("dotenv").config();
+const nodemailer = require("nodemailer");
 
 exports.registerUsers = async (req, res) => {
   const {
@@ -71,9 +72,95 @@ exports.registerUsers = async (req, res) => {
   }
 };
 
-exports.registerUser = async (req, res) => {
-  const {firstName, lastName, email, phoneNumber, password, companyName,role, designation, department, jobLocation, dateOfBirth,bloodGroup, technicalSkills, gender, confirmPassword} = req.body;
+// exports.registerUser = async (req, res) => {
+//   const {firstName, lastName, email, phoneNumber, password, companyName,role, designation, department, jobLocation, dateOfBirth,bloodGroup, technicalSkills, gender, confirmPassword} = req.body;
   
+//   const photo = req.file ? `/uploads/${req.file.filename}` : null;
+
+//   try {
+//     const checkEmailQuery = "SELECT email FROM users WHERE email = ?";
+//     db.query(checkEmailQuery, [email], async (err, results) => {
+//       if (err) {
+//         console.error("MySQL error:", err);
+//         return res.status(500).json({ error: "Database error" });
+//       }
+//       if (results.length > 0) {
+//         return res.status(400).json({ error: "Email already exists" });
+//       }
+
+//       const getLastEmployeeQuery = `
+//         SELECT employeeId FROM users WHERE companyName = ?  ORDER BY employeeId DESC LIMIT 1
+//       `;
+//       db.query(getLastEmployeeQuery, [companyName], async (err, results) => {
+//         if (err) {
+//           console.error("MySQL error:", err);
+//           return res.status(500).json({ error: "Error fetching last employee ID" });
+//         }
+
+//         let newEmployeeId;
+//         if (results.length > 0) {
+//           const lastEmployeeId = results[0].employeeId;
+//           const prefix = lastEmployeeId.slice(0, 2);
+//           const number = parseInt(lastEmployeeId.slice(2)) + 1;
+//           newEmployeeId = `${prefix}${number.toString().padStart(3, '0')}`;
+//         } else {
+//           newEmployeeId = companyName === "Karncy" ? "KC001" : "KN001";
+//         }
+
+//         const hashedPassword = await bcrypt.hash(password, 10);
+
+//         const insertQuery = `INSERT INTO users 
+//           (firstName, lastName, email, phoneNumber, password, companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, employeeId, gender, confirmPassword) 
+//           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+//         db.query(insertQuery, 
+//           [firstName, lastName, email, phoneNumber, hashedPassword, companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, newEmployeeId, gender, confirmPassword], 
+//           (err, result) => {
+//             if (err) {
+//               console.error("MySQL error:", err);
+//               return res.status(500).json({ error: "Failed to add user" });
+//             }
+//             res.status(201).json({ message: "User added successfully", employeeId: newEmployeeId });
+//           }
+//         );
+//       });
+//     });
+//   } catch (error) {
+//     console.error("Error hashing password:", error);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
+
+// Configure Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+exports.registerUser = async (req, res) => {
+  const {
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    password,
+    companyName,
+    role,
+    designation,
+    department,
+    jobLocation,
+    dateOfBirth,
+    bloodGroup,
+    technicalSkills,
+    gender,
+    confirmPassword,
+  } = req.body;
+
   const photo = req.file ? `/uploads/${req.file.filename}` : null;
 
   try {
@@ -88,7 +175,7 @@ exports.registerUser = async (req, res) => {
       }
 
       const getLastEmployeeQuery = `
-        SELECT employeeId FROM users WHERE companyName = ?  ORDER BY employeeId DESC LIMIT 1
+        SELECT employeeId FROM users WHERE companyName = ? ORDER BY employeeId DESC LIMIT 1
       `;
       db.query(getLastEmployeeQuery, [companyName], async (err, results) => {
         if (err) {
@@ -101,7 +188,7 @@ exports.registerUser = async (req, res) => {
           const lastEmployeeId = results[0].employeeId;
           const prefix = lastEmployeeId.slice(0, 2);
           const number = parseInt(lastEmployeeId.slice(2)) + 1;
-          newEmployeeId = `${prefix}${number.toString().padStart(3, '0')}`;
+          newEmployeeId = `${prefix}${number.toString().padStart(3, "0")}`;
         } else {
           newEmployeeId = companyName === "Karncy" ? "KC001" : "KN001";
         }
@@ -112,13 +199,59 @@ exports.registerUser = async (req, res) => {
           (firstName, lastName, email, phoneNumber, password, companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, employeeId, gender, confirmPassword) 
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-        db.query(insertQuery, 
-          [firstName, lastName, email, phoneNumber, hashedPassword, companyName, role, designation, department, jobLocation, dateOfBirth, bloodGroup, photo, technicalSkills, newEmployeeId, gender, confirmPassword], 
-          (err, result) => {
+        db.query(
+          insertQuery,
+          [
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            hashedPassword,
+            companyName,
+            role,
+            designation,
+            department,
+            jobLocation,
+            dateOfBirth,
+            bloodGroup,
+            photo,
+            technicalSkills,
+            newEmployeeId,
+            gender,
+            confirmPassword,
+          ],
+          async (err, result) => {
             if (err) {
               console.error("MySQL error:", err);
               return res.status(500).json({ error: "Failed to add user" });
             }
+
+            try {
+              const mailOptions = {
+                from: `"${companyName}" <${process.env.EMAIL_USER}>`,
+                to: email,
+                subject: "Your Login Credentials",
+                html: `
+                  <h3>Welcome to ${companyName}!</h3>
+                  <p>Your account has been successfully created. Below are your login credentials:</p>
+                  <ul>
+                    <li><strong>Email:</strong> ${email}</li>
+                    <li><strong>Password:</strong> ${password}</li>
+                    <li><strong>Employee ID:</strong> ${newEmployeeId}</li>
+                  </ul>
+                  <p>Please keep this information secure and do not share it with others.</p>
+                  <p>Best regards,<br>${companyName} Team</p>
+                `,
+              };
+
+              await transporter.sendMail(mailOptions);
+              console.log("Email sent successfully to:", email);
+            } catch (emailError) {
+              console.error("Error sending email:", emailError);
+              // Optionally, you can choose to proceed with registration even if email fails
+              return res.status(500).json({ error: "User registered but failed to send email", details: emailError.message });
+            }
+
             res.status(201).json({ message: "User added successfully", employeeId: newEmployeeId });
           }
         );

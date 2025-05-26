@@ -102,7 +102,7 @@ function Register() {
         const emailDomain = formValues.email.split("@")[1];
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formValues.email)) {
           newErrors.email = "Invalid email address";
-        } else if (formValues.companyName === "Karncy" && emailDomain !== "karncy.com") {
+        } else if (formValues.companyName === "Karncy" && emailDomain !== "gmail.com") {
           newErrors.email = "Email must end with @karncy.com";
         } else if (formValues.companyName === "Karnipuna" && emailDomain !== "karnipuna.com") {
           newErrors.email = "Email must end with @karnipuna.com";
