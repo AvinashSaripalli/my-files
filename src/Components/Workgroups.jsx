@@ -14,13 +14,32 @@ import {
   AvatarGroup,
   Menu,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  Button,
+  Grid,
+  TextField,
+  DialogActions,
 } from '@mui/material';
 import axios from 'axios';
+import CloseIcon from '@mui/icons-material/Close';
 
 const Workgroups = () => {
   const [workgroups, setWorkgroups] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [createGroups, setCreateGroups] =useState({
+      partnerCompanyName: '',
+      createdOn: '',
+      privacyType: '',
+      employeers: ''
+    });
+
 
   const fetchWorkGroups = async () => {
     try {
@@ -81,16 +100,58 @@ const Workgroups = () => {
     setSelectedEmployees(employees);
   };
 
+    const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCreateGroups((prev) => ({ ...prev, [name]: value }));
+  };
+
+    const handleSubmit = async () => {
+      const worksgroupsData = new WorkgroupsData();
+      worksgroupsData.append("partnerCompanyName", createGroups.partnerCompanyName);
+      worksgroupsData.append("createdOn", createGroups.createdOn);
+      worksgroupsData.append("privacyType", createGroups.privacyType);
+      worksgroupsData.append("employeers", createGroups.employeers);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/workgroups/",
+        worksgroupsData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+    } catch (error) {
+      setSnackbar({ 
+        open: true, 
+        message: error.response?.data?.error || "Registration failed!", 
+        severity: "error" 
+      });
+    }
+  };
+
+  
+
   const handleMenuClose = () => {
     setAnchorEl(null);
     setSelectedEmployees([]);
   };
 
   return (
-    <Box sx={{ pl: 6, pr: 6, mt: '30px' }}>
-      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
-        Workgroups
-      </Typography>
+    <Box sx={{ pl: 6, pr: 6, mt: '50px' }}>
+      <Grid container spacing={3} justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }} align="center" gutterBottom>
+          My Work Reports
+        </Typography>
+        <Grid>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              setOpenDialog(true);
+            }}
+          >
+            Add WorkGroups
+          </Button>
+        </Grid>
+      </Grid>
       <TableContainer
         component={Paper}
         sx={{
@@ -172,7 +233,12 @@ const Workgroups = () => {
         }}
       >
         {selectedEmployees.map((emp) => (
-          <MenuItem key={emp.employeeId} onClick={handleMenuClose}>
+          <MenuItem key={emp.employeeId} 
+            onClick={() => {
+              setSelectedEmployeeDetails(emp);
+              setDialogOpen(true);
+              handleMenuClose();
+            }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Avatar
                 src={emp.photo ? `http://localhost:5000${emp.photo}` : undefined}
@@ -188,6 +254,93 @@ const Workgroups = () => {
           </MenuItem>
         ))}
       </Menu>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Employee Details
+        <IconButton
+          color="inherit"
+          onClick={() => setDialogOpen(false)}
+          aria-label="close"
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 14,
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          {selectedEmployeeDetails && (
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Avatar
+                src={selectedEmployeeDetails.photo ? `http://localhost:5000${selectedEmployeeDetails.photo}` : undefined}
+                alt={`${selectedEmployeeDetails.firstName} ${selectedEmployeeDetails.lastName}`}
+                sx={{ width: 80, height: 80 }}
+              />
+              <Box>
+                <Typography variant="body1"><strong>ID:</strong> {selectedEmployeeDetails.employeeId}</Typography>
+                <Typography variant="body1"><strong>Name:</strong> {selectedEmployeeDetails.firstName} {selectedEmployeeDetails.lastName}</Typography>
+                <Typography variant="body1"><strong>Email:</strong> {selectedEmployeeDetails.email}</Typography>
+                <Typography variant="body1"><strong>Designation:</strong> {selectedEmployeeDetails.designation}</Typography>
+                <Typography variant="body1"><strong>Department:</strong> {selectedEmployeeDetails.department}</Typography>
+                <Typography variant="body1"><strong>Skills:</strong> </Typography>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 0.5 }}>
+                  {(selectedEmployeeDetails.technicalSkills || '')
+                    .split(',')
+                    .map((skill) => skill.trim())
+                    .filter(Boolean)
+                    .map((skill, idx) => (
+                      <Chip key={idx} label={skill} />
+                    ))}
+              </Box>
+              </Box>
+            </Box>
+          )}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Add WorkGroups</DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            label="Company Name"
+            name="partnerCompanyName"
+            margin='normal'
+            fullWidth
+            value={createGroups.partnerCompanyName}
+            onChange={handleChange}
+          />
+          <TextField
+            label="Task Name"
+            margin='normal'
+            name='taskName'
+            fullWidth
+            value={createGroups.tasks}
+            onChange={handleChange}
+          />
+          <TextField
+            label="Task Description"
+            margin='normal'
+            name='descriptionTask'
+            fullWidth
+            rows={4}
+            value={createGroups.descriptionTask}
+            onChange={handleChange}
+          />
+          <TextField
+            label="Add Employees"
+            name="employeers"
+            margin='normal'
+            fullWidth
+            value={createGroups.employeers}
+            onChange={handleChange}
+          />
+
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSubmit}>Submit</Button>
+        </DialogActions>
+      </Dialog>
+
     </Box>
   );
 };

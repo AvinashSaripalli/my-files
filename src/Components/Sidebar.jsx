@@ -9,12 +9,13 @@ import EmployeesList from './EmployeesList';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import UserProfile from './UserProfile';
 import { useNavigate } from 'react-router-dom';
-import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical,Activity, HierarchySquare2} from "iconsax-react";
+import { ArrowCircleLeft, ArrowCircleRight, ChartSquare, Element4, LogoutCurve,Notepad2,People,Profile,RowVertical,Activity, HierarchySquare2, TaskSquare} from "iconsax-react";
 import ManageLeaves from './ManageLeaves';
 import Reports from './Reports';
 import { ThreeDot } from 'react-loading-indicators';
 import CompanyStructure from './CompanyStructure';
 import Workgroups from './Workgroups';
+// import TasksProjects from './TasksProjects';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('EmployeesList');
@@ -51,13 +52,13 @@ const Sidebar = () => {
     }
     switch (selectedComponent) {
       case 'Dashboard': return <Dashboard />;
-      case 'Users List': return <EmployeesList />;
+      // case 'Tasks and Projects': return <TasksProjects />;
+      case 'Employees List': return <EmployeesList />;
       case 'Company Structure': return <CompanyStructure />;
       case 'Work Groups': return <Workgroups />;
       case 'Manage Leaves': return <ManageLeaves />;
       case 'Reports': return <Reports />;
-      case 'Profile': return <UserProfile />;
-      default: return <EmployeesList />;
+       default: return <UserProfile />;
     }
   };
 
@@ -112,6 +113,12 @@ const Sidebar = () => {
                 ?  <Element4 size="24" variant="Bold"/>
                 :  <Element4 size="24" variant="Outline"/>
             },
+            // { 
+            //   text: 'Tasks and Projects', 
+            //   icon: selectedComponent === 'Tasks and Projects' 
+            //     ? <TaskSquare size="25" color="#14286d" variant="Bold"/>  
+            //     : <TaskSquare size="25" color="#14286d" variant="Outline"/> 
+            // },
             { text: 'Employees List', icon:  selectedComponent === 'Employees List' 
                 ?  <RowVertical size="25" variant="Bold"/>
                 :   <RowVertical size="25" variant="Outline"/> 
@@ -132,12 +139,12 @@ const Sidebar = () => {
               ? <Activity size="25" color="#14286d" variant="Bold"/>
               : <Activity size="25" color="#14286d" variant="Outline"/>
             },
-            { 
-              text: 'Profile', 
-              icon: selectedComponent === 'Profile' 
-                ? <Profile size="25" color="#14286d" variant="Bold"/>  
-                : <Profile size="25" color="#14286d" variant="Outline"/> 
-            }
+            // { 
+            //   text: 'Profile', 
+            //   icon: selectedComponent === 'Profile' 
+            //     ? <Profile size="25" color="#14286d" variant="Bold"/>  
+            //     : <Profile size="25" color="#14286d" variant="Outline"/> 
+            // }
           ].map(({ text, icon }) => (
             <ListItem sx={{ justifyContent: 'center',height:'45px' }} disablePadding key={text}>
               <ListItemButton onClick={() => handleListItemOnClick(text)}>
@@ -150,18 +157,18 @@ const Sidebar = () => {
           ))}
 
 
-          <ListItem sx={{justifyContent:'center'}} disablePadding>
+          {/* <ListItem sx={{justifyContent:'center'}} disablePadding>
             <ListItemButton onClick={handleLogout}>
               <ListItemIcon sx={{ color: '#14286D' }}><LogoutCurve size="25" /></ListItemIcon>
               <Collapse in={sidebarOpen} orientation="horizontal"><ListItemText primary="Logout" /></Collapse>
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
           {/* <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '360px' }}>
             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
               {sidebarOpen ?  <ArrowCircleLeft size="22" color="#14286d"/> : <ArrowCircleRight size="24" color="#14286d"/>}
             </IconButton>
           </ListItem> */}
-          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '200px' }}>
+          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '250px' }}>
             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
               {sidebarOpen ? <ArrowCircleLeft size="22" color="#14286d"/> : <ArrowCircleRight size="24" color="#14286d"/>}
             </IconButton>

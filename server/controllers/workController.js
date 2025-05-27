@@ -15,31 +15,33 @@ exports.getWorkGroups = (req, res) => {
       w.privacyType,
       w.employeeId,
       w.partnerCompanyName,
-      e.firstName,
-      e.lastName,
-      e.email,
-      e.phoneNumber,
-      e.role,
-      e.designation,
-      e.department,
-      e.jobLocation,
-      e.technicalSkills,
-      e.gender,
-      e.photo
+      u.firstName,
+      u.lastName,
+      u.email,
+      u.phoneNumber,
+      u.role,
+      u.designation,
+      u.department,
+      u.jobLocation,
+      u.technicalSkills,
+      u.gender,
+      u.photo
     FROM 
       workgroups w
-      INNER JOIN users e ON w.employeeId = e.employeeId
+      INNER JOIN users u ON w.employeeId = u.employeeId
     WHERE 
-      w.companyName = ?
+      w.companyName = ? AND u.exists=1
     ORDER BY 
       w.createdOn DESC
   `;
 
   db.query(sql, [companyName], (err, results) => {
     if (err) {
-      console.error('Error fetching workgroups:', err);
+      consolu.error('Error fetching workgroups:', err);
       return res.status(500).json({ error: 'Database error' });
     }
     res.json(results);
   });
 };
+
+
