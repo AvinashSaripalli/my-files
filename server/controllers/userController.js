@@ -529,3 +529,30 @@ exports.getNextEmployeeId = (req, res) => {
     res.status(200).json({ employeeId: newEmployeeId });
   });
 };
+
+exports.getUsersList = (req, res) => {
+  const { companyName } = req.query;
+
+  if (!companyName) {
+    return res.status(400).json({ error: 'Company name is required' });
+  }
+
+  const query = 'SELECT * FROM users WHERE companyName = ? AND `exists` = 1';
+  const values = [companyName];
+
+  db.query(query, values, (err, results) => {
+    if (err) {
+      console.error('Error fetching users:', err);
+      return res.status(500).json({ error: 'Error fetching users' });
+    }
+
+    const users = results.map(user => ({
+      ...user,
+      photo: user.photo ? `${req.protocol}://${req.get('host')}${user.photo}` : null,
+      technicalSkills: user.technicalSkills ? user.technicalSkills.split(",") : null
+    }));
+
+    res.status(200).json(users);
+  });
+};
+

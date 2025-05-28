@@ -10,6 +10,7 @@ router.post('/login',userController.loginUser);
 router.patch('/users/update',  userController.updateUser);
 router.patch('/users/update-photo', upload.single('photo'), userController.updateUserPhoto);
 router.get('/users', verifyToken, userController.getUsers);
+router.get('/users/employees', userController.getUsersList);
 router.get('/users-by-month', userController.getUsersByMonth);
 router.get('/users-by-location',  userController.getUsersByLocation);
 router.get('/users-by-genders', userController.getUsersByGenders);
