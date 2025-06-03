@@ -1540,7 +1540,7 @@ const Workgroups = () => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Created By (Manager)"
+                label="Created By"
                 margin="normal"
                 fullWidth
                 placeholder="Select a manager..."
@@ -1586,7 +1586,7 @@ const Workgroups = () => {
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Add Employees (Non-Managers)"
+                label="Add Employees"
                 margin="normal"
                 fullWidth
                 placeholder="Add employees..."
