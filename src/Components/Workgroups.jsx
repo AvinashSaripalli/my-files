@@ -1326,14 +1326,17 @@ const Workgroups = () => {
           <TableHead sx={{ backgroundColor: '#f4f7fe', height: '80px' }}>
             <TableRow>
               <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
-                ID
+                Partner Company ID
               </TableCell>
+              {/* <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
+                ID
+              </TableCell> */}
               <TableCell align="left" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
                 Partner Company
               </TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
+              {/* <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
                 Partner Company ID
-              </TableCell>
+              </TableCell> */}
               <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>
                 Created By
               </TableCell>
@@ -1353,9 +1356,10 @@ const Workgroups = () => {
             {groupedData.length > 0 ? (
               groupedData.map((group) => (
                 <TableRow key={group.id}>
-                  <TableCell align="center">{group.id}</TableCell>
-                  <TableCell align="left">{group.partnerCompanyName}</TableCell>
                   <TableCell align="center">{group.partnerCompanyId}</TableCell>
+                  {/* <TableCell align="center">{group.id}</TableCell> */}
+                  <TableCell align="left">{group.partnerCompanyName}</TableCell>
+                  {/* <TableCell align="center">{group.partnerCompanyId}</TableCell> */}
                   <TableCell align="center">{group.createdByName}</TableCell>
                   <TableCell align="center">
                     {new Date(group.createdOn).toLocaleDateString('en-GB')}
