@@ -1059,6 +1059,7 @@
 // export default Workgroups;
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -1108,6 +1109,7 @@ const Workgroups = () => {
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedWorkgroupId, setSelectedWorkgroupId] = useState(null);
+  const navigate = useNavigate();
 
   // Fetch users (employees)
   const fetchUsers = async () => {
@@ -1358,7 +1360,19 @@ const Workgroups = () => {
                 <TableRow key={group.id}>
                   <TableCell align="center">{group.partnerCompanyId}</TableCell>
                   {/* <TableCell align="center">{group.id}</TableCell> */}
-                  <TableCell align="left">{group.partnerCompanyName}</TableCell>
+                  {/* <TableCell align="left">{group.partnerCompanyName}</TableCell> */}
+                  <TableCell align="left">
+                    <Link
+                      to={`/tasks/${group.partnerCompanyId}`}
+                      sx={{
+                        textDecoration: 'none',
+                        color: '#1976d2',
+                        '&:hover': { textDecoration: 'underline' },
+                      }}
+                    >
+                      {group.partnerCompanyName}
+                    </Link>
+                  </TableCell>
                   {/* <TableCell align="center">{group.partnerCompanyId}</TableCell> */}
                   <TableCell align="center">{group.createdByName}</TableCell>
                   <TableCell align="center">
@@ -1643,4 +1657,4 @@ const Workgroups = () => {
   );
 };
 
-export default Workgroups;
+export default Workgroups;                                                                                                  `1`
