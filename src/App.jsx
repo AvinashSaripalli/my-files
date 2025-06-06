@@ -64,6 +64,7 @@ function App() {
         <Route path="/hrsidebar" element={<HrSidebar />} />
       </Routes>
     </Router>
+    
   );
 }
 

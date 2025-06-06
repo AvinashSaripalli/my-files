@@ -201,6 +201,7 @@ import { ThreeDot } from 'react-loading-indicators';
 import CompanyStructure from './CompanyStructure';
 import Workgroups from './Workgroups';
 import Tasks from './Tasks';
+import TasksProjects from './TasksProjects';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('EmployeesList');
@@ -273,6 +274,8 @@ const Sidebar = () => {
     switch (selectedComponent) {
       case 'Dashboard':
         return <Dashboard />;
+      case 'Tasks and Projects':
+        return <TasksProjects />
       case 'Tasks':
         return <Tasks />; // Render Tasks component with partnerCompanyId
       case 'Employees List':
@@ -288,7 +291,7 @@ const Sidebar = () => {
       case 'Profile':
         return <UserProfile />;
       default:
-        return <EmployeesList />;
+        return <UserProfile />;
     }
   };
 
