@@ -95,7 +95,7 @@ const Reports = () => {
 
   return (
     <Box sx={{ pl: 6, pr: 6, mt: '40px' }}>
-      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>Work Reports</Typography>
+      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>Daily Work Reports</Typography>
       <TableContainer component={Paper} sx={{
         maxHeight: '462px',
         overflowY: 'auto',

@@ -99,7 +99,7 @@ const WorkReports = () => {
     <Box sx={{ pl: 10, pr: 10, mt: 8 }}>
       <Grid container spacing={3} justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold' }} align="center" gutterBottom>
-          My Work Reports
+          My Daily Reports
         </Typography>
         <Grid>
           <Button
