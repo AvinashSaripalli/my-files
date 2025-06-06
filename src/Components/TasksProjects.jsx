@@ -4,7 +4,7 @@ import {
   Paper, Typography, Dialog, DialogTitle, DialogContent, DialogActions, IconButton,
   FormControl, InputLabel, Select, MenuItem, Autocomplete, Chip, Avatar
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
 
 const TasksProjects = () => {
@@ -14,8 +14,8 @@ const TasksProjects = () => {
       name: 'Develop Login Page',
       description: 'Create a responsive login page with authentication.',
       dueDate: '2025-06-05',
-      assignedEmployee: 'john.doe@example.com',
-      createdBy: 'manager1@example.com',
+      assignedEmployee: ['emp1'],
+      createdBy: 'mgr1',
       status: 'In Progress',
     },
   ]);
@@ -26,7 +26,7 @@ const TasksProjects = () => {
     name: '',
     description: '',
     dueDate: '',
-    assignedEmployee: '',
+    assignedEmployee: [],
     createdBy: '',
   });
   const [filterStatus, setFilterStatus] = useState('All');
@@ -52,13 +52,16 @@ const TasksProjects = () => {
     }
   }, [openDialog]);
 
+  const managers = users.filter((user) => user.role === 'Manager');
+  const nonManagers = users.filter((user) => user.role !== 'Manager');
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewTask((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCreateOrUpdateTask = async () => {
-    if (newTask.name && newTask.description && newTask.dueDate && newTask.assignedEmployee && newTask.createdBy) {
+    if (newTask.name && newTask.description && newTask.dueDate && newTask.assignedEmployee.length > 0 && newTask.createdBy) {
       try {
         const token = localStorage.getItem('token');
         const taskData = {
@@ -67,16 +70,14 @@ const TasksProjects = () => {
           dueDate: newTask.dueDate,
           assignedEmployee: newTask.assignedEmployee,
           createdBy: newTask.createdBy,
-          status: 'Pending', // Default status for new tasks
+          status: 'Pending',
         };
 
         if (editTaskId) {
-          // Update existing task
           setTasks(tasks.map((task) =>
             task.id === editTaskId ? { ...taskData, id: editTaskId, status: task.status } : task
           ));
         } else {
-          // Create new task
           setTasks([...tasks, { id: tasks.length + 1, ...taskData }]);
         }
 
@@ -84,7 +85,7 @@ const TasksProjects = () => {
           name: '',
           description: '',
           dueDate: '',
-          assignedEmployee: '',
+          assignedEmployee: [],
           createdBy: '',
         });
         setEditTaskId(null);
@@ -128,7 +129,7 @@ const TasksProjects = () => {
       name: '',
       description: '',
       dueDate: '',
-      assignedEmployee: '',
+      assignedEmployee: [],
       createdBy: '',
     });
   };
@@ -141,13 +142,14 @@ const TasksProjects = () => {
     <Box sx={{ p: 5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Tasks and Projects</Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <FormControl sx={{ minWidth: 120 }}>
-            <InputLabel>Filter by Status</InputLabel>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <FormControl sx={{ minWidth: 140, width: 100 }}>
+            <InputLabel>Filter Status</InputLabel>
             <Select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              label="Filter by Status"
+              label="Filter Status"
+              size="small"
             >
               <MenuItem value="All">All</MenuItem>
               <MenuItem value="Pending">Pending</MenuItem>
@@ -155,7 +157,11 @@ const TasksProjects = () => {
               <MenuItem value="Completed">Completed</MenuItem>
             </Select>
           </FormControl>
-          <Button variant="contained" size='small' startIcon={<AddIcon />} onClick={handleOpenDialog}>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleOpenDialog}
+          >
             Assign Task
           </Button>
         </Box>
@@ -196,74 +202,14 @@ const TasksProjects = () => {
             required
           />
           <Autocomplete
-            id="assign-employee"
-            options={users}
-            getOptionLabel={(option) => `${option.firstName} ${option.lastName} (${option.email})`}
-            value={users.find((user) => user.email === newTask.assignedEmployee) || null}
-            onChange={(event, newValue) => {
-              setNewTask((prev) => ({
-                ...prev,
-                assignedEmployee: newValue ? newValue.email : '',
-              }));
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Assign Employee"
-                margin="normal"
-                fullWidth
-                required
-              />
-            )}
-            renderOption={(props, option) => (
-              <li {...props} key={option.email}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Avatar
-                    src={option.photo || undefined}
-                    alt={`${option.firstName} ${option.lastName}`}
-                    sx={{ width: 40, height: 40 }}
-                  />
-                  <Box>
-
-                    <Typography variant="body2">
-                      <strong>Name:</strong> {option.firstName} {option.lastName}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Email:</strong> {option.email}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Department:</strong> {option.department}
-                    </Typography>
-                  </Box>
-                </Box>
-              </li>
-            )}
-            renderTags={(value, getTagProps) =>
-              value ? (
-                <Chip
-                  avatar={
-                    <Avatar
-                      src={value.photo || undefined}
-                      alt={`${value.firstName} ${value.lastName}`}
-                    />
-                  }
-                  label={`${value.firstName} ${value.lastName}`}
-                  {...getTagProps({ index: 0 })}
-                  sx={{ m: 0.5 }}
-                />
-              ) : null
-            }
-            sx={{ width: '100%', mt: 2 }}
-          />
-          <Autocomplete
             id="created-by"
-            options={users.filter((user) => user.role === 'Manager')}
-            getOptionLabel={(option) => `${option.firstName} ${option.lastName} (${option.email})`}
-            value={users.find((user) => user.email === newTask.createdBy) || null}
+            options={managers}
+            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+            value={managers.find((user) => user.employeeId === newTask.createdBy) || null}
             onChange={(event, newValue) => {
               setNewTask((prev) => ({
                 ...prev,
-                createdBy: newValue ? newValue.email : '',
+                createdBy: newValue ? newValue.employeeId : '',
               }));
             }}
             renderInput={(params) => (
@@ -273,10 +219,11 @@ const TasksProjects = () => {
                 margin="normal"
                 fullWidth
                 required
+                placeholder="Select a manager..."
               />
             )}
             renderOption={(props, option) => (
-              <li {...props} key={option.email}>
+              <li {...props} key={option.employeeId}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Avatar
                     src={option.photo || undefined}
@@ -285,10 +232,10 @@ const TasksProjects = () => {
                   />
                   <Box>
                     <Typography variant="body2">
-                      <strong>Name:</strong> {option.firstName} {option.lastName}
+                      <strong>ID:</strong> {option.employeeId}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Email:</strong> {option.email}
+                      <strong>Name:</strong> {option.firstName} {option.lastName}
                     </Typography>
                     <Typography variant="body2">
                       <strong>Department:</strong> {option.department}
@@ -300,17 +247,80 @@ const TasksProjects = () => {
             renderTags={(value, getTagProps) =>
               value ? (
                 <Chip
+                  key={value.employeeId}
                   avatar={
                     <Avatar
                       src={value.photo || undefined}
                       alt={`${value.firstName} ${value.lastName}`}
                     />
                   }
-                  label={`${value.firstName} ${value.lastName}`}
+                  label={`${value.firstName} ${value.lastName} `}
                   {...getTagProps({ index: 0 })}
                   sx={{ m: 0.5 }}
                 />
               ) : null
+            }
+            sx={{ width: '100%', mt: 2 }}
+          />
+          <Autocomplete
+            multiple
+            id="assign-employee"
+            options={nonManagers}
+            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+            value={nonManagers.filter((user) => newTask.assignedEmployee.includes(user.employeeId))}
+            onChange={(event, newValue) => {
+              setNewTask((prev) => ({
+                ...prev,
+                assignedEmployee: newValue.map((user) => user.employeeId),
+              }));
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Assign Employees"
+                margin="normal"
+                fullWidth
+                required
+                placeholder="Select employees..."
+              />
+            )}
+            renderOption={(props, option) => (
+              <li {...props} key={option.employeeId}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar
+                    src={option.photo || undefined}
+                    alt={`${option.firstName} ${option.lastName}`}
+                    sx={{ width: 40, height: 40 }}
+                  />
+                  <Box>
+                    <Typography variant="body2">
+                      <strong>ID:</strong> {option.employeeId}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Name:</strong> {option.firstName} {option.lastName}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Department:</strong> {option.department}
+                    </Typography>
+                  </Box>
+                </Box>
+              </li>
+            )}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip
+                  key={option.employeeId}
+                  avatar={
+                    <Avatar
+                      src={option.photo || undefined}
+                      alt={`${option.firstName} ${option.lastName}`}
+                    />
+                  }
+                  label={`${option.firstName} ${option.lastName} `}
+                  {...getTagProps({ index })}
+                  sx={{ m: 0.5 }}
+                />
+              ))
             }
             sx={{ width: '100%', mt: 2 }}
           />
@@ -330,7 +340,7 @@ const TasksProjects = () => {
               <TableCell><strong>Task Name</strong></TableCell>
               <TableCell><strong>Description</strong></TableCell>
               <TableCell><strong>Due Date</strong></TableCell>
-              <TableCell><strong>Assigned Employee</strong></TableCell>
+              <TableCell><strong>Assigned Employees</strong></TableCell>
               <TableCell><strong>Created By</strong></TableCell>
               <TableCell><strong>Status</strong></TableCell>
               <TableCell><strong>Actions</strong></TableCell>
@@ -338,21 +348,19 @@ const TasksProjects = () => {
           </TableHead>
           <TableBody>
             {filteredTasks.map((task) => {
-              const assignedUser = users.find((user) => user.email === task.assignedEmployee) || {};
-              const createdByUser = users.find((user) => user.email === task.createdBy) || {};
+              const assignedUsers = task.assignedEmployee.map((employeeId) =>
+                users.find((user) => user.employeeId === employeeId) || { employeeId }
+              );
+              const createdByUser = users.find((user) => user.employeeId === task.createdBy) || {};
               return (
                 <TableRow key={task.id}>
                   <TableCell>{task.name}</TableCell>
                   <TableCell>{task.description}</TableCell>
                   <TableCell>{task.dueDate}</TableCell>
-                  <TableCell>
-                    {assignedUser.firstName
-                      ? `${assignedUser.firstName} ${assignedUser.lastName}`
-                      : task.assignedEmployee}
-                  </TableCell>
+                  <TableCell>{task.assignedEmployee}</TableCell>
                   <TableCell>
                     {createdByUser.firstName
-                      ? `${createdByUser.firstName} ${createdByUser.lastName}`
+                      ? `${createdByUser.firstName} ${createdByUser.lastName} (${createdByUser.employeeId})`
                       : task.createdBy}
                   </TableCell>
                   <TableCell>
@@ -371,7 +379,7 @@ const TasksProjects = () => {
                       Edit
                     </Button>
                     <IconButton onClick={() => handleDeleteTask(task.id)}>
-                      <DeleteIcon  sx={{ color: 'red' }}/>
+                      <DeleteIcon sx={{ color: 'red' }} />
                     </IconButton>
                   </TableCell>
                 </TableRow>

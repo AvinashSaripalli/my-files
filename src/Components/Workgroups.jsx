@@ -1128,6 +1128,7 @@ const Workgroups = () => {
                 </Box>
               </li>
             )}
+            
             sx={{ width: '100%', mt: 2 }}
           />
           <Autocomplete
@@ -1184,7 +1185,7 @@ const Workgroups = () => {
                       alt={`${user.firstName} ${user.lastName}`}
                     />
                   }
-                  label={user.employeeId}
+                  label={`${user.firstName} ${user.lastName}`}
                   {...getTagProps({ index })}
                   sx={{ m: 0.5 }}
                 />
