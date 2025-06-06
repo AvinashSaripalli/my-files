@@ -49,7 +49,6 @@ const Tasks = () => {
     }
   };
 
-  // Fetch employees and managers for assignment
   const fetchEmployees = async () => {
     try {
       const token = localStorage.getItem('token');
