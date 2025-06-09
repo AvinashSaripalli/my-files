@@ -25,8 +25,8 @@ app.use('/api/attendance', attendanceRoutes);
 const workRoutes = require('./routes/workRoutes');
 app.use('/api/workgroups', workRoutes);
 
-const tasksRoutes = require('./routes/tasksRoutes');
-app.use('/api/tasks', tasksRoutes);
+const taskRoutes = require('./routes/taskRoutes');
+app.use('/api', taskRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

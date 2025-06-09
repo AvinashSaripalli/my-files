@@ -8,34 +8,31 @@ import { Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
 
 const TasksProjects = () => {
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      name: 'Develop Login Page',
-      description: 'Create a responsive login page with authentication.',
-      dueDate: '2025-06-05',
-      assignedEmployee: ['emp1'],
-      createdBy: 'mgr1',
-      status: 'In Progress',
-    },
-  ]);
+  const [tasks, setTasks] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [editTaskId, setEditTaskId] = useState(null);
+  const [editId, setEditId] = useState(null);
+  const [dialogType, setDialogType] = useState('task'); // 'task' or 'project'
   const [users, setUsers] = useState([]);
-  const [newTask, setNewTask] = useState({
+  const [newItem, setNewItem] = useState({
     name: '',
     description: '',
     dueDate: '',
-    assignedEmployee: [],
+    startDate: '',
+    endDate: '',
+    assignedEmployees: [],
     createdBy: '',
+    status: 'Pending'
   });
   const [filterStatus, setFilterStatus] = useState('All');
+  const [filterEmployeeId, setFilterEmployeeId] = useState('');
 
+  const companyName = localStorage.getItem('companyName');
+  const token = localStorage.getItem('token');
+
+  // Fetch users
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const companyName = localStorage.getItem('companyName');
-
       const response = await axios.get('http://localhost:5000/api/users/employees', {
         headers: { Authorization: `Bearer ${token}` },
         params: { companyName },
@@ -46,350 +43,508 @@ const TasksProjects = () => {
     }
   };
 
+  // Fetch tasks
+  const fetchTasks = async (employeeId = '') => {
+    try {
+      const url = employeeId
+        ? `http://localhost:5000/api/tasks/employee/${employeeId}`
+        : 'http://localhost:5000/api/tasks';
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { companyName },
+      });
+      setTasks(response.data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  };
+
+  // Fetch projects
+  const fetchProjects = async (employeeId = '') => {
+    try {
+      const url = employeeId
+        ? `http://localhost:5000/api/projects/employee/${employeeId}`
+        : 'http://localhost:5000/api/projects';
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { companyName },
+      });
+      setProjects(response.data);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    }
+  };
+
   useEffect(() => {
+    fetchTasks(filterEmployeeId);
+    fetchProjects(filterEmployeeId);
     if (openDialog) {
       fetchUsers();
     }
-  }, [openDialog]);
+  }, [openDialog, filterEmployeeId]);
 
   const managers = users.filter((user) => user.role === 'Manager');
   const nonManagers = users.filter((user) => user.role !== 'Manager');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewTask((prev) => ({ ...prev, [name]: value }));
+    setNewItem((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCreateOrUpdateTask = async () => {
-    if (newTask.name && newTask.description && newTask.dueDate && newTask.assignedEmployee.length > 0 && newTask.createdBy) {
+  const handleCreateOrUpdate = async () => {
+    if (
+      newItem.name &&
+      newItem.description &&
+      (dialogType === 'task' ? newItem.dueDate : newItem.startDate) &&
+      newItem.assignedEmployees.length > 0 &&
+      newItem.createdBy
+    ) {
       try {
-        const token = localStorage.getItem('token');
-        const taskData = {
-          name: newTask.name,
-          description: newTask.description,
-          dueDate: newTask.dueDate,
-          assignedEmployee: newTask.assignedEmployee,
-          createdBy: newTask.createdBy,
-          status: 'Pending',
+        const itemData = {
+          companyName,
+          name: newItem.name,
+          description: newItem.description,
+          createdBy: newItem.createdBy,
+          employeeIds: newItem.assignedEmployees,
+          status: newItem.status,
+          ...(dialogType === 'task' ? { dueDate: newItem.dueDate } : { startDate: newItem.startDate, endDate: newItem.endDate }),
         };
 
-        if (editTaskId) {
-          setTasks(tasks.map((task) =>
-            task.id === editTaskId ? { ...taskData, id: editTaskId, status: task.status } : task
-          ));
+        if (editId) {
+          await axios.put(`http://localhost:5000/api/${dialogType}s/${editId}`, itemData, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
         } else {
-          setTasks([...tasks, { id: tasks.length + 1, ...taskData }]);
+          await axios.post(`http://localhost:5000/api/${dialogType}s`, itemData, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
         }
 
-        setNewTask({
+        setNewItem({
           name: '',
           description: '',
           dueDate: '',
-          assignedEmployee: [],
+          startDate: '',
+          endDate: '',
+          assignedEmployees: [],
           createdBy: '',
+          status: 'Pending',
         });
-        setEditTaskId(null);
+        setEditId(null);
         setOpenDialog(false);
+        dialogType === 'task' ? fetchTasks(filterEmployeeId) : fetchProjects(filterEmployeeId);
       } catch (error) {
-        console.error(`Error ${editTaskId ? 'updating' : 'creating'} task:`, error);
-        alert('An error occurred while saving the task.');
+        console.error(`Error ${editId ? 'updating' : 'creating'} ${dialogType}:`, error);
+        alert('An error occurred while saving.');
       }
     } else {
       alert('Please fill in all required fields.');
     }
   };
 
-  const handleEditTask = (task) => {
-    setEditTaskId(task.id);
-    setNewTask({
-      name: task.name,
-      description: task.description,
-      dueDate: task.dueDate,
-      assignedEmployee: task.assignedEmployee,
-      createdBy: task.createdBy,
+  const handleEdit = (item, type) => {
+    setEditId(item.id);
+    setDialogType(type);
+    setNewItem({
+      name: item.name,
+      description: item.description,
+      dueDate: item.dueDate || '',
+      startDate: item.startDate || '',
+      endDate: item.endDate || '',
+      assignedEmployees: item.assignedEmployees || [], 
+      createdBy: item.createdBy,
+      status: item.status,
     });
     setOpenDialog(true);
   };
 
-  const handleDeleteTask = (taskId) => {
-    setTasks(tasks.filter((task) => task.id !== taskId));
-  };
+    const handleDelete = async (id, type) => {
+      try {
+        await axios.delete(`http://localhost:5000/api/${type}s/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        type === 'task' ? fetchTasks(filterEmployeeId) : fetchProjects(filterEmployeeId);
+      } catch (error) {
+        console.error(`Error deleting ${type}:`, error);
+        alert('An error occurred while deleting.');
+      }
+    };
 
-  const handleStatusChange = (taskId, newStatus) => {
-    setTasks(tasks.map((task) =>
-      task.id === taskId ? { ...task, status: newStatus } : task
-    ));
-  };
 
-  const handleOpenDialog = () => setOpenDialog(true);
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setEditTaskId(null);
-    setNewTask({
-      name: '',
-      description: '',
-      dueDate: '',
-      assignedEmployee: [],
-      createdBy: '',
-    });
-  };
+    const handleOpenDialog = (type) => {
+      setDialogType(type);
+      setOpenDialog(true);
+    };
 
-  const filteredTasks = filterStatus === 'All'
-    ? tasks
-    : tasks.filter((task) => task.status === filterStatus);
+    const handleCloseDialog = () => {
+      setOpenDialog(false);
+      setEditId(null);
+      setNewItem({
+        name: '',
+        description: '',
+        dueDate: '',
+        startDate: '',
+        endDate: '',
+        assignedEmployees: [],
+        createdBy: '',
+        status: 'Pending',
+      });
+    };
 
-  return (
-    <Box sx={{ p: 5 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Tasks and Projects</Typography>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-          <FormControl sx={{ minWidth: 140, width: 100 }}>
-            <InputLabel>Filter Status</InputLabel>
-            <Select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              label="Filter Status"
+    const filteredItems = (items) => filterStatus === 'All' ? items : items.filter((item) => item.status === filterStatus);
+
+    return (
+      <Box sx={{ p: 5 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Tasks and Projects</Typography>
+          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+            <Autocomplete
+              options={nonManagers}
+              getOptionLabel={(option) => `${option.firstName} ${option.lastName} `}
+              value={nonManagers.find((user) => user.employeeId === filterEmployeeId) || null}
+              onChange={(event, newValue) => setFilterEmployeeId(newValue ? newValue.employeeId : '')}
+              renderInput={(params) => <TextField {...params} label="Filter by Employee" />}
+              sx={{ minWidth: 140 }}
+            />
+            <FormControl sx={{ minWidth: 140 }}>
+              <InputLabel>Filter Status</InputLabel>
+              <Select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                label="Filter Status"
+                size="small"
+              >
+                <MenuItem value="All">All</MenuItem>
+                <MenuItem value="Pending">Pending</MenuItem>
+                <MenuItem value="In Progress">In Progress</MenuItem>
+                <MenuItem value="Completed">Completed</MenuItem>
+              </Select>
+            </FormControl>
+            <Button
+              variant="contained"
               size="small"
+              onClick={() => handleOpenDialog('task')}
             >
-              <MenuItem value="All">All</MenuItem>
-              <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="In Progress">In Progress</MenuItem>
-              <MenuItem value="Completed">Completed</MenuItem>
-            </Select>
-          </FormControl>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={handleOpenDialog}
-          >
-            Assign Task
-          </Button>
+              Assign Task
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenDialog('project')}
+            >
+              Create Project
+            </Button>
+          </Box>
         </Box>
-      </Box>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
-        <DialogTitle>{editTaskId ? 'Edit Task' : 'Create New Task'}</DialogTitle>
-        <DialogContent dividers>
-          <TextField
-            fullWidth
-            label="Task Name"
-            name="name"
-            value={newTask.name}
-            onChange={handleInputChange}
-            margin="normal"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Description"
-            name="description"
-            value={newTask.description}
-            onChange={handleInputChange}
-            margin="normal"
-            multiline
-            rows={4}
-            required
-          />
-          <TextField
-            fullWidth
-            label="Due Date"
-            name="dueDate"
-            type="date"
-            value={newTask.dueDate}
-            onChange={handleInputChange}
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-            required
-          />
-          <Autocomplete
-            id="created-by"
-            options={managers}
-            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-            value={managers.find((user) => user.employeeId === newTask.createdBy) || null}
-            onChange={(event, newValue) => {
-              setNewTask((prev) => ({
-                ...prev,
-                createdBy: newValue ? newValue.employeeId : '',
-              }));
-            }}
-            renderInput={(params) => (
+        <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Tasks</Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>Task Name</strong></TableCell>
+                <TableCell><strong>Description</strong></TableCell>
+                <TableCell><strong>Due Date</strong></TableCell>
+                <TableCell><strong>Assigned Employees</strong></TableCell>
+                <TableCell><strong>Created By</strong></TableCell>
+                <TableCell><strong>Status</strong></TableCell>
+                <TableCell><strong>Actions</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredItems(tasks).map((task) => {
+                const assignedUsers = task.assignedEmployees.map((employeeId) =>
+                  users.find((user) => user.employeeId === employeeId) || { employeeId }
+                );
+                const createdByUser = users.find((user) => user.employeeId === task.createdBy) || {};
+                return (
+                  <TableRow key={task.id}>
+                    <TableCell>{task.name}</TableCell>
+                    <TableCell>{task.description}</TableCell>
+                    <TableCell>{new Date(task.dueDate).toLocaleDateString('en-GB')}</TableCell>
+                    <TableCell>
+                      {assignedUsers.map((user) => (
+                        <Chip
+                          key={user.employeeId}
+                          label={`${user.firstName || ''} ${user.lastName || ''} (${user.employeeId})`}
+                          sx={{ m: 0.5 }}
+                        />
+                      ))}
+                    </TableCell>
+                    <TableCell>
+                      {createdByUser.firstName
+                        ? `${createdByUser.firstName} ${createdByUser.lastName} (${createdByUser.employeeId})`
+                        : task.createdBy}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={task.status}
+                        color={
+                          task.status === 'Pending' ? 'default' :
+                          task.status === 'In Progress' ? 'primary' :
+                          'success'
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="outlined" size="small" onClick={() => handleEdit(task, 'task')}>
+                        Edit
+                      </Button>
+                      <IconButton onClick={() => handleDelete(task.id, 'task')}>
+                        <DeleteIcon sx={{ color: 'red' }} />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Projects</Typography>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>Project Name</strong></TableCell>
+                <TableCell><strong>Description</strong></TableCell>
+                <TableCell><strong>Start Date</strong></TableCell>
+                <TableCell><strong>End Date</strong></TableCell>
+                <TableCell><strong>Assigned Employees</strong></TableCell>
+                <TableCell><strong>Created By</strong></TableCell>
+                <TableCell><strong>Status</strong></TableCell>
+                <TableCell><strong>Actions</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredItems(projects).map((project) => {
+                const assignedUsers = project.assignedEmployees.map((employeeId) =>
+                  users.find((user) => user.employeeId === employeeId) || { employeeId }
+                );
+                const createdByUser = users.find((user) => user.employeeId === project.createdBy) || {};
+                return (
+                  <TableRow key={project.id}>
+                    <TableCell>{project.name}</TableCell>
+                    <TableCell>{project.description}</TableCell>
+                    <TableCell>{project.startDate}</TableCell>
+                    <TableCell>{project.endDate || 'N/A'}</TableCell>
+                    <TableCell>
+                      {assignedUsers.map((user) => (
+                        <Chip
+                          key={user.employeeId}
+                          label={`${user.firstName || ''} ${user.lastName || ''} (${user.employeeId})`}
+                          sx={{ m: 0.5 }}
+                        />
+                      ))}
+                    </TableCell>
+                    <TableCell>
+                      {createdByUser.firstName
+                        ? `${createdByUser.firstName} ${createdByUser.lastName} (${createdByUser.employeeId})`
+                        : project.createdBy}
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={project.status}
+                        onChange={(e) => handleStatusChange(project.id, e.target.value, 'project')}
+                        size="small"
+                      >
+                        <MenuItem value="Pending">Pending</MenuItem>
+                        <MenuItem value="In Progress">In Progress</MenuItem>
+                        <MenuItem value="Completed">Completed</MenuItem>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="outlined" size="small" onClick={() => handleEdit(project, 'project')}>
+                        Edit
+                      </Button>
+                      <IconButton onClick={() => handleDelete(project.id, 'project')}>
+                        <DeleteIcon sx={{ color: 'red' }} />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+          <DialogTitle>{editId ? `Edit ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}` : `Create New ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}`}</DialogTitle>
+          <DialogContent dividers>
+            <TextField
+              fullWidth
+              label="Name"
+              name="name"
+              value={newItem.name}
+              onChange={handleInputChange}
+              margin="normal"
+              required
+            />
+            <TextField
+              fullWidth
+              label="Description"
+              name="description"
+              value={newItem.description}
+              onChange={handleInputChange}
+              margin="normal"
+              multiline
+              rows={4}
+              required
+            />
+            {dialogType === 'task' ? (
               <TextField
-                {...params}
-                label="Created By"
-                margin="normal"
                 fullWidth
+                label="Due Date"
+                name="dueDate"
+                type="date"
+                value={newItem.dueDate}
+                onChange={handleInputChange}
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
                 required
-                placeholder="Select a manager..."
               />
-            )}
-            renderOption={(props, option) => (
-              <li {...props} key={option.employeeId}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Avatar
-                    src={option.photo || undefined}
-                    alt={`${option.firstName} ${option.lastName}`}
-                    sx={{ width: 40, height: 40 }}
-                  />
-                  <Box>
-                    <Typography variant="body2">
-                      <strong>ID:</strong> {option.employeeId}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Name:</strong> {option.firstName} {option.lastName}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Department:</strong> {option.department}
-                    </Typography>
-                  </Box>
-                </Box>
-              </li>
-            )}
-            renderTags={(value, getTagProps) =>
-              value ? (
-                <Chip
-                  key={value.employeeId}
-                  avatar={
-                    <Avatar
-                      src={value.photo || undefined}
-                      alt={`${value.firstName} ${value.lastName}`}
-                    />
-                  }
-                  label={`${value.firstName} ${value.lastName} `}
-                  {...getTagProps({ index: 0 })}
-                  sx={{ m: 0.5 }}
+            ) : (
+              <>
+                <TextField
+                  fullWidth
+                  label="Start Date"
+                  name="startDate"
+                  type="date"
+                  value={newItem.startDate}
+                  onChange={handleInputChange}
+                  margin="normal"
+                  InputLabelProps={{ shrink: true }}
+                  required
                 />
-              ) : null
-            }
-            sx={{ width: '100%', mt: 2 }}
-          />
-          <Autocomplete
-            multiple
-            id="assign-employee"
-            options={nonManagers}
-            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-            value={nonManagers.filter((user) => newTask.assignedEmployee.includes(user.employeeId))}
-            onChange={(event, newValue) => {
-              setNewTask((prev) => ({
-                ...prev,
-                assignedEmployee: newValue.map((user) => user.employeeId),
-              }));
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Assign Employees"
-                margin="normal"
-                fullWidth
-                required
-                placeholder="Select employees..."
-              />
+                <TextField
+                  fullWidth
+                  label="End Date"
+                  name="endDate"
+                  type="date"
+                  value={newItem.endDate}
+                  onChange={handleInputChange}
+                  margin="normal"
+                  InputLabelProps={{ shrink: true }}
+                />
+              </>
             )}
-            renderOption={(props, option) => (
-              <li {...props} key={option.employeeId}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <Avatar
-                    src={option.photo || undefined}
-                    alt={`${option.firstName} ${option.lastName}`}
-                    sx={{ width: 40, height: 40 }}
-                  />
-                  <Box>
-                    <Typography variant="body2">
-                      <strong>ID:</strong> {option.employeeId}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Name:</strong> {option.firstName} {option.lastName}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Department:</strong> {option.department}
-                    </Typography>
-                  </Box>
-                </Box>
-              </li>
-            )}
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  key={option.employeeId}
-                  avatar={
+            <Autocomplete
+              id="created-by"
+              options={managers}
+              getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+              value={managers.find((user) => user.employeeId === newItem.createdBy) || null}
+              onChange={(event, newValue) => {
+                setNewItem((prev) => ({
+                  ...prev,
+                  createdBy: newValue ? newValue.employeeId : '',
+                }));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Created By"
+                  margin="normal"
+                  fullWidth
+                  required
+                  placeholder="Select a manager..."
+                />
+              )}
+              renderOption={(props, option) => (
+                <li {...props} key={option.employeeId}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Avatar
                       src={option.photo || undefined}
                       alt={`${option.firstName} ${option.lastName}`}
+                      sx={{ width: 40, height: 40 }}
                     />
-                  }
-                  label={`${option.firstName} ${option.lastName} `}
-                  {...getTagProps({ index })}
-                  sx={{ m: 0.5 }}
+                    <Box>
+                      <Typography variant="body2">
+                        <strong>ID:</strong> {option.employeeId}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Name:</strong> {option.firstName} {option.lastName}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Department:</strong> {option.department}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </li>
+              )}
+              sx={{ width: '100%', mt: 2 }}
+            />
+            <Autocomplete
+              multiple
+              id="assign-employees"
+              options={nonManagers}
+              getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+              value={nonManagers.filter((user) => newItem.assignedEmployees.includes(user.employeeId))}
+              onChange={(event, newValue) => {
+                setNewItem((prev) => ({
+                  ...prev,
+                  assignedEmployees: newValue.map((user) => user.employeeId),
+                }));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Assign Employees"
+                  margin="normal"
+                  fullWidth
+                  required
+                  placeholder="Select employees..."
                 />
-              ))
-            }
-            sx={{ width: '100%', mt: 2 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleCreateOrUpdateTask} variant="contained" color="primary">
-            {editTaskId ? 'Update' : 'Create'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>Task Name</strong></TableCell>
-              <TableCell><strong>Description</strong></TableCell>
-              <TableCell><strong>Due Date</strong></TableCell>
-              <TableCell><strong>Assigned Employees</strong></TableCell>
-              <TableCell><strong>Created By</strong></TableCell>
-              <TableCell><strong>Status</strong></TableCell>
-              <TableCell><strong>Actions</strong></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredTasks.map((task) => {
-              const assignedUsers = task.assignedEmployee.map((employeeId) =>
-                users.find((user) => user.employeeId === employeeId) || { employeeId }
-              );
-              const createdByUser = users.find((user) => user.employeeId === task.createdBy) || {};
-              return (
-                <TableRow key={task.id}>
-                  <TableCell>{task.name}</TableCell>
-                  <TableCell>{task.description}</TableCell>
-                  <TableCell>{task.dueDate}</TableCell>
-                  <TableCell>{task.assignedEmployee}</TableCell>
-                  <TableCell>
-                    {createdByUser.firstName
-                      ? `${createdByUser.firstName} ${createdByUser.lastName} (${createdByUser.employeeId})`
-                      : task.createdBy}
-                  </TableCell>
-                  <TableCell>
-                    <Select
-                      value={task.status}
-                      onChange={(e) => handleStatusChange(task.id, e.target.value)}
-                      size="small"
-                    >
-                      <MenuItem value="Pending">Pending</MenuItem>
-                      <MenuItem value="In Progress">In Progress</MenuItem>
-                      <MenuItem value="Completed">Completed</MenuItem>
-                    </Select>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="outlined" size="small" onClick={() => handleEditTask(task)}>
-                      Edit
-                    </Button>
-                    <IconButton onClick={() => handleDeleteTask(task.id)}>
-                      <DeleteIcon sx={{ color: 'red' }} />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
-  );
+              )}
+              renderOption={(props, option) => (
+                <li {...props} key={option.employeeId}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Avatar
+                      src={option.photo || undefined}
+                      alt={`${option.firstName} ${option.lastName}`}
+                      sx={{ width: 40, height: 40 }}
+                    />
+                    <Box>
+                      <Typography variant="body2">
+                        <strong>ID:</strong> {option.employeeId}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Name:</strong> {option.firstName} {option.lastName}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Department:</strong> {option.department}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </li>
+              )}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    key={option.employeeId}
+                    avatar={
+                      <Avatar
+                        src={option.photo || undefined}
+                        alt={`${option.firstName} ${option.lastName}`}
+                      />
+                    }
+                    label={`${option.firstName} ${option.lastName}`}
+                    {...getTagProps({ index })}
+                    sx={{ m: 0.5 }}
+                  />
+                ))
+              }
+              sx={{ width: '100%', mt: 2 }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog}>Cancel</Button>
+            <Button onClick={handleCreateOrUpdate} variant="contained" color="primary">
+              {editId ? 'Update' : 'Create'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
+    );
 };
 
 export default TasksProjects;
