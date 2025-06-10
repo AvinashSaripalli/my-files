@@ -7,12 +7,35 @@ import {
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
 
+const formatDateForInput = (date) => {
+  if (!date) return '';
+  try {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
+    return d.toISOString().split('T')[0]; 
+  } catch {
+    return '';
+  }
+};
+
+
+const formatDateForDisplay = (date) => {
+  if (!date) return 'N/A';
+  try {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return 'N/A';
+    return d.toLocaleDateString('en-GB'); 
+  } catch {
+    return 'N/A';
+  }
+};
+
 const TasksProjects = () => {
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editId, setEditId] = useState(null);
-  const [dialogType, setDialogType] = useState('task'); // 'task' or 'project'
+  const [dialogType, setDialogType] = useState('task'); 
   const [users, setUsers] = useState([]);
   const [newItem, setNewItem] = useState({
     name: '',
@@ -78,10 +101,8 @@ const TasksProjects = () => {
   useEffect(() => {
     fetchTasks(filterEmployeeId);
     fetchProjects(filterEmployeeId);
-    if (openDialog) {
-      fetchUsers();
-    }
-  }, [openDialog, filterEmployeeId]);
+    fetchUsers();
+  }, [filterEmployeeId]);
 
   const managers = users.filter((user) => user.role === 'Manager');
   const nonManagers = users.filter((user) => user.role !== 'Manager');
@@ -148,326 +169,386 @@ const TasksProjects = () => {
     setNewItem({
       name: item.name,
       description: item.description,
-      dueDate: item.dueDate || '',
-      startDate: item.startDate || '',
-      endDate: item.endDate || '',
-      assignedEmployees: item.assignedEmployees || [], 
+      dueDate: formatDateForInput(item.dueDate),
+      startDate: formatDateForInput(item.startDate),
+      endDate: formatDateForInput(item.endDate),
+      assignedEmployees: item.assignedEmployees || [],
       createdBy: item.createdBy,
       status: item.status,
     });
     setOpenDialog(true);
   };
 
-    const handleDelete = async (id, type) => {
-      try {
-        await axios.delete(`http://localhost:5000/api/${type}s/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        type === 'task' ? fetchTasks(filterEmployeeId) : fetchProjects(filterEmployeeId);
-      } catch (error) {
-        console.error(`Error deleting ${type}:`, error);
-        alert('An error occurred while deleting.');
-      }
-    };
-
-
-    const handleOpenDialog = (type) => {
-      setDialogType(type);
-      setOpenDialog(true);
-    };
-
-    const handleCloseDialog = () => {
-      setOpenDialog(false);
-      setEditId(null);
-      setNewItem({
-        name: '',
-        description: '',
-        dueDate: '',
-        startDate: '',
-        endDate: '',
-        assignedEmployees: [],
-        createdBy: '',
-        status: 'Pending',
+  const handleDelete = async (id, type) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/${type}s/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-    };
+      type === 'task' ? fetchTasks(filterEmployeeId) : fetchProjects(filterEmployeeId);
+    } catch (error) {
+      console.error(`Error deleting ${type}:`, error);
+      alert('An error occurred while deleting.');
+    }
+  };
 
-    const filteredItems = (items) => filterStatus === 'All' ? items : items.filter((item) => item.status === filterStatus);
+  const handleOpenDialog = (type) => {
+    setDialogType(type);
+    setOpenDialog(true);
+  };
 
-    return (
-      <Box sx={{ p: 5 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Tasks and Projects</Typography>
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <Autocomplete
-              options={nonManagers}
-              getOptionLabel={(option) => `${option.firstName} ${option.lastName} `}
-              value={nonManagers.find((user) => user.employeeId === filterEmployeeId) || null}
-              onChange={(event, newValue) => setFilterEmployeeId(newValue ? newValue.employeeId : '')}
-              renderInput={(params) => <TextField {...params} label="Filter by Employee" />}
-              sx={{ minWidth: 140 }}
-            />
-            <FormControl sx={{ minWidth: 140 }}>
-              <InputLabel>Filter Status</InputLabel>
-              <Select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                label="Filter Status"
-                size="small"
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Pending">Pending</MenuItem>
-                <MenuItem value="In Progress">In Progress</MenuItem>
-                <MenuItem value="Completed">Completed</MenuItem>
-              </Select>
-            </FormControl>
-            <Button
-              variant="contained"
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setEditId(null);
+    setNewItem({
+      name: '',
+      description: '',
+      dueDate: '',
+      startDate: '',
+      endDate: '',
+      assignedEmployees: [],
+      createdBy: '',
+      status: 'Pending',
+    });
+  };
+
+  const filteredItems = (items) => filterStatus === 'All' ? items : items.filter((item) => item.status === filterStatus);
+
+
+  const getUserDisplayName = (employeeId) => {
+    const user = users.find((u) => u.employeeId === employeeId);
+    return user ? `${user.firstName} ${user.lastName} (${user.employeeId})` : `Unknown (${employeeId})`;
+  };
+
+  return (
+    <Box sx={{ p: 5 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Tasks and Projects</Typography>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <Autocomplete
+            options={nonManagers}
+            getOptionLabel={(option) => `${option.firstName} ${option.lastName} (${option.employeeId})`}
+            value={nonManagers.find((user) => user.employeeId === filterEmployeeId) || null}
+            onChange={(event, newValue) => setFilterEmployeeId(newValue ? newValue.employeeId : '')}
+            renderInput={(params) => <TextField {...params} label="Filter by Employee" />}
+            sx={{ minWidth: 140 }}
+          />
+          <FormControl sx={{ minWidth: 140 }}>
+            <InputLabel>Filter Status</InputLabel>
+            <Select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              label="Filter Status"
               size="small"
-              onClick={() => handleOpenDialog('task')}
             >
-              Assign Task
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => handleOpenDialog('project')}
-            >
-              Create Project
-            </Button>
-          </Box>
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="Pending">Pending</MenuItem>
+              <MenuItem value="In Progress">In Progress</MenuItem>
+              <MenuItem value="Completed">Completed</MenuItem>
+            </Select>
+          </FormControl>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleOpenDialog('task')}
+          >
+            Assign Task
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => handleOpenDialog('project')}
+          >
+            Create Project
+          </Button>
         </Box>
+      </Box>
 
-        <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Tasks</Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>Task Name</strong></TableCell>
-                <TableCell><strong>Description</strong></TableCell>
-                <TableCell><strong>Due Date</strong></TableCell>
-                <TableCell><strong>Assigned Employees</strong></TableCell>
-                <TableCell><strong>Created By</strong></TableCell>
-                <TableCell><strong>Status</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredItems(tasks).map((task) => {
-                const assignedUsers = task.assignedEmployees.map((employeeId) =>
-                  users.find((user) => user.employeeId === employeeId) || { employeeId }
-                );
-                const createdByUser = users.find((user) => user.employeeId === task.createdBy) || {};
-                return (
-                  <TableRow key={task.id}>
-                    <TableCell>{task.name}</TableCell>
-                    <TableCell>{task.description}</TableCell>
-                    <TableCell>{new Date(task.dueDate).toLocaleDateString('en-GB')}</TableCell>
-                    <TableCell>
-                      {assignedUsers.map((user) => (
-                        <Chip
-                          key={user.employeeId}
-                          label={`${user.firstName || ''} ${user.lastName || ''} (${user.employeeId})`}
-                          sx={{ m: 0.5 }}
-                        />
-                      ))}
-                    </TableCell>
-                    <TableCell>
-                      {createdByUser.firstName
-                        ? `${createdByUser.firstName} ${createdByUser.lastName} (${createdByUser.employeeId})`
-                        : task.createdBy}
-                    </TableCell>
-                    <TableCell>
+      <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Tasks</Typography>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>Task Name</strong></TableCell>
+              <TableCell><strong>Description</strong></TableCell>
+              <TableCell><strong>Due Date</strong></TableCell>
+              <TableCell><strong>Assigned Employees</strong></TableCell>
+              <TableCell><strong>Created By</strong></TableCell>
+              <TableCell><strong>Status</strong></TableCell>
+              <TableCell><strong>Actions</strong></TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredItems(tasks).map((task) => {
+              const assignedUsers = task.assignedEmployees.map((employeeId) =>
+                users.find((user) => user.employeeId === employeeId) || { employeeId, firstName: 'Unknown', lastName: '' }
+              );
+              return (
+                <TableRow key={task.id}>
+                  <TableCell>{task.name}</TableCell>
+                  <TableCell>{task.description}</TableCell>
+                  <TableCell>{formatDateForDisplay(task.dueDate)}</TableCell>
+                  <TableCell>
+                    {assignedUsers.map((user) => (
                       <Chip
-                        label={task.status}
-                        color={
-                          task.status === 'Pending' ? 'default' :
-                          task.status === 'In Progress' ? 'primary' :
-                          'success'
-                        }
+                        key={user.employeeId}
+                        avatar={<Avatar src={user.photo || undefined} alt={`${user.firstName} ${user.lastName}`} />}
+                        label={`${user.firstName} ${user.lastName}`}
+                        sx={{ m: 0.5 }}
                       />
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="outlined" size="small" onClick={() => handleEdit(task, 'task')}>
-                        Edit
-                      </Button>
-                      <IconButton onClick={() => handleDelete(task.id, 'task')}>
-                        <DeleteIcon sx={{ color: 'red' }} />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                    ))}
+                  </TableCell>
+                  <TableCell>{getUserDisplayName(task.createdBy)}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={task.status}
+                      color={
+                        task.status === 'Pending' ? 'default' :
+                        task.status === 'In Progress' ? 'primary' :
+                        'success'
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Button variant="outlined" size="small" onClick={() => handleEdit(task, 'task')}>
+                      Edit
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleDelete(task.id, 'task')}>
+                      <DeleteIcon sx={{ color: 'red' }} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-        <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Projects</Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell><strong>Project Name</strong></TableCell>
-                <TableCell><strong>Description</strong></TableCell>
-                <TableCell><strong>Start Date</strong></TableCell>
-                <TableCell><strong>End Date</strong></TableCell>
-                <TableCell><strong>Assigned Employees</strong></TableCell>
-                <TableCell><strong>Created By</strong></TableCell>
-                <TableCell><strong>Status</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredItems(projects).map((project) => {
-                const assignedUsers = project.assignedEmployees.map((employeeId) =>
-                  users.find((user) => user.employeeId === employeeId) || { employeeId }
-                );
-                const createdByUser = users.find((user) => user.employeeId === project.createdBy) || {};
-                return (
-                  <TableRow key={project.id}>
-                    <TableCell>{project.name}</TableCell>
-                    <TableCell>{project.description}</TableCell>
-                    <TableCell>{project.startDate}</TableCell>
-                    <TableCell>{project.endDate || 'N/A'}</TableCell>
-                    <TableCell>
-                      {assignedUsers.map((user) => (
-                        <Chip
-                          key={user.employeeId}
-                          label={`${user.firstName || ''} ${user.lastName || ''} (${user.employeeId})`}
-                          sx={{ m: 0.5 }}
-                        />
-                      ))}
-                    </TableCell>
-                    <TableCell>
-                      {createdByUser.firstName
-                        ? `${createdByUser.firstName} ${createdByUser.lastName} (${createdByUser.employeeId})`
-                        : project.createdBy}
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        value={project.status}
-                        onChange={(e) => handleStatusChange(project.id, e.target.value, 'project')}
-                        size="small"
-                      >
-                        <MenuItem value="Pending">Pending</MenuItem>
-                        <MenuItem value="In Progress">In Progress</MenuItem>
-                        <MenuItem value="Completed">Completed</MenuItem>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="outlined" size="small" onClick={() => handleEdit(project, 'project')}>
-                        Edit
-                      </Button>
-                      <IconButton onClick={() => handleDelete(project.id, 'project')}>
-                        <DeleteIcon sx={{ color: 'red' }} />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
-          <DialogTitle>{editId ? `Edit ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}` : `Create New ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}`}</DialogTitle>
-          <DialogContent dividers>
+      {/* <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Projects</Typography>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>Project Name</strong></TableCell>
+              <TableCell><strong>Description</strong></TableCell>
+              <TableCell><strong>Start Date</strong></TableCell>
+              <TableCell><strong>End Date</strong></TableCell>
+              <TableCell><strong>Assigned Employees</strong></TableCell>
+              <TableCell><strong>Created By</strong></TableCell>
+              <TableCell><strong>Status</strong></TableCell>
+              <TableCell><strong>Actions</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredItems(projects).map((project) => {
+              const assignedUsers = project.assignedEmployees.map((employeeId) =>
+                users.find((user) => user.employeeId === employeeId) || { employeeId, firstName: 'Unknown', lastName: '' }
+              );
+              return (
+                <TableRow key={project.id}>
+                  <TableCell>{project.name}</TableCell>
+                  <TableCell>{project.description}</TableCell>
+                  <TableCell>{formatDateForDisplay(project.startDate)}</TableCell>
+                  <TableCell>{formatDateForDisplay(project.endDate)}</TableCell>
+                  <TableCell>
+                    {assignedUsers.map((user) => (
+                      <Chip
+                        key={user.employeeId}
+                        avatar={<Avatar src={user.photo || undefined} alt={`${user.firstName} ${user.lastName}`} />}
+                        label={`${user.firstName} ${user.lastName} (${user.employeeId})`}
+                        sx={{ m: 0.5 }}
+                      />
+                    ))}
+                  </TableCell>
+                  <TableCell>{getUserDisplayName(project.createdBy)}</TableCell>
+                  <TableCell>
+                    <Select
+                      value={project.status}
+                      onChange={(e) => handleStatusChange(project.id, e.target.value, 'project')}
+                      size="small"
+                    >
+                      <MenuItem value="Pending">Pending</MenuItem>
+                      <MenuItem value="In Progress">In Progress</MenuItem>
+                      <MenuItem value="Completed">Completed</MenuItem>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Button variant="outlined" size="small" onClick={() => handleEdit(project, 'project')}>
+                      Edit
+                    </Button>
+                    <IconButton onClick={() => handleDelete(project.id, 'project')}>
+                      <DeleteIcon sx={{ color: 'red' }} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer> */}
+      <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Projects</Typography>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell><strong>Project Name</strong></TableCell>
+              <TableCell><strong>Description</strong></TableCell>
+              <TableCell><strong>Start Date</strong></TableCell>
+              <TableCell><strong>End Date</strong></TableCell>
+              <TableCell><strong>Assigned Employees</strong></TableCell>
+              <TableCell><strong>Created By</strong></TableCell>
+              <TableCell><strong>Status</strong></TableCell>
+              <TableCell><strong>Actions</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredItems(projects).map((project) => {
+              const assignedUsers = project.assignedEmployees.map((employeeId) =>
+                users.find((user) => user.employeeId === employeeId) || { employeeId, firstName: 'Unknown', lastName: '' }
+              );
+              return (
+                <TableRow key={project.id}>
+                  <TableCell>{project.name}</TableCell>
+                  <TableCell>{project.description}</TableCell>
+                  <TableCell>{formatDateForDisplay(project.startDate)}</TableCell>
+                  <TableCell>{formatDateForDisplay(project.endDate)}</TableCell>
+                  <TableCell>
+                    {assignedUsers.map((user) => (
+                      <Chip
+                        key={user.employeeId}
+                        avatar={<Avatar src={user.photo || undefined} alt={`${user.firstName} ${user.lastName}`} />}
+                        label={`${user.firstName} ${user.lastName}`}
+                        sx={{ m: 0.5 }}
+                      />
+                    ))}
+                  </TableCell>
+                  <TableCell>{getUserDisplayName(project.createdBy)}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={project.status}
+                      color={
+                        project.status === 'Pending' ? 'default' :
+                        project.status === 'In Progress' ? 'primary' :
+                        'success'
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Button variant="outlined" size="small" onClick={() => handleEdit(project, 'project')}>
+                      Edit
+                    </Button>
+                    <IconButton onClick={() => handleDelete(project.id, 'project')}>
+                      <DeleteIcon sx={{ color: 'red' }} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+        <DialogTitle>{editId ? `Edit ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}` : `Create New ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}`}</DialogTitle>
+        <DialogContent dividers>
+          <TextField
+            fullWidth
+            label="Name"
+            name="name"
+            value={newItem.name}
+            onChange={handleInputChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Description"
+            name="description"
+            value={newItem.description}
+            onChange={handleInputChange}
+            margin="normal"
+            multiline
+            rows={4}
+            required
+          />
+          {dialogType === 'task' ? (
             <TextField
               fullWidth
-              label="Name"
-              name="name"
-              value={newItem.name}
+              label="Due Date"
+              name="dueDate"
+              type="date"
+              value={newItem.dueDate}
               onChange={handleInputChange}
               margin="normal"
+              InputLabelProps={{ shrink: true }}
               required
             />
-            <TextField
-              fullWidth
-              label="Description"
-              name="description"
-              value={newItem.description}
-              onChange={handleInputChange}
-              margin="normal"
-              multiline
-              rows={4}
-              required
-            />
-            {dialogType === 'task' ? (
+          ) : (
+            <>
               <TextField
                 fullWidth
-                label="Due Date"
-                name="dueDate"
+                label="Start Date"
+                name="startDate"
                 type="date"
-                value={newItem.dueDate}
+                value={newItem.startDate}
                 onChange={handleInputChange}
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
                 required
               />
-            ) : (
-              <>
-                <TextField
-                  fullWidth
-                  label="Start Date"
-                  name="startDate"
-                  type="date"
-                  value={newItem.startDate}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  InputLabelProps={{ shrink: true }}
-                  required
-                />
-                <TextField
-                  fullWidth
-                  label="End Date"
-                  name="endDate"
-                  type="date"
-                  value={newItem.endDate}
-                  onChange={handleInputChange}
-                  margin="normal"
-                  InputLabelProps={{ shrink: true }}
-                />
-              </>
+              <TextField
+                fullWidth
+                label="End Date"
+                name="endDate"
+                type="date"
+                value={newItem.endDate}
+                onChange={handleInputChange}
+                margin="normal"
+                InputLabelProps={{ shrink: true }}
+              />
+            </>
+          )}
+          <Autocomplete
+            id="created-by"
+            options={managers}
+            getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
+            value={managers.find((user) => user.employeeId === newItem.createdBy) || null}
+            onChange={(event, newValue) => {
+              setNewItem((prev) => ({
+                ...prev,
+                createdBy: newValue ? newValue.employeeId : '',
+              }));
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Created By"
+                margin="normal"
+                fullWidth
+                required
+                placeholder="Select a manager..."
+              />
             )}
-            <Autocomplete
-              id="created-by"
-              options={managers}
-              getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-              value={managers.find((user) => user.employeeId === newItem.createdBy) || null}
-              onChange={(event, newValue) => {
-                setNewItem((prev) => ({
-                  ...prev,
-                  createdBy: newValue ? newValue.employeeId : '',
-                }));
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Created By"
-                  margin="normal"
-                  fullWidth
-                  required
-                  placeholder="Select a manager..."
-                />
-              )}
-              renderOption={(props, option) => (
-                <li {...props} key={option.employeeId}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Avatar
-                      src={option.photo || undefined}
-                      alt={`${option.firstName} ${option.lastName}`}
-                      sx={{ width: 40, height: 40 }}
-                    />
-                    <Box>
-                      <Typography variant="body2">
-                        <strong>ID:</strong> {option.employeeId}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Name:</strong> {option.firstName} {option.lastName}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Department:</strong> {option.department}
-                      </Typography>
-                    </Box>
+            renderOption={(props, option) => (
+              <li {...props} key={option.employeeId}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Avatar
+                    src={option.photo || undefined}
+                    alt={`${option.firstName} ${option.lastName}`}
+                    sx={{ width: 40, height: 40 }}
+                  />
+                  <Box>
+                    <Typography variant="body2">
+                      <strong>ID:</strong> {option.employeeId}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Name:</strong> {option.firstName} {option.lastName}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Department:</strong> {option.department || 'N/A'}
+                    </Typography>
+                  </Box>
                   </Box>
                 </li>
               )}
@@ -511,40 +592,40 @@ const TasksProjects = () => {
                         <strong>Name:</strong> {option.firstName} {option.lastName}
                       </Typography>
                       <Typography variant="body2">
-                        <strong>Department:</strong> {option.department}
+                        <strong>Department:</strong> {option.department || 'N/A'}
                       </Typography>
                     </Box>
-                  </Box>
-                </li>
-              )}
-              renderTags={(value, getTagProps) =>
-                value.map((option, index) => (
-                  <Chip
-                    key={option.employeeId}
-                    avatar={
-                      <Avatar
-                        src={option.photo || undefined}
-                        alt={`${option.firstName} ${option.lastName}`}
-                      />
-                    }
-                    label={`${option.firstName} ${option.lastName}`}
-                    {...getTagProps({ index })}
-                    sx={{ m: 0.5 }}
-                  />
-                ))
-              }
-              sx={{ width: '100%', mt: 2 }}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button onClick={handleCreateOrUpdate} variant="contained" color="primary">
-              {editId ? 'Update' : 'Create'}
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
-    );
-};
+                    </Box>
+                  </li>
+                )}
+                renderTags={(value, getTagProps) =>
+                  value.map((option, index) => (
+                    <Chip
+                      key={option.employeeId}
+                      avatar={
+                        <Avatar
+                          src={option.photo || undefined}
+                          alt={`${option.firstName} ${option.lastName}`}
+                        />
+                      }
+                      label={`${option.firstName} ${option.lastName} (${option.employeeId})`}
+                      {...getTagProps({ index })}
+                      sx={{ m: 0.5 }}
+                    />
+                  ))
+                }
+                sx={{ width: '100%', mt: 2 }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cancel</Button>
+              <Button onClick={handleCreateOrUpdate} variant="contained" color="primary">
+                {editId ? 'Update' : 'Create'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
+      );
+    };
 
-export default TasksProjects;
+    export default TasksProjects;
