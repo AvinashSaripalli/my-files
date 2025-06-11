@@ -312,6 +312,7 @@ import {
 } from "iconsax-react";
 import { ThreeDot } from 'react-loading-indicators';
 import axios from 'axios';
+import TasksAndProjects from './TasksAndProjects';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('My Leaves');
@@ -441,6 +442,7 @@ const Sidebar = () => {
     }
     switch (selectedComponent) {
       case 'Work Reports': return <WorkReports />;
+      case 'Tasks & Projects': return <TasksAndProjects />;
       case 'Apply Leave': return <ApplyLeave />;
       case 'My Leaves': return <MyLeaves />;
       case 'Profile': return <EmployeeProfile />;
@@ -537,6 +539,12 @@ const Sidebar = () => {
                 : <Activity size="25" variant="Outline" />
             },
             {
+              text: 'Tasks & Projects',
+              icon: selectedComponent === 'Tasks & Projects'
+                ? <Activity size="25" variant="Bold" />
+                : <Activity size="25" variant="Outline" />
+            },
+            {
               text: 'Apply Leave',
               icon: selectedComponent === 'Apply Leave'
                 ? <Note size="25" variant="Bold" />
@@ -570,7 +578,7 @@ const Sidebar = () => {
               <Collapse in={sidebarOpen} orientation="horizontal"><ListItemText primary="Logout" /></Collapse>
             </ListItemButton>
           </ListItem>
-          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '280px' }}>
+          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '260px' }}>
             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
               {sidebarOpen ? <ArrowCircleLeft size="22" color="#14286d" /> : <ArrowCircleRight size="24" color="#14286d" />}
             </IconButton>
