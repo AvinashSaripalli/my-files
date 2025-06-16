@@ -308,7 +308,8 @@ import WorkReports from './WorkReports';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity, ArrowCircleLeft, ArrowCircleRight, LogoutCurve, Note,
-  Notepad2, Profile
+  Notepad2, Profile,
+  TaskSquare
 } from "iconsax-react";
 import { ThreeDot } from 'react-loading-indicators';
 import axios from 'axios';
@@ -513,7 +514,7 @@ const Sidebar = () => {
 
       <Drawer variant="permanent" sx={{
         '& .MuiDrawer-paper': {
-          width: sidebarOpen ? 200 : 60,
+          width: sidebarOpen ? 210 : 60,
           transition: 'width 0.3s',
           overflowX: 'hidden',
           boxSizing: 'border-box',
@@ -541,8 +542,8 @@ const Sidebar = () => {
             {
               text: 'Tasks & Projects',
               icon: selectedComponent === 'Tasks & Projects'
-                ? <Activity size="25" variant="Bold" />
-                : <Activity size="25" variant="Outline" />
+                ? <TaskSquare size="25" variant="Bold" />
+                : <TaskSquare size="25" variant="Outline" />
             },
             {
               text: 'Apply Leave',
@@ -556,12 +557,12 @@ const Sidebar = () => {
                 ? <Notepad2 size="25" variant="Bold" />
                 : <Notepad2 size="25" variant="Outline" />
             },
-            {
-              text: 'Profile',
-              icon: selectedComponent === 'Profile'
-                ? <Profile size="25" variant="Bold" />
-                : <Profile size="25" variant="Outline" />
-            }
+            // {
+            //   text: 'Profile',
+            //   icon: selectedComponent === 'Profile'
+            //     ? <Profile size="25" variant="Bold" />
+            //     : <Profile size="25" variant="Outline" />
+            // }
           ].map(({ text, icon }) => (
             <ListItem sx={{ justifyContent: 'center', height: '50px' }} disablePadding key={text}>
               <ListItemButton onClick={() => handleListItemOnClick(text)}>
@@ -578,7 +579,7 @@ const Sidebar = () => {
               <Collapse in={sidebarOpen} orientation="horizontal"><ListItemText primary="Logout" /></Collapse>
             </ListItemButton>
           </ListItem>
-          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '260px' }}>
+          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '300px' }}>
             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
               {sidebarOpen ? <ArrowCircleLeft size="22" color="#14286d" /> : <ArrowCircleRight size="24" color="#14286d" />}
             </IconButton>
