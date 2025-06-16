@@ -866,6 +866,7 @@ const TasksProjects = () => {
                   <TableCell>
                     {assignedUsers.map((user) => (
                       <Chip
+                        variant="outlined"
                         key={user.employeeId}
                         avatar={<Avatar src={user.photo || undefined} alt={`${user.firstName} ${user.lastName}`} />}
                         label={`${user.firstName} ${user.lastName}`}
@@ -875,6 +876,7 @@ const TasksProjects = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
+                      variant="outlined"
                       avatar={<Avatar src={createdByUser.photo || undefined} alt={`${createdByUser.firstName} ${createdByUser.lastName}`} />}
                       label={`${createdByUser.firstName} ${createdByUser.lastName}`}
                       sx={{ m: 0.5 }}
@@ -938,6 +940,7 @@ const TasksProjects = () => {
                   <TableCell>
                     {assignedUsers.map((user) => (
                       <Chip
+                        variant="outlined"
                         key={user.employeeId}
                         avatar={<Avatar src={user.photo || undefined} alt={`${user.firstName} ${user.lastName}`} />}
                         label={`${user.firstName} ${user.lastName}`}
@@ -947,6 +950,7 @@ const TasksProjects = () => {
                   </TableCell>
                   <TableCell>
                     <Chip
+                      variant="outlined"
                       avatar={<Avatar src={createdByUser.photo || undefined} alt={`${createdByUser.firstName} ${createdByUser.lastName}`} />}
                       label={`${createdByUser.firstName} ${createdByUser.lastName}`}
                       sx={{ m: 0.5 }}
@@ -1140,6 +1144,7 @@ const TasksProjects = () => {
             renderTags={(value, getTagProps) =>
               value.map((option, index) => (
                 <Chip
+                  variant="outlined"
                   key={option.employeeId}
                   avatar={<Avatar src={option.photo || undefined} alt={`${option.firstName} ${option.lastName}`} />}
                   label={`${option.firstName} ${option.lastName}`}

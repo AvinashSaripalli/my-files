@@ -7,6 +7,7 @@ router.get('/tasks/employee/:employeeId', taskController.getTasksByEmployeeId);
 router.post('/tasks', taskController.createTask);
 router.put('/tasks/:id', taskController.updateTask);
 router.delete('/tasks/:id', taskController.deleteTask);
+router.put('/tasks/:id/status', taskController.updateTaskStatus);
 
 router.get('/projects', taskController.getProjects);
 router.get('/projects/employee/:employeeId', taskController.getProjectsByEmployeeId);

@@ -312,3 +312,43 @@ exports.getProjectsByEmployeeId = (req, res) => {
     })));
   });
 };
+
+exports.updateTaskStatus = (req, res) => {
+  const { id } = req.params;
+  const { status, companyName } = req.body;
+
+  // Validate required fields
+  if (!status || !companyName) {
+    return res.status(400).json({ error: 'Status and companyName are required' });
+  }
+
+  // Prepare the SQL update query
+  let updateFields = ['status = ?'];
+  let values = [status];
+
+  // Add startDate or endDate with NOW() based on status
+  if (status === 'In Progress') {
+    updateFields.push('startDate = NOW()');
+  } else if (status === 'Completed') {
+    updateFields.push('endDate = NOW()');
+  }
+
+  values.push(id, companyName);
+
+  const updateTaskSql = `
+    UPDATE tasks 
+    SET ${updateFields.join(', ')}
+    WHERE id = ? AND companyName = ?
+  `;
+
+  db.query(updateTaskSql, values, (err, result) => {
+    if (err) {
+      console.error('Error updating task status:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    res.json({ message: 'Task status updated successfully' });
+  });
+};

@@ -4,6 +4,7 @@ import {
   Paper, CircularProgress, Tabs, Tab, Chip, Avatar
 } from '@mui/material';
 import axios from 'axios';
+import TaskDialog from './TaskDialog';
 
 const TasksAndProjects = () => {
   const [tasks, setTasks] = useState([]);
@@ -11,6 +12,8 @@ const TasksAndProjects = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tabValue, setTabValue] = useState(0);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +50,20 @@ const TasksAndProjects = () => {
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
+
+  const handleTaskClick = (task) => {
+  setSelectedTask(task);
+  setDialogOpen(true);
+};
+
+// Add handler for dialog close
+const handleDialogClose = (updatedTask) => {
+  setDialogOpen(false);
+  if (updatedTask.status !== selectedTask.status) {
+    setTasks(tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
+  }
+  setSelectedTask(null);
+}
 
   if (loading) {
     return (
@@ -97,12 +114,19 @@ const TasksAndProjects = () => {
                 <TableBody>
                   {tasks.map((task) => (
                     <TableRow key={task.id}>
-                      <TableCell>{task.name}</TableCell>
+                      {/* <TableCell>{task.name}</TableCell> */}
+                      <TableCell 
+                        onClick={() => handleTaskClick(task)} 
+                        sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+                      >
+                        {task.name}
+                      </TableCell>
                       <TableCell>{task.description}</TableCell>
                       <TableCell>{new Date(task.dueDate).toLocaleDateString()}</TableCell>
                       <TableCell>{task.status}</TableCell>
                       <TableCell>
                         <Chip
+                          variant="outlined"
                           avatar={<Avatar src={task.createdByPhoto} />}
                           label={`${task.createdByFirstName} ${task.createdByLastName}`}
                         />
@@ -111,6 +135,7 @@ const TasksAndProjects = () => {
                         {task.assignedEmployees && task.assignedEmployees.length > 0 ? (
                           task.assignedEmployees.map(employee => (
                             <Chip
+                              variant="outlined"
                               key={employee.employeeId}
                               avatar={<Avatar src={employee.photo || ''} />}
                               label={`${employee.firstName} ${employee.lastName}`}
@@ -161,6 +186,7 @@ const TasksAndProjects = () => {
                       <TableCell>{project.status}</TableCell>
                       <TableCell>
                         <Chip
+                          variant="outlined"
                           avatar={<Avatar src={project.createdByPhoto} />}
                           label={`${project.createdByFirstName} ${project.createdByLastName}`}
                         />
@@ -169,6 +195,7 @@ const TasksAndProjects = () => {
                         {project.assignedEmployees && project.assignedEmployees.length > 0 ? (
                           project.assignedEmployees.map(employee => (
                             <Chip
+                              variant="outlined"
                               key={employee.employeeId}
                               avatar={<Avatar src={employee.photo || ''} />}
                               label={`${employee.firstName} ${employee.lastName}`}
@@ -187,6 +214,13 @@ const TasksAndProjects = () => {
           )}
         </Box>
       )}
+      <TaskDialog 
+        open={dialogOpen} 
+        onClose={handleDialogClose} 
+        task={selectedTask || {}}
+        companyName={localStorage.getItem('companyName')}
+        employeeId={localStorage.getItem('userEmployeeId')}
+      />
     </Box>
   );
 };
