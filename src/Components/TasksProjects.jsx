@@ -920,6 +920,7 @@ const TasksProjects = () => {
               <TableCell><strong>Created By</strong></TableCell>
               <TableCell><strong>Status</strong></TableCell>
               <TableCell><strong>Actions</strong></TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
