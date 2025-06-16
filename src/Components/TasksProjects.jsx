@@ -1157,7 +1157,7 @@ const TasksProjects = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleCloseDialog} color="error" variant="contained">Cancel</Button>
           <Button onClick={handleCreateOrUpdate} variant="contained" color="primary">
             {editId ? 'Update' : 'Create'}
           </Button>
