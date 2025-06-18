@@ -65,7 +65,6 @@ const TaskDialog = ({ open, onClose, task, companyName, employeeId }) => {
                 bgcolor: '#1976d2',
                 textTransform: 'none',
                 fontWeight: 500,
-                '&:hover': { bgcolor: '#1565c0' }
               }}
             >
               {loading ? <CircularProgress size={20} color="inherit" /> : 
@@ -82,7 +81,6 @@ const TaskDialog = ({ open, onClose, task, companyName, employeeId }) => {
                 bgcolor: '#2e7d32',
                 textTransform: 'none',
                 fontWeight: 500,
-                '&:hover': { bgcolor: '#1b5e20' }
               }}
             >
               {loading ? <CircularProgress size={20} color="inherit" /> : 'Finish'}
@@ -93,7 +91,6 @@ const TaskDialog = ({ open, onClose, task, companyName, employeeId }) => {
             disabled={loading}
             sx={{ 
               color: '#666',
-              '&:hover': { bgcolor: '#f5f5f5' }
             }}
           >
             <CloseIcon />
