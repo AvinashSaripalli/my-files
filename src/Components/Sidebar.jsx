@@ -163,7 +163,14 @@ const Sidebar = () => {
             { text: 'Reports', icon: selectedComponent === 'Reports' ? <Activity size="25" color="#14286d" variant="Bold" /> : <Activity size="25" color="#14286d" variant="Outline" /> },
           ].map(({ text, icon }) => (
             <ListItem sx={{ justifyContent: 'center', height: '45px' }} disablePadding key={text}>
-              <ListItemButton onClick={() => handleListItemOnClick(text)}>
+              <ListItemButton onClick={() => handleListItemOnClick(text)}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'transparent', 
+                  },
+                }}
+                disableRipple
+                >
                 <ListItemIcon sx={{ color: '#14286D' }}>{icon}</ListItemIcon>
                 <Collapse in={sidebarOpen} orientation="horizontal">
                   <ListItemText primary={text} />

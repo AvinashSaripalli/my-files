@@ -268,7 +268,14 @@ const Sidebar = () => {
             // }
           ].map(({ text, icon }) => (
             <ListItem sx={{ justifyContent: 'center', height: '50px' }} disablePadding key={text}>
-              <ListItemButton onClick={() => handleListItemOnClick(text)}>
+              <ListItemButton onClick={() => handleListItemOnClick(text)}
+                sx={{
+                  '&:hover': {
+                    backgroundColor: 'transparent', 
+                  },
+                }}
+                disableRipple  
+              >
                 <ListItemIcon sx={{ color: '#14286D' }}>{icon}</ListItemIcon>
                 <Collapse in={sidebarOpen} orientation="horizontal">
                   <ListItemText primary={text} />
