@@ -603,4 +603,4 @@ const Workgroups = () => {
   );
 };
 
-export default Workgroups;  
+export default Workgroups;

@@ -29,6 +29,9 @@ app.use('/api/workgroups', workRoutes);
 const taskRoutes = require('./routes/taskRoutes');
 app.use('/api', taskRoutes);
 
+const partnerTasksRoutes = require('./routes/partnerTasksRoutes');
+app.use('/api/partnerTasks', partnerTasksRoutes);
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

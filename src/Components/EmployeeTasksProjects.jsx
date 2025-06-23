@@ -6,7 +6,7 @@
 // import axios from 'axios';
 // import TaskDialog from './TaskDialog';
 
-// const TasksAndProjects = () => {
+// const EmployeeTasksProjects = () => {
 //   const [tasks, setTasks] = useState([]);
 //   const [projects, setProjects] = useState([]);
 //   const [loading, setLoading] = useState(true);
@@ -14,6 +14,12 @@
 //   const [tabValue, setTabValue] = useState(0);
 //   const [selectedTask, setSelectedTask] = useState(null);
 //   const [dialogOpen, setDialogOpen] = useState(false);
+
+//   // Function to check if today is the 23rd
+//   const is23rd = () => {
+//     const today = new Date();
+//     return today.getDate() === 23;
+//   };
 
 //   useEffect(() => {
 //     const fetchData = async () => {
@@ -52,18 +58,22 @@
 //   };
 
 //   const handleTaskClick = (task) => {
-//   setSelectedTask(task);
-//   setDialogOpen(true);
-// };
+//     setSelectedTask(task);
+//     setDialogOpen(true);
+//   };
 
-// // Add handler for dialog close
-// const handleDialogClose = (updatedTask) => {
-//   setDialogOpen(false);
-//   if (updatedTask.status !== selectedTask.status) {
-//     setTasks(tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
-//   }
-//   setSelectedTask(null);
-// }
+//   const handleDialogClose = (updatedTask) => {
+//     setDialogOpen(false);
+//     if (updatedTask && updatedTask.status !== selectedTask.status) {
+//       setTasks(tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
+//     }
+//     setSelectedTask(null);
+//   };
+
+//   // Filter tasks based on date
+//   const filteredTasks = is23rd()
+//     ? tasks
+//     : tasks.filter((task) => !task.isRecurring);
 
 //   if (loading) {
 //     return (
@@ -84,7 +94,7 @@
 //   return (
 //     <Box sx={{ p: 3 }}>
 //       <Typography variant="h5" gutterBottom>
-//         Tasks & Projects
+//         Tasks & Projects {is23rd() ? '(Including Recurring Tasks)' : '(Non-Recurring Tasks Only)'}
 //       </Typography>
 //       <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 2 }}>
 //         <Tab label="Tasks" />
@@ -96,7 +106,7 @@
 //           <Typography variant="h6" gutterBottom>
 //             My Tasks
 //           </Typography>
-//           {tasks.length === 0 ? (
+//           {filteredTasks.length === 0 ? (
 //             <Typography>No tasks assigned to you.</Typography>
 //           ) : (
 //             <TableContainer component={Paper}>
@@ -109,14 +119,14 @@
 //                     <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
 //                     <TableCell sx={{ fontWeight: 'bold' }}>Created By</TableCell>
 //                     <TableCell sx={{ fontWeight: 'bold' }}>Assigned Employees</TableCell>
+//                     <TableCell sx={{ fontWeight: 'bold' }}>Recurring</TableCell>
 //                   </TableRow>
 //                 </TableHead>
 //                 <TableBody>
-//                   {tasks.map((task) => (
+//                   {filteredTasks.map((task) => (
 //                     <TableRow key={task.id}>
-//                       {/* <TableCell>{task.name}</TableCell> */}
-//                       <TableCell 
-//                         onClick={() => handleTaskClick(task)} 
+//                       <TableCell
+//                         onClick={() => handleTaskClick(task)}
 //                         sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
 //                       >
 //                         {task.name}
@@ -145,6 +155,12 @@
 //                         ) : (
 //                           <Typography variant="body2">None</Typography>
 //                         )}
+//                       </TableCell>
+//                       <TableCell>
+//                         <Chip
+//                           label={task.isRecurring ? 'Recurring' : 'Non-Recurring'}
+//                           color={task.isRecurring ? 'info' : 'default'}
+//                         />
 //                       </TableCell>
 //                     </TableRow>
 //                   ))}
@@ -214,9 +230,9 @@
 //           )}
 //         </Box>
 //       )}
-//       <TaskDialog 
-//         open={dialogOpen} 
-//         onClose={handleDialogClose} 
+//       <TaskDialog
+//         open={dialogOpen}
+//         onClose={handleDialogClose}
 //         task={selectedTask || {}}
 //         companyName={localStorage.getItem('companyName')}
 //         employeeId={localStorage.getItem('userEmployeeId')}
@@ -225,7 +241,7 @@
 //   );
 // };
 
-// export default TasksAndProjects;
+// export default EmployeeTasksProjects;
 
 import React, { useState, useEffect } from 'react';
 import {
@@ -235,7 +251,7 @@ import {
 import axios from 'axios';
 import TaskDialog from './TaskDialog';
 
-const TasksAndProjects = () => {
+const EmployeeTasksProjects = () => {
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -243,6 +259,8 @@ const TasksAndProjects = () => {
   const [tabValue, setTabValue] = useState(0);
   const [selectedTask, setSelectedTask] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const is23rd = () => new Date().getDate() === 23;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -255,12 +273,8 @@ const TasksAndProjects = () => {
         }
 
         const [tasksResponse, projectsResponse] = await Promise.all([
-          axios.get(`http://localhost:5000/api/tasks/employee/${employeeId}`, {
-            params: { companyName }
-          }),
-          axios.get(`http://localhost:5000/api/projects/employee/${employeeId}`, {
-            params: { companyName }
-          })
+          axios.get(`http://localhost:5000/api/tasks/employee/${employeeId}`, { params: { companyName } }),
+          axios.get(`http://localhost:5000/api/projects/employee/${employeeId}`, { params: { companyName } })
         ]);
 
         setTasks(tasksResponse.data);
@@ -276,9 +290,7 @@ const TasksAndProjects = () => {
     fetchData();
   }, []);
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
+  const handleTabChange = (event, newValue) => setTabValue(newValue);
 
   const handleTaskClick = (task) => {
     setSelectedTask(task);
@@ -287,11 +299,13 @@ const TasksAndProjects = () => {
 
   const handleDialogClose = (updatedTask) => {
     setDialogOpen(false);
-    if (updatedTask && updatedTask.status !== selectedTask.status) {
+    if (updatedTask && updatedTask.status !== selectedTask?.status) {
       setTasks(tasks.map(t => t.id === updatedTask.id ? updatedTask : t));
     }
     setSelectedTask(null);
   };
+
+  const filteredTasks = is23rd() ? tasks : tasks.filter(task => !task.isRecurring);
 
   if (loading) {
     return (
@@ -312,7 +326,7 @@ const TasksAndProjects = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>
-        Tasks & Projects
+        Tasks & Projects {is23rd() ? '(Including Recurring Tasks)' : '(Non-Recurring Tasks Only)'}
       </Typography>
       <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 2 }}>
         <Tab label="Tasks" />
@@ -321,10 +335,8 @@ const TasksAndProjects = () => {
 
       {tabValue === 0 && (
         <Box>
-          <Typography variant="h6" gutterBottom>
-            My Tasks
-          </Typography>
-          {tasks.length === 0 ? (
+          {/* <Typography variant="h6" gutterBottom>My Tasks</Typography> */}
+          {filteredTasks.length === 0 ? (
             <Typography>No tasks assigned to you.</Typography>
           ) : (
             <TableContainer component={Paper}>
@@ -337,17 +349,33 @@ const TasksAndProjects = () => {
                     <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Created By</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Assigned Employees</TableCell>
-                    {/* <TableCell sx={{ fontWeight: 'bold' }}>Recurring</TableCell> */}
+                    <TableCell sx={{ fontWeight: 'bold' }}>Recurring</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {tasks.map((task) => (
+                  {filteredTasks.map((task) => (
                     <TableRow key={task.id}>
-                      <TableCell
+                      {/* <TableCell
                         onClick={() => handleTaskClick(task)}
                         sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
                       >
                         {task.name}
+                      </TableCell> */}
+                      <TableCell>
+                        <Typography
+                          onClick={() => handleTaskClick(task)}
+                          //component="span"
+                          sx={{
+                            color: 'black',
+                            cursor: 'pointer',
+                            '&:hover': {
+                              color: 'primary.main',
+                              textDecoration: 'underline',
+                            },
+                          }}
+                        >
+                          {task.name}
+                        </Typography>
                       </TableCell>
                       <TableCell>{task.description}</TableCell>
                       <TableCell>{new Date(task.dueDate).toLocaleDateString()}</TableCell>
@@ -360,7 +388,7 @@ const TasksAndProjects = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        {task.assignedEmployees && task.assignedEmployees.length > 0 ? (
+                        {task.assignedEmployees?.length > 0 ? (
                           task.assignedEmployees.map(employee => (
                             <Chip
                               variant="outlined"
@@ -374,12 +402,12 @@ const TasksAndProjects = () => {
                           <Typography variant="body2">None</Typography>
                         )}
                       </TableCell>
-                      {/* <TableCell>
+                      <TableCell>
                         <Chip
                           label={task.isRecurring ? 'Recurring' : 'Non-Recurring'}
                           color={task.isRecurring ? 'info' : 'default'}
                         />
-                      </TableCell> */}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -391,9 +419,7 @@ const TasksAndProjects = () => {
 
       {tabValue === 1 && (
         <Box>
-          <Typography variant="h6" gutterBottom>
-            My Projects
-          </Typography>
+          {/* <Typography variant="h6" gutterBottom>My Projects</Typography> */}
           {projects.length === 0 ? (
             <Typography>No projects assigned to you.</Typography>
           ) : (
@@ -426,7 +452,7 @@ const TasksAndProjects = () => {
                         />
                       </TableCell>
                       <TableCell>
-                        {project.assignedEmployees && project.assignedEmployees.length > 0 ? (
+                        {project.assignedEmployees?.length > 0 ? (
                           project.assignedEmployees.map(employee => (
                             <Chip
                               variant="outlined"
@@ -459,4 +485,4 @@ const TasksAndProjects = () => {
   );
 };
 
-export default TasksAndProjects;
+export default EmployeeTasksProjects;

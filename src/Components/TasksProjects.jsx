@@ -2,7 +2,8 @@
 // import {
 //   Box, Button, TextField, Table, TableContainer, TableHead, TableRow, TableCell, TableBody,
 //   Paper, Typography, Dialog, DialogTitle, DialogContent, DialogActions, IconButton,
-//   FormControl, InputLabel, Select, MenuItem, Autocomplete, Chip, Avatar
+//   FormControl, InputLabel, Select, MenuItem, Autocomplete, Chip, Avatar, FormControlLabel, Checkbox,
+//   Tabs, Tab
 // } from '@mui/material';
 // import { Delete as DeleteIcon } from '@mui/icons-material';
 // import axios from 'axios';
@@ -30,13 +31,14 @@
 // };
 
 // const TasksProjects = () => {
+//   const [tab, setTab] = useState(0); 
 //   const [tasks, setTasks] = useState([]);
 //   const [projects, setProjects] = useState([]);
 //   const [openDialog, setOpenDialog] = useState(false);
 //   const [editId, setEditId] = useState(null);
 //   const [dialogType, setDialogType] = useState('task');
-//   const [users, setUsers] = useState([]);
-//   const [newItem, setNewItem] = useState({
+//   const [users, setEmployees] = useState([]);
+//   const [newItemField, setNewItemField] = useState({
 //     name: '',
 //     description: '',
 //     dueDate: '',
@@ -44,34 +46,35 @@
 //     endDate: '',
 //     assignedEmployees: [],
 //     createdBy: '',
-//     status: 'Pending'
+//     status: '',
+//     isRecurring: true
 //   });
 //   const [filterStatus, setFilterStatus] = useState('All');
-//   // const [filterEmployeeId, setFilterEmployeeId] = useState('');
 
 //   const companyName = localStorage.getItem('companyName');
-//   const token = localStorage.getItem('token');
+//   const token = localStorage.getItem('id');
 
- 
+//   // Function to check if today is Monday
+//   const is23rd = () => {
+//     const today = new Date();
+//     return today.getDate() === 23;
+//   };
+
 //   const fetchUsers = async () => {
 //     try {
 //       const response = await axios.get('http://localhost:5000/api/users/employees', {
 //         headers: { Authorization: `Bearer ${token}` },
 //         params: { companyName },
 //       });
-//       setUsers(response.data);
+//       setEmployees(response.data);
 //     } catch (error) {
 //       console.error('Error fetching users:', error);
 //     }
 //   };
 
-
-//   const fetchTasks = async (employeeId = '') => {
+//   const fetchTasks = async () => {
 //     try {
-//       const url = employeeId
-//         ? `http://localhost:5000/api/tasks/employee/${employeeId}`
-//         : 'http://localhost:5000/api/tasks';
-//       const response = await axios.get(url, {
+//       const response = await axios.get('http://localhost:5000/api/tasks', {
 //         headers: { Authorization: `Bearer ${token}` },
 //         params: { companyName },
 //       });
@@ -81,13 +84,9 @@
 //     }
 //   };
 
- 
-//   const fetchProjects = async (employeeId = '') => {
+//   const fetchProjects = async () => {
 //     try {
-//       const url = employeeId
-//         ? `http://localhost:5000/api/projects/employee/${employeeId}`
-//         : 'http://localhost:5000/api/projects';
-//       const response = await axios.get(url, {
+//       const response = await axios.get('http://localhost:5000/api/projects', {
 //         headers: { Authorization: `Bearer ${token}` },
 //         params: { companyName },
 //       });
@@ -107,27 +106,31 @@
 //   const nonManagers = users.filter((user) => user.role !== 'Manager');
 
 //   const handleInputChange = (e) => {
-//     const { name, value } = e.target;
-//     setNewItem((prev) => ({ ...prev, [name]: value }));
+//     const { name, value, type, checked } = e.target;
+//     setNewItemField((prev) => ({
+//       ...prev,
+//       [name]: type === 'checkbox' ? checked : value
+//     }));
 //   };
 
 //   const handleCreateOrUpdate = async () => {
 //     if (
-//       newItem.name &&
-//       newItem.description &&
-//       (dialogType === 'task' ? newItem.dueDate : newItem.startDate) &&
-//       newItem.assignedEmployees.length > 0 &&
-//       newItem.createdBy
+//       newItemField.name &&
+//       newItemField.description &&
+//       (dialogType === 'task' ? newItemField.dueDate : newItemField.startDate) &&
+//       newItemField.assignedEmployees.length > 0 &&
+//       newItemField.createdBy
 //     ) {
 //       try {
 //         const itemData = {
 //           companyName,
-//           name: newItem.name,
-//           description: newItem.description,
-//           createdBy: newItem.createdBy,
-//           employeeIds: newItem.assignedEmployees,
-//           status: newItem.status,
-//           ...(dialogType === 'task' ? { dueDate: newItem.dueDate } : { startDate: newItem.startDate, endDate: newItem.endDate }),
+//           name: newItemField.name,
+//           description: newItemField.description,
+//           createdBy: newItemField.createdBy,
+//           employeeIds: newItemField.assignedEmployees,
+//           status: newItemField.status,
+//           isRecurring: newItemField.isRecurring,
+//           ...(dialogType === 'task' ? { dueDate: newItemField.dueDate } : { startDate: newItemField.startDate, endDate: newItemField.endDate }),
 //         };
 
 //         if (editId) {
@@ -140,7 +143,7 @@
 //           });
 //         }
 
-//         setNewItem({
+//         setNewItemField({
 //           name: '',
 //           description: '',
 //           dueDate: '',
@@ -149,6 +152,7 @@
 //           assignedEmployees: [],
 //           createdBy: '',
 //           status: 'Pending',
+//           isRecurring: false
 //         });
 //         setEditId(null);
 //         setOpenDialog(false);
@@ -165,7 +169,7 @@
 //   const handleEdit = (item, type) => {
 //     setEditId(item.id);
 //     setDialogType(type);
-//     setNewItem({
+//     setNewItemField({
 //       name: item.name,
 //       description: item.description,
 //       dueDate: formatDateForInput(item.dueDate),
@@ -174,6 +178,7 @@
 //       assignedEmployees: item.assignedEmployees || [],
 //       createdBy: item.createdBy,
 //       status: item.status,
+//       isRecurring: item.isRecurring || false
 //     });
 //     setOpenDialog(true);
 //   };
@@ -186,7 +191,7 @@
 //       type === 'task' ? fetchTasks() : fetchProjects();
 //     } catch (error) {
 //       console.error(`Error deleting ${type}:`, error);
-//       alert('An error occurred while deleting.');
+//       alert(error.response?.data?.error || 'An error occurred while deleting.');
 //     }
 //   };
 
@@ -198,7 +203,7 @@
 //   const handleCloseDialog = () => {
 //     setOpenDialog(false);
 //     setEditId(null);
-//     setNewItem({
+//     setNewItemField({
 //       name: '',
 //       description: '',
 //       dueDate: '',
@@ -207,10 +212,17 @@
 //       assignedEmployees: [],
 //       createdBy: '',
 //       status: 'Pending',
+//       isRecurring: false
 //     });
 //   };
 
-//   const filteredItems = (items) => filterStatus === 'All' ? items : items.filter((item) => item.status === filterStatus);
+//   const filteredItems = (items) => {
+//     let filtered = filterStatus === 'All' ? items : items.filter((item) => item.status === filterStatus);
+//     if (!is23rd()) {
+//       filtered = filtered.filter((item) => !item.isRecurring);
+//     }
+//     return filtered;
+//   };
 
 //   const getUserDisplayName = (employeeId) => {
 //     const user = users.find((u) => u.employeeId === employeeId);
@@ -221,19 +233,17 @@
 //     return users.find((u) => u.employeeId === employeeId) || { employeeId, firstName: 'Unknown', lastName: '' };
 //   };
 
+//   const handleTabChange = (event, newValue) => {
+//     setTab(newValue);
+//   };
+
 //   return (
 //     <Box sx={{ p: 5 }}>
 //       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-//         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Tasks and Projects</Typography>
+//         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+//           Tasks and Projects {is23rd() ? '(Including Recurring Tasks)' : '(Non-Recurring Tasks Only)'}
+//         </Typography>
 //         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-//           {/* <Autocomplete
-//             options={nonManagers}
-//             getOptionLabel={(option) => `${option.firstName} ${option.lastName} (${option.employeeId})`}
-//             value={nonManagers.find((user) => user.employeeId === filterEmployeeId) || null}
-//             onChange={(event, newValue) => setFilterEmployeeId(newValue ? newValue.employeeId : '')}
-//             renderInput={(params) => <TextField {...params} label="Filter by Employee" />}
-//             sx={{ minWidth: 140 }}
-//           /> */}
 //           <FormControl sx={{ minWidth: 140 }}>
 //             <InputLabel>Filter Status</InputLabel>
 //             <Select
@@ -248,168 +258,192 @@
 //               <MenuItem value="Completed">Completed</MenuItem>
 //             </Select>
 //           </FormControl>
-//           <Button
-//             variant="contained"
-//             size="small"
-//             onClick={() => handleOpenDialog('task')}
-//           >
-//             Assign Task
-//           </Button>
-//           <Button
-//             variant="contained"
-//             size="small"
-//             onClick={() => handleOpenDialog('project')}
-//           >
-//             Create Project
-//           </Button>
+//           {tab === 0 && (
+//             <Button
+//               variant="contained"
+//               size="small"
+//               onClick={() => handleOpenDialog('task')}
+//             >
+//               Assign Task
+//             </Button>
+//           )}
+//           {tab === 1 && (
+//             <Button
+//               variant="contained"
+//               size="small"
+//               onClick={() => handleOpenDialog('project')}
+//             >
+//               Create Project
+//             </Button>
+//           )}
 //         </Box>
 //       </Box>
 
-//       <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Tasks</Typography>
-//       <TableContainer component={Paper}>
-//         <Table>
-//           <TableHead>
-//             <TableRow>
-//               <TableCell><strong>Task Name</strong></TableCell>
-//               <TableCell><strong>Description</strong></TableCell>
-//               <TableCell><strong>Due Date</strong></TableCell>
-//               <TableCell><strong>Assigned Employees</strong></TableCell>
-//               <TableCell><strong>Created By</strong></TableCell>
-//               <TableCell><strong>Status</strong></TableCell>
-//               <TableCell><strong>Actions</strong></TableCell>
-//               <TableCell></TableCell>
-//             </TableRow>
-//           </TableHead>
-//           <TableBody>
-//             {filteredItems(tasks).map((task) => {
-//               const assignedUsers = task.assignedEmployees.map((employeeId) =>
-//                 getUserById(employeeId)
-//               );
-//               const createdByUser = getUserById(task.createdBy);
-//               return (
-//                 <TableRow key={task.id}>
-//                   <TableCell>{task.name}</TableCell>
-//                   <TableCell>{task.description}</TableCell>
-//                   <TableCell>{formatDateForDisplay(task.dueDate)}</TableCell>
-//                   <TableCell>
-//                     {assignedUsers.map((user) => (
-//                       <Chip
-//                         variant="outlined"
-//                         key={user.employeeId}
-//                         avatar={<Avatar src={user.photo || undefined} alt={`${user.firstName} ${user.lastName}`} />}
-//                         label={`${user.firstName} ${user.lastName}`}
-//                         sx={{ m: 0.5 }}
-//                       />
-//                     ))}
-//                   </TableCell>
-//                   <TableCell>
-//                     <Chip
-//                       variant="outlined"
-//                       avatar={<Avatar src={createdByUser.photo || undefined} alt={`${createdByUser.firstName} ${createdByUser.lastName}`} />}
-//                       label={`${createdByUser.firstName} ${createdByUser.lastName}`}
-//                       sx={{ m: 0.5 }}
-//                     />
-//                   </TableCell>
-//                   <TableCell>
-//                     <Chip
-//                       label={task.status}
-//                       color={
-//                         task.status === 'Pending' ? 'default' :
-//                         task.status === 'In Progress' ? 'primary' :
-//                         'success'
-//                       }
-//                     />
-//                   </TableCell>
-//                   <TableCell>
-//                     <Button variant="outlined" size="small" onClick={() => handleEdit(task, 'task')}>
-//                       Edit
-//                     </Button>
-//                   </TableCell>
-//                   <TableCell>
-//                     <IconButton onClick={() => handleDelete(task.id, 'task')}>
-//                       <DeleteIcon sx={{ color: 'red' }} />
-//                     </IconButton>
-//                   </TableCell>
-//                 </TableRow>
-//               );
-//             })}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
+//       <Tabs value={tab} onChange={handleTabChange} aria-label="tasks and projects tabs">
+//         <Tab label="Tasks" />
+//         <Tab label="Projects" />
+//       </Tabs>
 
-//       <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Projects</Typography>
-//       <TableContainer component={Paper}>
-//         <Table>
-//           <TableHead>
-//             <TableRow>
-//               <TableCell><strong>Project Name</strong></TableCell>
-//               <TableCell><strong>Description</strong></TableCell>
-//               <TableCell><strong>Start Date</strong></TableCell>
-//               <TableCell><strong>End Date</strong></TableCell>
-//               <TableCell><strong>Assigned Employees</strong></TableCell>
-//               <TableCell><strong>Created By</strong></TableCell>
-//               <TableCell><strong>Status</strong></TableCell>
-//               <TableCell><strong>Actions</strong></TableCell>
-//               <TableCell></TableCell>
-//             </TableRow>
-//           </TableHead>
-//           <TableBody>
-//             {filteredItems(projects).map((project) => {
-//               const assignedUsers = project.assignedEmployees.map((employeeId) =>
-//                 getUserById(employeeId)
-//               );
-//               const createdByUser = getUserById(project.createdBy);
-//               return (
-//                 <TableRow key={project.id}>
-//                   <TableCell>{project.name}</TableCell>
-//                   <TableCell>{project.description}</TableCell>
-//                   <TableCell>{formatDateForDisplay(project.startDate)}</TableCell>
-//                   <TableCell>{formatDateForDisplay(project.endDate)}</TableCell>
-//                   <TableCell>
-//                     {assignedUsers.map((user) => (
-//                       <Chip
-//                         variant="outlined"
-//                         key={user.employeeId}
-//                         avatar={<Avatar src={user.photo || undefined} alt={`${user.firstName} ${user.lastName}`} />}
-//                         label={`${user.firstName} ${user.lastName}`}
-//                         sx={{ m: 0.5 }}
-//                       />
-//                     ))}
-//                   </TableCell>
-//                   <TableCell>
-//                     <Chip
-//                       variant="outlined"
-//                       avatar={<Avatar src={createdByUser.photo || undefined} alt={`${createdByUser.firstName} ${createdByUser.lastName}`} />}
-//                       label={`${createdByUser.firstName} ${createdByUser.lastName}`}
-//                       sx={{ m: 0.5 }}
-//                     />
-//                   </TableCell>
-//                   <TableCell>
-//                     <Chip
-//                       label={project.status}
-//                       color={
-//                         project.status === 'Pending' ? 'default' :
-//                         project.status === 'In Progress' ? 'primary' :
-//                         'success'
-//                       }
-//                     />
-//                   </TableCell>
-//                   <TableCell>
-//                     <Button variant="outlined" size="small" onClick={() => handleEdit(project, 'project')}>
-//                       Edit
-//                     </Button>
-//                   </TableCell>
-//                   <TableCell>
-//                     <IconButton onClick={() => handleDelete(project.id, 'project')}>
-//                       <DeleteIcon sx={{ color: 'red' }} />
-//                     </IconButton>
-//                   </TableCell>
+//       {tab === 0 && (
+//         <>
+//           <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Tasks</Typography>
+//           <TableContainer component={Paper}>
+//             <Table>
+//               <TableHead>
+//                 <TableRow>
+//                   <TableCell><strong>Task Name</strong></TableCell>
+//                   <TableCell><strong>Description</strong></TableCell>
+//                   <TableCell><strong>Due Date</strong></TableCell>
+//                   <TableCell><strong>Assigned Employees</strong></TableCell>
+//                   <TableCell><strong>Created By</strong></TableCell>
+//                   <TableCell><strong>Status</strong></TableCell>
+//                   <TableCell><strong>Recurring</strong></TableCell>
+//                   <TableCell><strong>Actions</strong></TableCell>
+//                   <TableCell></TableCell>
 //                 </TableRow>
-//               );
-//             })}
-//           </TableBody>
-//         </Table>
-//       </TableContainer>
+//               </TableHead>
+//               <TableBody>
+//                 {filteredItems(tasks).map((task) => {
+//                   const assignedUsers = task.assignedEmployees.map((employeeId) =>
+//                     getUserById(employeeId)
+//                   );
+//                   const createdByUser = getUserById(task.createdBy);
+//                   return (
+//                     <TableRow key={task.id}>
+//                       <TableCell>{task.name}</TableCell>
+//                       <TableCell>{task.description}</TableCell>
+//                       <TableCell>{formatDateForDisplay(task.dueDate)}</TableCell>
+//                       <TableCell>
+//                         {assignedUsers.map((user) => (
+//                           <Chip
+//                             variant="outlined"
+//                             key={user.employeeId}
+//                             avatar={<Avatar src={user.photo || undefined} />}
+//                             label={`${user.firstName} ${user.lastName}`}
+//                             sx={{ m: 0.5 }}
+//                           />
+//                         ))}
+//                       </TableCell>
+//                       <TableCell sx={{ fontSize: '10px' }}>
+//                         <Chip
+//                           variant="outlined"
+//                           avatar={<Avatar src={createdByUser.photo || undefined} />}
+//                           label={`${createdByUser.firstName} ${createdByUser.lastName}`}
+//                           sx={{ m: 0.5 }}
+//                         />
+//                       </TableCell>
+//                       <TableCell>
+//                         <Chip
+//                           label={task.status}
+//                           color={
+//                             task.status === 'Pending' ? 'default' :
+//                             task.status === 'In Progress' ? 'primary' :
+//                             'success'
+//                           }
+//                         />
+//                       </TableCell>
+//                       <TableCell>
+//                         <Chip
+//                           label={task.isRecurring ? 'Recurring' : 'Non-Recurring'}
+//                           color={task.isRecurring ? 'info' : 'default'}
+//                         />
+//                       </TableCell>
+//                       <TableCell>
+//                         <Button variant="outlined" size="small" onClick={() => handleEdit(task, 'task')}>
+//                           Edit
+//                         </Button>
+//                       </TableCell>
+//                       <TableCell>
+//                         <IconButton onClick={() => handleDelete(task.id, 'task')}>
+//                           <DeleteIcon sx={{ color: 'red' }} />
+//                         </IconButton>
+//                       </TableCell>
+//                     </TableRow>
+//                   );
+//                 })}
+//               </TableBody>
+//             </Table>
+//           </TableContainer>
+//         </>
+//       )}
+
+//       {tab === 1 && (
+//         <>
+//           <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Projects</Typography>
+//           <TableContainer component={Paper}>
+//             <Table>
+//               <TableHead>
+//                 <TableRow>
+//                   <TableCell><strong>Project Name</strong></TableCell>
+//                   <TableCell><strong>Description</strong></TableCell>
+//                   <TableCell><strong>Start Date</strong></TableCell>
+//                   <TableCell><strong>End Date</strong></TableCell>
+//                   <TableCell><strong>Assigned Employees</strong></TableCell>
+//                   <TableCell><strong>Created By</strong></TableCell>
+//                   <TableCell><strong>Status</strong></TableCell>
+//                   <TableCell><strong>Actions</strong></TableCell>
+//                   <TableCell></TableCell>
+//                 </TableRow>
+//               </TableHead>
+//               <TableBody>
+//                 {filteredItems(projects).map((project) => {
+//                   const assignedUsers = project.assignedEmployees.map((employeeId) =>
+//                     getUserById(employeeId)
+//                   );
+//                   const createdByUser = getUserById(project.createdBy);
+//                   return (
+//                     <TableRow key={project.id}>
+//                       <TableCell>{project.name}</TableCell>
+//                       <TableCell>{project.description}</TableCell>
+//                       <TableCell>{formatDateForDisplay(project.startDate)}</TableCell>
+//                       <TableCell>{formatDateForDisplay(project.endDate)}</TableCell>
+//                       <TableCell>
+//                         {assignedUsers.map((user) => (
+//                           <Chip
+//                             variant="outlined"
+//                             key={user.employeeId}
+//                             avatar={<Avatar src={user.photo || undefined} />}
+//                             label={`${user.firstName} ${user.lastName}`}
+//                             sx={{ m: 0.5 }}
+//                           />
+//                         ))}
+//                       </TableCell>
+//                       <TableCell>
+//                         <Chip
+//                           variant="outlined"
+//                           avatar={<Avatar src={createdByUser.photo || undefined} />}
+//                           label={`${createdByUser.firstName} ${createdByUser.lastName}`}
+//                           sx={{ m: 0.5 }}
+//                         />
+//                       </TableCell>
+//                       <TableCell>
+//                         <Chip
+//                           label={project.status}
+//                           color={
+//                             project.status === 'Pending' ? 'default' :
+//                             project.status === 'In Progress' ? 'primary' :
+//                             'success'
+//                           }
+//                         />
+//                       </TableCell>
+//                       <TableCell>
+//                         <Button variant="outlined" size="small" onClick={() => handleEdit(project, 'project')}>
+//                           Edit
+//                         </Button>
+//                       </TableCell>
+//                       <TableCell>
+//                         <IconButton onClick={() => handleDelete(project.id, 'project')}>
+//                           <DeleteIcon sx={{ color: 'red' }} />
+//                         </IconButton>
+//                       </TableCell>
+//                     </TableRow>
+//                   );
+//                 })}
+//               </TableBody>
+//             </Table>
+//           </TableContainer>
+//         </>
+//       )}
 
 //       <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
 //         <DialogTitle>{editId ? `Edit ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}` : `Create New ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}`}</DialogTitle>
@@ -418,7 +452,7 @@
 //             fullWidth
 //             label="Name"
 //             name="name"
-//             value={newItem.name}
+//             value={newItemField.name}
 //             onChange={handleInputChange}
 //             margin="normal"
 //             required
@@ -427,7 +461,7 @@
 //             fullWidth
 //             label="Description"
 //             name="description"
-//             value={newItem.description}
+//             value={newItemField.description}
 //             onChange={handleInputChange}
 //             margin="normal"
 //             multiline
@@ -435,17 +469,30 @@
 //             required
 //           />
 //           {dialogType === 'task' ? (
-//             <TextField
-//               fullWidth
-//               label="Due Date"
-//               name="dueDate"
-//               type="date"
-//               value={newItem.dueDate}
-//               onChange={handleInputChange}
-//               margin="normal"
-//               InputLabelProps={{ shrink: true }}
-//               required
-//             />
+//             <>
+//               <TextField
+//                 fullWidth
+//                 label="Due Date"
+//                 name="dueDate"
+//                 type="date"
+//                 value={newItemField.dueDate}
+//                 onChange={handleInputChange}
+//                 margin="normal"
+//                 InputLabelProps={{ shrink: true }}
+//                 required
+//               />
+//               <FormControlLabel
+//                 control={
+//                   <Checkbox
+//                     checked={newItemField.isRecurring}
+//                     onChange={handleInputChange}
+//                     name="isRecurring"
+//                   />
+//                 }
+//                 label="Recurring Task (Every 23rd of the Month)"
+//                 sx={{ mt: 2 }}
+//               />
+//             </>
 //           ) : (
 //             <>
 //               <TextField
@@ -453,7 +500,7 @@
 //                 label="Start Date"
 //                 name="startDate"
 //                 type="date"
-//                 value={newItem.startDate}
+//                 value={newItemField.startDate}
 //                 onChange={handleInputChange}
 //                 margin="normal"
 //                 InputLabelProps={{ shrink: true }}
@@ -464,7 +511,7 @@
 //                 label="End Date"
 //                 name="endDate"
 //                 type="date"
-//                 value={newItem.endDate}
+//                 value={newItemField.endDate}
 //                 onChange={handleInputChange}
 //                 margin="normal"
 //                 InputLabelProps={{ shrink: true }}
@@ -475,9 +522,9 @@
 //             id="created-by"
 //             options={managers}
 //             getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-//             value={managers.find((user) => user.employeeId === newItem.createdBy) || null}
+//             value={managers.find((user) => user.employeeId === newItemField.createdBy) || null}
 //             onChange={(event, newValue) => {
-//               setNewItem((prev) => ({
+//               setNewItemField((prev) => ({
 //                 ...prev,
 //                 createdBy: newValue ? newValue.employeeId : '',
 //               }));
@@ -505,7 +552,7 @@
 //                       <strong>ID:</strong> {option.employeeId}
 //                     </Typography>
 //                     <Typography variant="body2">
-//                       <strong>Name:</strong> {option.firstName} {option.lastName}
+//                       <strong>Name:</strong> {option.firstName} ${option.lastName}
 //                     </Typography>
 //                     <Typography variant="body2">
 //                       <strong>Department:</strong> {option.department || 'N/A'}
@@ -518,7 +565,7 @@
 //             renderTags={(value) => (
 //               value ? (
 //                 <Chip
-//                   avatar={<Avatar src={value.photo || undefined} alt={`${value.firstName} ${value.lastName}`} />}
+//                   avatar={<Avatar src={value.photo || undefined} />}
 //                   label={`${value.firstName} ${value.lastName}`}
 //                   sx={{ m: 0.5 }}
 //                 />
@@ -530,9 +577,9 @@
 //             id="assign-employees"
 //             options={nonManagers}
 //             getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-//             value={nonManagers.filter((user) => newItem.assignedEmployees.includes(user.employeeId))}
+//             value={nonManagers.filter((user) => newItemField.assignedEmployees.includes(user.employeeId))}
 //             onChange={(event, newValue) => {
-//               setNewItem((prev) => ({
+//               setNewItemField((prev) => ({
 //                 ...prev,
 //                 assignedEmployees: newValue.map((user) => user.employeeId),
 //               }));
@@ -560,7 +607,7 @@
 //                       <strong>ID:</strong> {option.employeeId}
 //                     </Typography>
 //                     <Typography variant="body2">
-//                       <strong>Name:</strong> {option.firstName} {option.lastName}
+//                       <strong>Name:</strong> {option.firstName} ${option.lastName}
 //                     </Typography>
 //                     <Typography variant="body2">
 //                       <strong>Department:</strong> {option.department || 'N/A'}
@@ -574,7 +621,7 @@
 //                 <Chip
 //                   variant="outlined"
 //                   key={option.employeeId}
-//                   avatar={<Avatar src={option.photo || undefined} alt={`${option.firstName} ${option.lastName}`} />}
+//                   avatar={<Avatar src={option.photo || undefined} />}
 //                   label={`${option.firstName} ${option.lastName}`}
 //                   {...getTagProps({ index })}
 //                   sx={{ m: 0.5 }}
@@ -601,7 +648,8 @@ import React, { useState, useEffect } from 'react';
 import {
   Box, Button, TextField, Table, TableContainer, TableHead, TableRow, TableCell, TableBody,
   Paper, Typography, Dialog, DialogTitle, DialogContent, DialogActions, IconButton,
-  FormControl, InputLabel, Select, MenuItem, Autocomplete, Chip, Avatar, FormControlLabel, Checkbox
+  FormControl, InputLabel, Select, MenuItem, Autocomplete, Chip, Avatar, FormControlLabel, Checkbox,
+  Tabs, Tab
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
@@ -629,13 +677,14 @@ const formatDateForDisplay = (date) => {
 };
 
 const TasksProjects = () => {
+  const [tab, setTab] = useState(0);
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editId, setEditId] = useState(null);
   const [dialogType, setDialogType] = useState('task');
-  const [users, setUsers] = useState([]);
-  const [newItem, setNewItem] = useState({
+  const [users, setEmployees] = useState([]);
+  const [newItemField, setNewItemField] = useState({
     name: '',
     description: '',
     dueDate: '',
@@ -649,7 +698,9 @@ const TasksProjects = () => {
   const [filterStatus, setFilterStatus] = useState('All');
 
   const companyName = localStorage.getItem('companyName');
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('id');
+
+  const is23rd = () => new Date().getDate() === 23;
 
   const fetchUsers = async () => {
     try {
@@ -657,7 +708,7 @@ const TasksProjects = () => {
         headers: { Authorization: `Bearer ${token}` },
         params: { companyName },
       });
-      setUsers(response.data);
+      setEmployees(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);
     }
@@ -698,7 +749,7 @@ const TasksProjects = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setNewItem((prev) => ({
+    setNewItemField((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
@@ -706,22 +757,22 @@ const TasksProjects = () => {
 
   const handleCreateOrUpdate = async () => {
     if (
-      newItem.name &&
-      newItem.description &&
-      (dialogType === 'task' ? newItem.dueDate : newItem.startDate) &&
-      newItem.assignedEmployees.length > 0 &&
-      newItem.createdBy
+      newItemField.name &&
+      newItemField.description &&
+      (dialogType === 'task' ? newItemField.dueDate : newItemField.startDate) &&
+      newItemField.assignedEmployees.length > 0 &&
+      newItemField.createdBy
     ) {
       try {
         const itemData = {
           companyName,
-          name: newItem.name,
-          description: newItem.description,
-          createdBy: newItem.createdBy,
-          employeeIds: newItem.assignedEmployees,
-          status: newItem.status,
-          isRecurring: newItem.isRecurring,
-          ...(dialogType === 'task' ? { dueDate: newItem.dueDate } : { startDate: newItem.startDate, endDate: newItem.endDate }),
+          name: newItemField.name,
+          description: newItemField.description,
+          createdBy: newItemField.createdBy,
+          employeeIds: newItemField.assignedEmployees,
+          status: newItemField.status,
+          isRecurring: newItemField.isRecurring,
+          ...(dialogType === 'task' ? { dueDate: newItemField.dueDate } : { startDate: newItemField.startDate, endDate: newItemField.endDate }),
         };
 
         if (editId) {
@@ -734,7 +785,7 @@ const TasksProjects = () => {
           });
         }
 
-        setNewItem({
+        setNewItemField({
           name: '',
           description: '',
           dueDate: '',
@@ -760,7 +811,7 @@ const TasksProjects = () => {
   const handleEdit = (item, type) => {
     setEditId(item.id);
     setDialogType(type);
-    setNewItem({
+    setNewItemField({
       name: item.name,
       description: item.description,
       dueDate: formatDateForInput(item.dueDate),
@@ -794,7 +845,7 @@ const TasksProjects = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditId(null);
-    setNewItem({
+    setNewItemField({
       name: '',
       description: '',
       dueDate: '',
@@ -807,7 +858,13 @@ const TasksProjects = () => {
     });
   };
 
-  const filteredItems = (items) => filterStatus === 'All' ? items : items.filter((item) => item.status === filterStatus);
+  const filteredItems = (items) => {
+    let filtered = filterStatus === 'All' ? items : items.filter((item) => item.status === filterStatus);
+    if (!is23rd()) {
+      filtered = filtered.filter((item) => !item.isRecurring);
+    }
+    return filtered;
+  };
 
   const getUserDisplayName = (employeeId) => {
     const user = users.find((u) => u.employeeId === employeeId);
@@ -818,10 +875,14 @@ const TasksProjects = () => {
     return users.find((u) => u.employeeId === employeeId) || { employeeId, firstName: 'Unknown', lastName: '' };
   };
 
+  const handleTabChange = (event, newValue) => setTab(newValue);
+
   return (
     <Box sx={{ p: 5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Tasks and Projects</Typography>
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+          Tasks and Projects {is23rd() ? '(Including Recurring Tasks)' : '(Non-Recurring Tasks Only)'}
+        </Typography>
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           <FormControl sx={{ minWidth: 140 }}>
             <InputLabel>Filter Status</InputLabel>
@@ -837,175 +898,188 @@ const TasksProjects = () => {
               <MenuItem value="Completed">Completed</MenuItem>
             </Select>
           </FormControl>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => handleOpenDialog('task')}
-          >
-            Assign Task
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={() => handleOpenDialog('project')}
-          >
-            Create Project
-          </Button>
+          {tab === 0 && (
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenDialog('task')}
+            >
+              Assign Task
+            </Button>
+          )}
+          {tab === 1 && (
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleOpenDialog('project')}
+            >
+              Create Project
+            </Button>
+          )}
         </Box>
       </Box>
 
-      <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Tasks</Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>Task Name</strong></TableCell>
-              <TableCell><strong>Description</strong></TableCell>
-              <TableCell><strong>Due Date</strong></TableCell>
-              <TableCell><strong>Assigned Employees</strong></TableCell>
-              <TableCell><strong>Created By</strong></TableCell>
-              <TableCell><strong>Status</strong></TableCell>
-              <TableCell><strong>Recurring</strong></TableCell>
-              <TableCell><strong>Actions</strong></TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredItems(tasks).map((task) => {
-              const assignedUsers = task.assignedEmployees.map((employeeId) =>
-                getUserById(employeeId)
-              );
-              const createdByUser = getUserById(task.createdBy);
-              return (
-                <TableRow key={task.id} >
-                  <TableCell>{task.name} </TableCell>
-                  <TableCell>{task.description} </TableCell>
-                  <TableCell>{formatDateForDisplay(task.dueDate)}</TableCell>
-                  <TableCell>
-                    {assignedUsers.map((user) => (
-                      <Chip
-                        variant="outlined"
-                        key={user.employeeId}
-                        avatar={<Avatar src={user.photo || undefined} alt={`${user.firstName} ${user.lastName}`} />}
-                        label={`${user.firstName} ${user.lastName}`}
-                        sx={{ m: 0.5 }}
-                      />
-                    ))}
-                  </TableCell>
-                  <TableCell sx={{fontSize: '10px'}}>
-                    <Chip
-                      variant="outlined"
-                      avatar={<Avatar src={createdByUser.photo || undefined} alt={`${createdByUser.firstName} ${createdByUser.lastName}`} />}
-                      label={`${createdByUser.firstName} ${createdByUser.lastName}`}
-                      sx={{ m: 0.5 }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={task.status}
-                      color={
-                        task.status === 'Pending' ? 'default' :
-                        task.status === 'In Progress' ? 'primary' :
-                        'success'
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={task.isRecurring ? 'Recurring' : 'Non-Recurring'}
-                      color={task.isRecurring ? 'info' : 'default'}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="outlined" size="small" onClick={() => handleEdit(task, 'task')}>
-                      Edit
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleDelete(task.id, 'task')}>
-                      <DeleteIcon sx={{ color: 'red' }} />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Tabs value={tab} onChange={handleTabChange} aria-label="tasks and projects tabs">
+        <Tab label="Tasks" />
+        <Tab label="Projects" />
+      </Tabs>
 
-      <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Projects</Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>Project Name</strong></TableCell>
-              <TableCell><strong>Description</strong></TableCell>
-              <TableCell><strong>Start Date</strong></TableCell>
-              <TableCell><strong>End Date</strong></TableCell>
-              <TableCell><strong>Assigned Employees</strong></TableCell>
-              <TableCell><strong>Created By</strong></TableCell>
-              <TableCell><strong>Status</strong></TableCell>
-              <TableCell><strong>Actions</strong></TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredItems(projects).map((project) => {
-              const assignedUsers = project.assignedEmployees.map((employeeId) =>
-                getUserById(employeeId)
-              );
-              const createdByUser = getUserById(project.createdBy);
-              return (
-                <TableRow key={project.id}>
-                  <TableCell>{project.name}</TableCell>
-                  <TableCell>{project.description}</TableCell>
-                  <TableCell>{formatDateForDisplay(project.startDate)}</TableCell>
-                  <TableCell>{formatDateForDisplay(project.endDate)}</TableCell>
-                  <TableCell>
-                    {assignedUsers.map((user) => (
-                      <Chip
-                        variant="outlined"
-                        key={user.employeeId}
-                        avatar={<Avatar src={user.photo || undefined} alt={`${user.firstName} ${user.lastName}`} />}
-                        label={`${user.firstName} ${user.lastName}`}
-                        sx={{ m: 0.5 }}
-                      />
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      variant="outlined"
-                      avatar={<Avatar src={createdByUser.photo || undefined} alt={`${createdByUser.firstName} ${createdByUser.lastName}`} />}
-                      label={`${createdByUser.firstName} ${createdByUser.lastName}`}
-                      sx={{ m: 0.5 }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={project.status}
-                      color={
-                        project.status === 'Pending' ? 'default' :
-                        project.status === 'In Progress' ? 'primary' :
-                        'success'
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button variant="outlined" size="small" onClick={() => handleEdit(project, 'project')}>
-                      Edit
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleDelete(project.id, 'project')}>
-                      <DeleteIcon sx={{ color: 'red' }} />
-                    </IconButton>
-                  </TableCell>
+      {tab === 0 && (
+        <>
+          <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Tasks</Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell><strong>Task Name</strong></TableCell>
+                  <TableCell><strong>Description</strong></TableCell>
+                  <TableCell><strong>Due Date</strong></TableCell>
+                  <TableCell><strong>Assigned Employees</strong></TableCell>
+                  <TableCell><strong>Created By</strong></TableCell>
+                  <TableCell><strong>Status</strong></TableCell>
+                  <TableCell><strong>Recurring</strong></TableCell>
+                  <TableCell><strong>Actions</strong></TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filteredItems(tasks).map((task) => {
+                  const assignedUsers = task.assignedEmployees?.map((employeeId) => getUserById(employeeId)) || [];
+                  const createdByUser = getUserById(task.createdBy);
+                  return (
+                    <TableRow key={task.id}>
+                      <TableCell>{task.name}</TableCell>
+                      <TableCell>{task.description}</TableCell>
+                      <TableCell>{formatDateForDisplay(task.dueDate)}</TableCell>
+                      <TableCell>
+                        {assignedUsers.map((user) => (
+                          <Chip
+                            variant="outlined"
+                            key={user.employeeId}
+                            avatar={<Avatar src={user.photo || undefined} />}
+                            label={`${user.firstName} ${user.lastName}`}
+                            sx={{ m: 0.5 }}
+                          />
+                        ))}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          variant="outlined"
+                          avatar={<Avatar src={createdByUser.photo || undefined} />}
+                          label={`${createdByUser.firstName} ${createdByUser.lastName}`}
+                          sx={{ m: 0.5 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={task.status}
+                          color={
+                            task.status === 'Pending' ? 'default' :
+                            task.status === 'In Progress' ? 'primary' :
+                            'success'
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={task.isRecurring ? 'Recurring' : 'Non-Recurring'}
+                          color={task.isRecurring ? 'info' : 'default'}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outlined" size="small" onClick={() => handleEdit(task, 'task')}>
+                          Edit
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => handleDelete(task.id, 'task')}>
+                          <DeleteIcon sx={{ color: 'red' }} />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )}
+
+      {tab === 1 && (
+        <>
+          <Typography variant="h6" sx={{ mt: 4, mb: 2 }}>Projects</Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell><strong>Project Name</strong></TableCell>
+                  <TableCell><strong>Description</strong></TableCell>
+                  <TableCell><strong>Start Date</strong></TableCell>
+                  <TableCell><strong>End Date</strong></TableCell>
+                  <TableCell><strong>Assigned Employees</strong></TableCell>
+                  <TableCell><strong>Created By</strong></TableCell>
+                  <TableCell><strong>Status</strong></TableCell>
+                  <TableCell><strong>Actions</strong></TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredItems(projects).map((project) => {
+                  const assignedUsers = project.assignedEmployees?.map((employeeId) => getUserById(employeeId)) || [];
+                  const createdByUser = getUserById(project.createdBy);
+                  return (
+                    <TableRow key={project.id}>
+                      <TableCell>{project.name}</TableCell>
+                      <TableCell>{project.description}</TableCell>
+                      <TableCell>{formatDateForDisplay(project.startDate)}</TableCell>
+                      <TableCell>{formatDateForDisplay(project.endDate)}</TableCell>
+                      <TableCell>
+                        {assignedUsers.map((user) => (
+                          <Chip
+                            variant="outlined"
+                            key={user.employeeId}
+                            avatar={<Avatar src={user.photo || undefined} />}
+                            label={`${user.firstName} ${user.lastName}`}
+                            sx={{ m: 0.5 }}
+                          />
+                        ))}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          variant="outlined"
+                          avatar={<Avatar src={createdByUser.photo || undefined} />}
+                          label={`${createdByUser.firstName} ${createdByUser.lastName}`}
+                          sx={{ m: 0.5 }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={project.status}
+                          color={
+                            project.status === 'Pending' ? 'default' :
+                            project.status === 'In Progress' ? 'primary' :
+                            'success'
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outlined" size="small" onClick={() => handleEdit(project, 'project')}>
+                          Edit
+                        </Button>
+                      </TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => handleDelete(project.id, 'project')}>
+                          <DeleteIcon sx={{ color: 'red' }} />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )}
 
       <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
         <DialogTitle>{editId ? `Edit ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}` : `Create New ${dialogType.charAt(0).toUpperCase() + dialogType.slice(1)}`}</DialogTitle>
@@ -1014,7 +1088,7 @@ const TasksProjects = () => {
             fullWidth
             label="Name"
             name="name"
-            value={newItem.name}
+            value={newItemField.name}
             onChange={handleInputChange}
             margin="normal"
             required
@@ -1023,7 +1097,7 @@ const TasksProjects = () => {
             fullWidth
             label="Description"
             name="description"
-            value={newItem.description}
+            value={newItemField.description}
             onChange={handleInputChange}
             margin="normal"
             multiline
@@ -1037,7 +1111,7 @@ const TasksProjects = () => {
                 label="Due Date"
                 name="dueDate"
                 type="date"
-                value={newItem.dueDate}
+                value={newItemField.dueDate}
                 onChange={handleInputChange}
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
@@ -1046,12 +1120,12 @@ const TasksProjects = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={newItem.isRecurring}
+                    checked={newItemField.isRecurring}
                     onChange={handleInputChange}
                     name="isRecurring"
                   />
                 }
-                label="Recurring Task (Every 19th of the Month)"
+                label="Recurring Task (Every 23rd of the Month)"
                 sx={{ mt: 2 }}
               />
             </>
@@ -1062,7 +1136,7 @@ const TasksProjects = () => {
                 label="Start Date"
                 name="startDate"
                 type="date"
-                value={newItem.startDate}
+                value={newItemField.startDate}
                 onChange={handleInputChange}
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
@@ -1073,7 +1147,7 @@ const TasksProjects = () => {
                 label="End Date"
                 name="endDate"
                 type="date"
-                value={newItem.endDate}
+                value={newItemField.endDate}
                 onChange={handleInputChange}
                 margin="normal"
                 InputLabelProps={{ shrink: true }}
@@ -1084,9 +1158,9 @@ const TasksProjects = () => {
             id="created-by"
             options={managers}
             getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-            value={managers.find((user) => user.employeeId === newItem.createdBy) || null}
+            value={managers.find((user) => user.employeeId === newItemField.createdBy) || null}
             onChange={(event, newValue) => {
-              setNewItem((prev) => ({
+              setNewItemField((prev) => ({
                 ...prev,
                 createdBy: newValue ? newValue.employeeId : '',
               }));
@@ -1114,7 +1188,7 @@ const TasksProjects = () => {
                       <strong>ID:</strong> {option.employeeId}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Name:</strong> {option.firstName} {option.lastName}
+                      <strong>Name:</strong> {option.firstName} ${option.lastName}
                     </Typography>
                     <Typography variant="body2">
                       <strong>Department:</strong> {option.department || 'N/A'}
@@ -1127,7 +1201,7 @@ const TasksProjects = () => {
             renderTags={(value) => (
               value ? (
                 <Chip
-                  avatar={<Avatar src={value.photo || undefined} alt={`${value.firstName} ${value.lastName}`} />}
+                  avatar={<Avatar src={value.photo || undefined} />}
                   label={`${value.firstName} ${value.lastName}`}
                   sx={{ m: 0.5 }}
                 />
@@ -1139,9 +1213,9 @@ const TasksProjects = () => {
             id="assign-employees"
             options={nonManagers}
             getOptionLabel={(option) => `${option.firstName} ${option.lastName}`}
-            value={nonManagers.filter((user) => newItem.assignedEmployees.includes(user.employeeId))}
+            value={nonManagers.filter((user) => newItemField.assignedEmployees.includes(user.employeeId))}
             onChange={(event, newValue) => {
-              setNewItem((prev) => ({
+              setNewItemField((prev) => ({
                 ...prev,
                 assignedEmployees: newValue.map((user) => user.employeeId),
               }));
@@ -1183,7 +1257,7 @@ const TasksProjects = () => {
                 <Chip
                   variant="outlined"
                   key={option.employeeId}
-                  avatar={<Avatar src={option.photo || undefined} alt={`${option.firstName} ${option.lastName}`} />}
+                  avatar={<Avatar src={option.photo || undefined} />}
                   label={`${option.firstName} ${option.lastName}`}
                   {...getTagProps({ index })}
                   sx={{ m: 0.5 }}

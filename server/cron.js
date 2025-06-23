@@ -1,9 +1,8 @@
 const cron = require('node-cron');
 const db = require('./db');
 
-
-cron.schedule('0 0 20 * *', () => {
-  console.log('Running recurring task creation job on the 19th of each month');
+cron.schedule('0 0 23 * *', () => {
+  console.log('Running recurring task creation job on the 23rd of each month');
 
   const fetchRecurringTasksSql = `
     SELECT 
@@ -18,16 +17,18 @@ cron.schedule('0 0 20 * *', () => {
       console.error('Error fetching recurring tasks:', err);
       return;
     }
+    if (!tasks.length) {
+      console.log('No recurring tasks found.');
+      return;
+    }
 
     tasks.forEach(task => {
-      const nextDueDate = new Date();
-      nextDueDate.setDate(20);
-      if (nextDueDate.getDate() < 20) {
+      const now = new Date();
+      let nextDueDate = new Date(now.getFullYear(), now.getMonth() + 1, 23);
+      if (now.getDate() > 23) {
         nextDueDate.setMonth(nextDueDate.getMonth() + 1);
       }
-      nextDueDate.setDate(20);
 
-      // Insert new task with updated due date
       const insertTaskSql = `
         INSERT INTO tasks (companyName, name, description, dueDate, createdBy, status, isRecurring)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -42,16 +43,16 @@ cron.schedule('0 0 20 * *', () => {
         task.isRecurring
       ], (err, result) => {
         if (err) {
-          console.error('Error creating recurring task:', err);
+          console.error(`Error creating recurring task for task ID ${task.id}:`, err);
           return;
         }
         const newTaskId = result.insertId;
+        console.log(`Created new recurring task with ID ${newTaskId}`);
 
-        // Copy task assignments
         const fetchAssignmentsSql = `SELECT employeeId FROM task_assignments WHERE taskId = ?`;
         db.query(fetchAssignmentsSql, [task.id], (err, assignments) => {
           if (err) {
-            console.error('Error fetching task assignments:', err);
+            console.error(`Error fetching assignments for task ID ${task.id}:`, err);
             return;
           }
           if (assignments.length > 0) {
@@ -59,7 +60,9 @@ cron.schedule('0 0 20 * *', () => {
             const values = assignments.map(assignment => [newTaskId, assignment.employeeId]);
             db.query(insertAssignmentsSql, [values], (err) => {
               if (err) {
-                console.error('Error copying task assignments:', err);
+                console.error(`Error copying assignments for task ID ${newTaskId}:`, err);
+              } else {
+                console.log(`Copied ${assignments.length} assignments for task ID ${newTaskId}`);
               }
             });
           }

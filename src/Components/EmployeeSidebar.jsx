@@ -16,7 +16,7 @@ import {
 } from "iconsax-react";
 import { ThreeDot } from 'react-loading-indicators';
 import axios from 'axios';
-import TasksAndProjects from './TasksAndProjects';
+import EmployeeTasksProjects from './EmployeeTasksProjects';
 
 const Sidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('My Leaves');
@@ -146,7 +146,7 @@ const Sidebar = () => {
     }
     switch (selectedComponent) {
       case 'Work Reports': return <WorkReports />;
-      case 'Tasks & Projects': return <TasksAndProjects />;
+      case 'Tasks & Projects': return <EmployeeTasksProjects />;
       case 'Apply Leave': return <ApplyLeave />;
       case 'My Leaves': return <MyLeaves />;
       case 'Profile': return <EmployeeProfile />;
