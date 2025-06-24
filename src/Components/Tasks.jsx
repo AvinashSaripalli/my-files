@@ -22,6 +22,7 @@ import {
   Select,
   MenuItem,
   IconButton,
+  Chip,
   Avatar,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -222,7 +223,8 @@ const Tasks = () => {
           Back to Workgroups
         </Button>
         <Button
-          variant="outlined"
+          variant="contained"
+          size='small'
           color="primary"
           onClick={() => {
             setIsEditMode(false);
@@ -253,23 +255,26 @@ const Tasks = () => {
                   <TableCell align="center">{task.description}</TableCell>
                   <TableCell align="center">{task.status}</TableCell>
                   <TableCell align="center">
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                      <Avatar
-                        src={task.assignedToPhoto ? `http://localhost:5000${task.assignedToPhoto}` : undefined}
-                        alt={`${task.assignedToFirstName} ${task.assignedToLastName}`}
-                        sx={{ width: 30, height: 30 }}
-                      />
-                      {`${task.assignedToFirstName} ${task.assignedToLastName}`}
-                    </Box>
+                    <Chip
+                      variant="outlined"
+                      avatar={
+                        <Avatar
+                          src={task.assignedToPhoto ? `http://localhost:5000${task.assignedToPhoto}` : undefined}
+                          alt={`${task.assignedToFirstName} ${task.assignedToLastName}`}
+                        />
+                      }
+                      label={`${task.assignedToFirstName} ${task.assignedToLastName}`}
+                      sx={{ m: 0.5 }}
+                    />
                   </TableCell>
                   <TableCell align="center">{new Date(task.dueDate).toLocaleDateString('en-GB')}</TableCell>
                   <TableCell align="center">{`${task.createdByFirstName} ${task.createdByLastName}`}</TableCell>
                   <TableCell align="center">
-                    <IconButton onClick={() => handleEditClick(task)}>
-                      <EditIcon />
-                    </IconButton>
+                    <Button variant='outlined' size='small' onClick={() => handleEditClick(task)}>
+                      Edit
+                    </Button>
                     <IconButton onClick={() => handleDeleteClick(task.id)}>
-                      <DeleteIcon />
+                      <DeleteIcon sx={{ color: 'red' }}  />
                     </IconButton>
                   </TableCell>
                 </TableRow>

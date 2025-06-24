@@ -592,6 +592,7 @@ const Workgroups = () => {
             renderTags={(value, getTagProps) =>
               value.map((user, index) => (
                 <Chip
+                  variant='outlined'
                   key={user.employeeId}
                   avatar={
                     <Avatar

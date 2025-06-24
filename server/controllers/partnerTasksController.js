@@ -105,7 +105,7 @@ exports.deletePartnerTask = (req, res) => {
     return res.status(400).json({ error: 'partnerCompanyId is required' });
   }
 
-  const sql = `UPDATE partner_tasks SET exists = 0 WHERE id = ? AND partnerCompanyId = ?`;
+  const sql = `UPDATE partner_tasks SET \`exists\` = 0 WHERE id = ? AND partnerCompanyId = ?`;
 
   db.query(sql, [id, partnerCompanyId], (err, result) => {
     if (err) {
