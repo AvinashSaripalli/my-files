@@ -51,7 +51,6 @@ const Workgroups = () => {
   const [selectedWorkgroupId, setSelectedWorkgroupId] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch users (employees)
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -66,7 +65,7 @@ const Workgroups = () => {
     }
   };
 
-  // Fetch workgroups
+  
   const fetchWorkGroups = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -81,7 +80,7 @@ const Workgroups = () => {
     }
   };
 
-  // Fetch partner companies
+  
   const fetchPartnerCompanies = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -105,11 +104,11 @@ const Workgroups = () => {
     }
   }, [openDialog]);
 
-  // Filter users by role
+  
   const managers = users.filter((user) => user.role === 'Manager');
   const nonManagers = users.filter((user) => user.role !== 'Manager');
 
-  // Handle input changes
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCreateGroups((prev) => ({ ...prev, [name]: value }));
@@ -176,7 +175,7 @@ const Workgroups = () => {
   };
 
   const handleAvatarGroupClick = (event, employees) => {
-    event.stopPropagation(); // Prevent event bubbling
+    event.stopPropagation(); 
     setAnchorEl(event.currentTarget);
     setSelectedEmployees(employees);
   };
@@ -199,7 +198,6 @@ const Workgroups = () => {
     });
   };
 
-  // Group workgroups for display
   const groupedWorkgroups = workgroups.reduce((acc, workgroup) => {
     const { id, partnerCompanyName, partnerCompanyId, createdBy, createdOn, privacyType, employeeId } = workgroup;
     if (!acc[id]) {
@@ -298,9 +296,26 @@ const Workgroups = () => {
               groupedData.map((group) => (
                 <TableRow key={group.id}>
                   <TableCell align="center">{group.partnerCompanyId}</TableCell>
+                  {/* <TableCell align="left">
+                    <Link
+                      to={`/tasks/${group.partnerCompanyId}`}
+                      style={{
+                        textDecoration: 'none',
+                        color: '#1976d2',
+                      }}
+                      onMouseOver={(e) => (e.currentTarget.style.textDecoration = 'underline')}
+                      onMouseOut={(e) => (e.currentTarget.style.textDecoration = 'none')}
+                    >
+                      {group.partnerCompanyName}
+                    </Link>
+                  </TableCell> */}
                   <TableCell align="left">
                     <Link
                       to={`/tasks/${group.partnerCompanyId}`}
+                      state={{ 
+                        partnerCompanyName: group.partnerCompanyName,
+                        partnerCompanyId: group.partnerCompanyId 
+                      }}
                       style={{
                         textDecoration: 'none',
                         color: '#1976d2',
