@@ -15,7 +15,7 @@ const EmployeeTasksProjects = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const is23rd = () => new Date().getDate() === 23;
+  const is25th = () => new Date().getDate() === 25;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +60,7 @@ const EmployeeTasksProjects = () => {
     setSelectedTask(null);
   };
 
-  const filteredTasks = is23rd() ? tasks : tasks.filter(task => !task.isRecurring);
+  const filteredTasks = is25th() ? tasks : tasks.filter(task => !task.isRecurring);
 
   if (loading) {
     return (
@@ -81,7 +81,7 @@ const EmployeeTasksProjects = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>
-        Tasks & Projects {is23rd() ? '(Including Recurring Tasks)' : '(Non-Recurring Tasks Only)'}
+        Tasks & Projects {is25th() ? '(Including Recurring Tasks)' : '(Non-Recurring Tasks Only)'}
       </Typography>
       <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 2 }}>
         <Tab label="Tasks" />

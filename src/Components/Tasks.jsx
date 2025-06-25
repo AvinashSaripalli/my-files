@@ -28,6 +28,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const Tasks = () => {
   const { partnerCompanyId: paramPartnerCompanyId } = useParams();
@@ -214,13 +215,22 @@ const Tasks = () => {
         Tasks for {taskData.partnerCompanyName || 'Partner Company'} (ID: {effectivePartnerCompanyId || 'N/A'})
       </Typography>
       <Box sx={{ mb: 3 }}>
-        <Button
+        {/* <Button
           variant="outlined"
           color="secondary"
           onClick={() => navigate('/workgroups')}
           sx={{ mr: 2 }}
         >
           Back to Workgroups
+        </Button> */}
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => navigate('/workgroups')}
+          sx={{ mr: 2 }}
+          startIcon={<ArrowBackIcon />}
+        >
+          Back
         </Button>
         <Button
           variant="contained"

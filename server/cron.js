@@ -1,8 +1,8 @@
 const cron = require('node-cron');
 const db = require('./db');
 
-cron.schedule('0 0 23 * *', () => {
-  console.log('Running recurring task creation job on the 23rd of each month');
+cron.schedule('0 0 25 * *', () => {
+  console.log('Running recurring task creation job on the 25th of each month');
 
   const fetchRecurringTasksSql = `
     SELECT 
@@ -24,8 +24,8 @@ cron.schedule('0 0 23 * *', () => {
 
     tasks.forEach(task => {
       const now = new Date();
-      let nextDueDate = new Date(now.getFullYear(), now.getMonth() + 1, 23);
-      if (now.getDate() > 23) {
+      let nextDueDate = new Date(now.getFullYear(), now.getMonth() + 1, 25);
+      if (now.getDate() > 25) {
         nextDueDate.setMonth(nextDueDate.getMonth() + 1);
       }
 
