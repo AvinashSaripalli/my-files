@@ -118,3 +118,58 @@ exports.deletePartnerTask = (req, res) => {
     res.json({ message: 'Partner task deleted successfully' });
   });
 };
+
+exports.getPartnerTasksByEmployeeId = (req, res) => {
+  const { partnerCompanyId, employeeId } = req.query;
+
+  if (!partnerCompanyId) {
+    return res.status(400).json({ error: 'partnerCompanyId is required' });
+  }
+
+  // If employeeId is provided, filter tasks where employeeId matches createdBy or assignedTo
+  let sql = `
+    SELECT 
+      pt.id,
+      pt.title,
+      pt.description,
+      pt.status,
+      pt.dueDate,
+      pt.createdBy,
+      pt.assignedTo,
+      pt.partnerCompanyId,
+      uc.firstName AS createdByFirstName,
+      uc.lastName AS createdByLastName,
+      ua.firstName AS assignedToFirstName,
+      ua.lastName AS assignedToLastName,
+      ua.email AS assignedToEmail,
+      ua.designation AS assignedToDesignation,
+      ua.department AS assignedToDepartment,
+      ua.technicalSkills AS assignedToTechnicalSkills,
+      ua.photo AS assignedToPhoto
+    FROM 
+      partner_tasks pt
+      LEFT JOIN users uc ON pt.createdBy = uc.employeeId
+      LEFT JOIN users ua ON pt.assignedTo = ua.employeeId
+    WHERE 
+      pt.partnerCompanyId = ? 
+      AND (pt.exists = 1 OR pt.exists IS NULL)
+  `;
+
+  const queryParams = [partnerCompanyId];
+
+  // Add employeeId filter if provided
+  if (employeeId) {
+    sql += ` AND (pt.createdBy = ? OR pt.assignedTo = ?)`;
+    queryParams.push(employeeId, employeeId);
+  }
+
+  sql += ` ORDER BY pt.createdOn DESC`;
+
+  db.query(sql, queryParams, (err, results) => {
+    if (err) {
+      console.error('Error fetching partner tasks:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+};

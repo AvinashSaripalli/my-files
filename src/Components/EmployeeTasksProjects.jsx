@@ -138,7 +138,7 @@ const EmployeeTasksProjects = () => {
                       <TableCell>
                         <Chip
                           variant="outlined"
-                          avatar={<Avatar src={task.createdByPhoto} />}
+                          avatar={<Avatar src={task.createdByPhoto ? `http://localhost:5000${task.createdByPhoto}` : undefined} />}
                           label={`${task.createdByFirstName} ${task.createdByLastName}`}
                         />
                       </TableCell>
@@ -148,7 +148,7 @@ const EmployeeTasksProjects = () => {
                             <Chip
                               variant="outlined"
                               key={employee.employeeId}
-                              avatar={<Avatar src={employee.photo || ''} />}
+                              avatar={<Avatar src={employee.photo ? `http://localhost:5000${employee.photo}` : undefined } />}
                               label={`${employee.firstName} ${employee.lastName}`}
                               sx={{ mr: 1, mb: 1 }}
                             />
@@ -202,7 +202,7 @@ const EmployeeTasksProjects = () => {
                       <TableCell>
                         <Chip
                           variant="outlined"
-                          avatar={<Avatar src={project.createdByPhoto} />}
+                          avatar={<Avatar src={project.createdByPhoto ? `http://localhost:5000${project.createdByPhoto}` : undefined} />}
                           label={`${project.createdByFirstName} ${project.createdByLastName}`}
                         />
                       </TableCell>
@@ -212,7 +212,7 @@ const EmployeeTasksProjects = () => {
                             <Chip
                               variant="outlined"
                               key={employee.employeeId}
-                              avatar={<Avatar src={employee.photo || ''} />}
+                              avatar={<Avatar src={employee.photo ? `http://localhost:5000${employee.photo}` : undefined} />}
                               label={`${employee.firstName} ${employee.lastName}`}
                               sx={{ mr: 1, mb: 1 }}
                             />

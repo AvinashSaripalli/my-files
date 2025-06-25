@@ -11,14 +11,15 @@ import WorkReports from './WorkReports';
 import { useNavigate } from 'react-router-dom';
 import {
   Activity, ArrowCircleLeft, ArrowCircleRight, LogoutCurve, Note,
-  Notepad2, Profile,
+  Notepad2, People, Profile,
   TaskSquare
 } from "iconsax-react";
 import { ThreeDot } from 'react-loading-indicators';
 import axios from 'axios';
 import EmployeeTasksProjects from './EmployeeTasksProjects';
+import EmployeeWorkgroups from './EmployeeWorkGroups';
 
-const Sidebar = () => {
+const EmployeeSidebar = () => {
   const [selectedComponent, setSelectedComponent] = useState('My Leaves');
   const [loading, setLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState('');
@@ -149,8 +150,9 @@ const Sidebar = () => {
       case 'Tasks & Projects': return <EmployeeTasksProjects />;
       case 'Apply Leave': return <ApplyLeave />;
       case 'My Leaves': return <MyLeaves />;
+      case 'Work Groups': return <EmployeeWorkgroups />;
       case 'Profile': return <EmployeeProfile />;
-      default: return <MyLeaves />;
+      default: return <EmployeeTasksProjects />;
     }
   };
 
@@ -260,6 +262,12 @@ const Sidebar = () => {
                 ? <Notepad2 size="25" variant="Bold" />
                 : <Notepad2 size="25" variant="Outline" />
             },
+                        {
+              text: 'Work Groups',
+              icon: selectedComponent === 'Work Groups'
+                ? <People size="25" variant="Bold" />
+                : <People size="25" variant="Outline" />
+            },
             // {
             //   text: 'Profile',
             //   icon: selectedComponent === 'Profile'
@@ -289,7 +297,7 @@ const Sidebar = () => {
               <Collapse in={sidebarOpen} orientation="horizontal"><ListItemText primary="Logout" /></Collapse>
             </ListItemButton>
           </ListItem>
-          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '300px' }}>
+          <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '260px' }}>
             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
               {sidebarOpen ? <ArrowCircleLeft size="22" color="#14286d" /> : <ArrowCircleRight size="24" color="#14286d" />}
             </IconButton>
@@ -322,4 +330,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default EmployeeSidebar;

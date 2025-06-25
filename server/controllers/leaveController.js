@@ -43,7 +43,6 @@ exports.getRecentLeaves = (req, res) => {
     AND companyName = ?
     AND (start_date < NOW() OR start_date > NOW()) 
     ORDER BY start_date DESC 
-    LIMIT 4
   `;
 
   db.query(query, [employeeId, companyName], (err, results) => {

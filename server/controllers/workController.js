@@ -1,6 +1,5 @@
 const db = require('../db');
 
-// Fetch all workgroups
 exports.getWorkGroups = (req, res) => {
   const { companyName } = req.query;
 
@@ -14,17 +13,21 @@ exports.getWorkGroups = (req, res) => {
       w.createdBy,
       w.createdOn,
       u.employeeId,
-      u.firstName,
-      u.lastName,
+      u.firstName AS employeeFirstName,
+      u.lastName AS employeeLastName,
       u.email,
       u.designation,
       u.department,
       u.technicalSkills,
-      u.photo
+      u.photo,
+      uc.firstName AS creatorFirstName,
+      uc.lastName AS creatorLastName,
+      uc.photo AS creatorPhoto
     FROM 
       workgroups w
       LEFT JOIN workgroup_employees we ON w.id = we.workgroupId
       LEFT JOIN users u ON we.employeeId = u.employeeId
+      LEFT JOIN users uc ON w.createdBy = uc.employeeId
     WHERE 
       w.companyName = ? AND (u.exists = 1 OR u.employeeId IS NULL)
     ORDER BY 
@@ -40,7 +43,6 @@ exports.getWorkGroups = (req, res) => {
   });
 };
 
-// Create a new workgroup
 exports.createWorkGroup = (req, res) => {
   const { companyName, partnerCompanyName, partnerCompanyId, privacyType, createdBy, employeeIds } = req.body;
 
@@ -78,7 +80,6 @@ exports.createWorkGroup = (req, res) => {
   });
 };
 
-// Update a workgroup
 exports.updateWorkGroup = (req, res) => {
   const { id } = req.params;
   const { partnerCompanyName, partnerCompanyId, privacyType, createdBy, employeeIds } = req.body;
@@ -125,12 +126,66 @@ exports.updateWorkGroup = (req, res) => {
   });
 };
 
-// Fetch partner companies
+
 exports.getPartnerCompanies = (req, res) => {
   const sql = `SELECT partnerCompanyId, partnerCompanyName FROM partner_companies`;
   db.query(sql, (err, results) => {
     if (err) {
       console.error('Error fetching partner companies:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+  });
+};
+
+exports.workgroupsByEmployeeId = (req, res) => {
+  const { companyName, employeeId } = req.query;
+
+  if (!companyName || !employeeId) {
+    return res.status(400).json({ error: 'companyName and employeeId are required' });
+  }
+
+  const sql = `
+  SELECT 
+    w.id,
+    w.companyName,
+    w.partnerCompanyName,
+    w.partnerCompanyId,
+    w.privacyType,
+    w.createdBy,
+    w.createdOn,
+    uc.firstName AS createdByFirstName,
+    uc.lastName AS createdByLastName,
+    uc.photo AS createdByPhoto,  -- Add this line
+    u.employeeId,
+    u.firstName,
+    u.lastName,
+    u.email,
+    u.designation,
+    u.department,
+    u.technicalSkills,
+    u.photo
+  FROM 
+    workgroups w
+    INNER JOIN workgroup_employees we ON w.id = we.workgroupId
+    LEFT JOIN users u ON we.employeeId = u.employeeId
+    LEFT JOIN users uc ON w.createdBy = uc.employeeId
+  WHERE 
+    w.companyName = ? 
+    AND we.workgroupId IN (
+      SELECT workgroupId 
+      FROM workgroup_employees 
+      WHERE employeeId = ?
+    )
+    AND (u.exists = 1 OR u.employeeId IS NULL)
+    AND (uc.exists = 1 OR uc.employeeId IS NULL)
+  ORDER BY 
+    w.createdOn DESC
+`;
+
+  db.query(sql, [companyName, employeeId], (err, results) => {
+    if (err) {
+      console.error('Error fetching workgroups:', err);
       return res.status(500).json({ error: 'Database error' });
     }
     res.json(results);
