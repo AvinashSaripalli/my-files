@@ -15,6 +15,7 @@ import {
   Avatar,
 } from '@mui/material';
 import axios from 'axios';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const EmployeePartnerTasks = () => {
   const { partnerCompanyId: paramPartnerCompanyId } = useParams();
@@ -31,7 +32,7 @@ const EmployeePartnerTasks = () => {
     console.log('Effective partnerCompanyId:', effectivePartnerCompanyId);
     if (!effectivePartnerCompanyId) {
       console.warn('No partnerCompanyId provided. Redirecting to workgroups.');
-      navigate('/workgroups');
+      navigate('/employee/work-groups');
     } else {
       fetchTasks();
     }
@@ -40,7 +41,7 @@ const EmployeePartnerTasks = () => {
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const employeeId = localStorage.getItem('employeeId');
+      const employeeId = localStorage.getItem('userEmployeeId');
       const response = await axios.get(`http://localhost:5000/api/partnerTasks/getPartnerTasks/employee`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { 
@@ -63,10 +64,12 @@ const EmployeePartnerTasks = () => {
       <Box sx={{ mb: 3 }}>
         <Button
           variant="outlined"
-          color="secondary"
-          onClick={() => navigate('/workgroups')}
+          color="primary"
+          onClick={() => navigate('/employee/work-groups')}
+          sx={{ mr: 2 }}
+          startIcon={<ArrowBackIcon />}
         >
-          Back to Workgroups
+          Back
         </Button>
       </Box>
       <TableContainer component={Paper} sx={{ maxHeight: '462px', overflowY: 'auto' }}>

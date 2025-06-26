@@ -1,28 +1,363 @@
+// import React, { useState, useEffect } from 'react';
+// import {
+//   AppBar, Toolbar, Drawer, List, ListItem, ListItemButton, ListItemIcon,
+//   ListItemText, Box, Divider, Avatar, Menu, MenuItem, IconButton, Collapse,
+//   Tooltip, Typography, Button, Snackbar, Alert
+// } from '@mui/material';
+// import ApplyLeave from './ApplyLeave';
+// import MyLeaves from './MyLeaves';
+// import EmployeeProfile from './EmployeeProfile';
+// import WorkReports from './WorkReports';
+// import { useNavigate } from 'react-router-dom';
+// import {
+//   Activity, ArrowCircleLeft, ArrowCircleRight, LogoutCurve, Note,
+//   Notepad2, People, Profile,
+//   TaskSquare
+// } from "iconsax-react";
+// import { ThreeDot } from 'react-loading-indicators';
+// import axios from 'axios';
+// import EmployeeTasksProjects from './EmployeeTasksProjects';
+// import EmployeeWorkgroups from './EmployeeWorkGroups';
+
+// const EmployeeSidebar = () => {
+//   const [selectedComponent, setSelectedComponent] = useState('My Leaves');
+//   const [loading, setLoading] = useState(false);
+//   const [userPhoto, setUserPhoto] = useState('');
+//   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+//   const [sidebarOpen, setSidebarOpen] = useState(false);
+//   const [clockedIn, setClockedIn] = useState(false);
+//   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+//   const [clockInterval, setClockInterval] = useState(null);
+//   const [showContinueWorking, setShowContinueWorking] = useState(false);
+//   const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     setUserPhoto(localStorage.getItem('userPhoto') || '');
+//   }, []);
+
+//   const startTimer = () => {
+//     const interval = setInterval(() => {
+//       setElapsedSeconds((prev) => prev + 1);
+//     }, 1000);
+//     setClockInterval(interval);
+//   };
+
+//   const handleClockIn = () => {
+//     setLoading(true);
+
+//     const formatDateForMySQL = (date) => {
+//       return date.toISOString().slice(0, 10);
+//     };
+
+//     const formatTimeForMySQL = (date) => {
+//       return date.toTimeString().split(' ')[0];
+//     };
+
+//     const userDetails = {
+//       companyName: localStorage.getItem('companyName'),
+//       department: localStorage.getItem('userDepartment'),
+//       firstName: localStorage.getItem('userFirstName'),
+//       lastName: localStorage.getItem('userLastName'),
+//       email: localStorage.getItem('userEmail'),
+//       employeeId: localStorage.getItem('userEmployeeId'),
+//       designation: localStorage.getItem('userDesignation'),
+//       clockInDate: formatDateForMySQL(new Date()),
+//       clockInTime: formatTimeForMySQL(new Date()),
+//     };
+
+//     axios.post('http://localhost:5000/api/attendance/clock-in', userDetails)
+//       .then(() => {
+//         setClockedIn(true);
+//         setShowContinueWorking(false);
+//         startTimer();
+//         setLoading(false);
+//       })
+//       .catch((error) => {
+//         console.error('Clock-in failed:', error);
+//         alert('Failed to clock in. Please try again.');
+//         setClockedIn(false);
+//         setLoading(false);
+//       });
+//   };
+
+//   const handleClockOut = () => {
+//     setLoading(true);
+//     clearInterval(clockInterval);
+
+//     const formatTimeForMySQL = (date) => {
+//       return date.toTimeString().split(' ')[0];
+//     };
+
+//     const totalWorkedTime = formatElapsedTime(elapsedSeconds);
+
+//     const clockOutData = {
+//       employeeId: localStorage.getItem('userEmployeeId'),
+//       companyName: localStorage.getItem('companyName'),
+//       clockOutTime: formatTimeForMySQL(new Date()),
+//       workedTime: totalWorkedTime,
+//     };
+
+//     axios.patch('http://localhost:5000/api/attendance/clock-out', clockOutData)
+//       .then(() => {
+//         setClockedIn(false);
+//         setShowContinueWorking(true);
+//         setSnackbarOpen(true);
+//         localStorage.setItem('workedTime', totalWorkedTime);
+//         console.log('Total Worked Time:', totalWorkedTime);
+//         setClockInterval(null);
+//         setLoading(false);
+//       })
+//       .catch((error) => {
+//         console.error('Clock-out failed:', error);
+//         alert('Failed to clock out. Please try again.');
+//         setLoading(false);
+//       });
+//   };
+
+//   const handleContinueWorking = () => {
+//     setLoading(true);
+//     setClockedIn(true);
+//     setShowContinueWorking(false);
+//     startTimer();
+//     setLoading(false);
+//   };
+
+//   const handleLogout = () => {
+//     localStorage.clear();
+//     navigate('/login');
+//   };
+
+//   const handleListItemOnClick = (component) => {
+//     setLoading(true);
+//     setTimeout(() => {
+//       setSelectedComponent(component);
+//       setLoading(false);
+//     }, 1000);
+//   };
+
+//   const renderComponent = () => {
+//     if (loading) {
+//       return (
+//         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+//           <ThreeDot variant="bob" color="#14286d" size="small" text="" textColor="" />
+//         </Box>
+//       );
+//     }
+//     switch (selectedComponent) {
+//       case 'Work Reports': return <WorkReports />;
+//       case 'Tasks & Projects': return <EmployeeTasksProjects />;
+//       case 'Apply Leave': return <ApplyLeave />;
+//       case 'My Leaves': return <MyLeaves />;
+//       case 'Work Groups': return <EmployeeWorkgroups />;
+//       case 'Profile': return <EmployeeProfile />;
+//       default: return <EmployeeTasksProjects />;
+//     }
+//   };
+
+//   const handleAvatarClick = (event) => {
+//     setMenuAnchorEl(event.currentTarget);
+//   };
+
+//   const handleMenuClose = () => {
+//     setMenuAnchorEl(null);
+//   };
+
+//   const handleSnackbarClose = (event, reason) => {
+//     if (reason === 'clickaway') {
+//       return;
+//     }
+//     setSnackbarOpen(false);
+//   };
+
+//   const formatElapsedTime = (seconds) => {
+//     const hrs = String(Math.floor(seconds / 3600)).padStart(2, '0');
+//     const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+//     const secs = String(seconds % 60).padStart(2, '0');
+//     return `${hrs}:${mins}:${secs}`;
+//   };
+
+//   return (
+//     <Box sx={{ display: 'flex' }}>
+//       <AppBar position="fixed" sx={{ background: '#fff', boxShadow: 'none', borderBottom: '1px solid #e0e0e0', zIndex: 1201 }}>
+//         <Toolbar>
+//           <Box sx={{ flexGrow: 1 }} />
+//           <Box sx={{ display: 'flex', alignItems: 'center', mr: 2, gap: 2 }}>
+//             <Button
+//               size="small"
+//               variant="outlined"
+//               onClick={showContinueWorking ? handleContinueWorking : (clockedIn ? handleClockOut : handleClockIn)}
+//               sx={{
+//                 color: showContinueWorking ? "#fff" : (clockedIn ? "#f11005" : "#14286D"),
+//                 backgroundColor: showContinueWorking ? "#4caf50" : "transparent",
+//                 borderColor: showContinueWorking ? "#4caf50" : (clockedIn ? "#f11005" : "#14286D"),
+//                 fontWeight: 600,
+//                 '&:hover': {
+//                   backgroundColor: showContinueWorking ? "#45a049" : (clockedIn ? "#f11005" : "#14286D"),
+//                   color: "#fff",
+//                   borderColor: showContinueWorking ? "#45a049" : (clockedIn ? "#f11005" : "#14286D"),
+//                 },
+//               }}
+//             >
+//               {showContinueWorking ? "Continue Working" : (clockedIn ? "Clock Out" : "Clock In")}
+//             </Button>
+//             <Typography sx={{ color: '#14286D', fontWeight: 600 }}>
+//               {formatElapsedTime(elapsedSeconds)}
+//             </Typography>
+//           </Box>
+//           <Tooltip title="Profile">
+//             <Avatar src={userPhoto} sx={{ cursor: 'pointer' }} onClick={handleAvatarClick} />
+//           </Tooltip>
+//           <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleMenuClose}>
+//             <MenuItem onClick={() => { handleListItemOnClick('Profile'); handleMenuClose(); }}>Profile</MenuItem>
+//             <Divider />
+//             <MenuItem onClick={handleLogout}>Logout</MenuItem>
+//           </Menu>
+//         </Toolbar>
+//       </AppBar>
+
+//       <Drawer variant="permanent" sx={{
+//         '& .MuiDrawer-paper': {
+//           width: sidebarOpen ? 210 : 60,
+//           transition: 'width 0.3s',
+//           overflowX: 'hidden',
+//           boxSizing: 'border-box',
+//           background: '#ffffff',
+//           color: '#14286D',
+//           zIndex: 1300,
+//         },
+//       }}>
+//         <List>
+//           <ListItem disablePadding onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ mt: 1.8, mb: 1.8, justifyContent: 'center' }}>
+//             <img
+//               src={sidebarOpen ? '/image 25.png' : '/image 26.png'}
+//               alt="Company Logo"
+//               style={{ height: '26px', width: 'auto', cursor: 'pointer', objectFit: 'contain' }}
+//             />
+//           </ListItem>
+//           <Divider />
+//           {[
+//             {
+//               text: 'Work Reports',
+//               icon: selectedComponent === 'Work Reports'
+//                 ? <Activity size="25" variant="Bold" />
+//                 : <Activity size="25" variant="Outline" />
+//             },
+//             {
+//               text: 'Tasks & Projects',
+//               icon: selectedComponent === 'Tasks & Projects'
+//                 ? <TaskSquare size="25" variant="Bold" />
+//                 : <TaskSquare size="25" variant="Outline" />
+//             },
+//             {
+//               text: 'Apply Leave',
+//               icon: selectedComponent === 'Apply Leave'
+//                 ? <Note size="25" variant="Bold" />
+//                 : <Note size="25" variant="Outline" />
+//             },
+//             {
+//               text: 'My Leaves',
+//               icon: selectedComponent === 'My Leaves'
+//                 ? <Notepad2 size="25" variant="Bold" />
+//                 : <Notepad2 size="25" variant="Outline" />
+//             },
+//                         {
+//               text: 'Work Groups',
+//               icon: selectedComponent === 'Work Groups'
+//                 ? <People size="25" variant="Bold" />
+//                 : <People size="25" variant="Outline" />
+//             },
+//             // {
+//             //   text: 'Profile',
+//             //   icon: selectedComponent === 'Profile'
+//             //     ? <Profile size="25" variant="Bold" />
+//             //     : <Profile size="25" variant="Outline" />
+//             // }
+//           ].map(({ text, icon }) => (
+//             <ListItem sx={{ justifyContent: 'center', height: '50px' }} disablePadding key={text}>
+//               <ListItemButton onClick={() => handleListItemOnClick(text)}
+//                 sx={{
+//                   '&:hover': {
+//                     backgroundColor: 'transparent', 
+//                   },
+//                 }}
+//                 disableRipple  
+//               >
+//                 <ListItemIcon sx={{ color: '#14286D' }}>{icon}</ListItemIcon>
+//                 <Collapse in={sidebarOpen} orientation="horizontal">
+//                   <ListItemText primary={text} />
+//                 </Collapse>
+//               </ListItemButton>
+//             </ListItem>
+//           ))}
+//           <ListItem sx={{ justifyContent: 'center' }} disablePadding>
+//             <ListItemButton onClick={handleLogout}>
+//               <ListItemIcon sx={{ color: '#14286D' }}><LogoutCurve size="25" /></ListItemIcon>
+//               <Collapse in={sidebarOpen} orientation="horizontal"><ListItemText primary="Logout" /></Collapse>
+//             </ListItemButton>
+//           </ListItem>
+//           <ListItem sx={{ justifyContent: sidebarOpen ? 'flex-end' : 'center', mt: '260px' }}>
+//             <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} sx={{ color: '#000' }}>
+//               {sidebarOpen ? <ArrowCircleLeft size="22" color="#14286d" /> : <ArrowCircleRight size="24" color="#14286d" />}
+//             </IconButton>
+//           </ListItem>
+//         </List>
+//       </Drawer>
+
+//       <Box component="main" sx={{
+//         flexGrow: 1,
+//         mt: "64px",
+//         ml: '60px',
+//         backgroundColor: '#f4f7fe',
+//         minHeight: "calc(100vh - 64px)",
+//         width: "100vh",
+//       }}>
+//         {renderComponent()}
+//       </Box>
+
+//       <Snackbar
+//         open={snackbarOpen}
+//         autoHideDuration={6000}
+//         onClose={handleSnackbarClose}
+//         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+//       >
+//         <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+//           Now you can submit your work report
+//         </Alert>
+//       </Snackbar>
+//     </Box>
+//   );
+// };
+
+// export default EmployeeSidebar;
+
 import React, { useState, useEffect } from 'react';
 import {
   AppBar, Toolbar, Drawer, List, ListItem, ListItemButton, ListItemIcon,
   ListItemText, Box, Divider, Avatar, Menu, MenuItem, IconButton, Collapse,
   Tooltip, Typography, Button, Snackbar, Alert
 } from '@mui/material';
-import ApplyLeave from './ApplyLeave';
-import MyLeaves from './MyLeaves';
-import EmployeeProfile from './EmployeeProfile';
-import WorkReports from './WorkReports';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import {
   Activity, ArrowCircleLeft, ArrowCircleRight, LogoutCurve, Note,
-  Notepad2, People, Profile,
-  TaskSquare
+  Notepad2, People, Profile, TaskSquare
 } from "iconsax-react";
 import { ThreeDot } from 'react-loading-indicators';
 import axios from 'axios';
 import EmployeeTasksProjects from './EmployeeTasksProjects';
-import EmployeeWorkgroups from './EmployeeWorkGroups';
+import EmployeeWorkGroups from './EmployeeWorkGroups';
+import ApplyLeave from './ApplyLeave';
+import MyLeaves from './MyLeaves';
+import EmployeeProfile from './EmployeeProfile';
+import WorkReports from './WorkReports';
+import EmployeePartnerTasks from './EmployeePartnerTasks';
 
 const EmployeeSidebar = () => {
-  const [selectedComponent, setSelectedComponent] = useState('My Leaves');
+  const [selectedComponent, setSelectedComponent] = useState('Work Groups');
   const [loading, setLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [clockedIn, setClockedIn] = useState(false);
@@ -30,12 +365,28 @@ const EmployeeSidebar = () => {
   const [clockInterval, setClockInterval] = useState(null);
   const [showContinueWorking, setShowContinueWorking] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-
   const navigate = useNavigate();
+  const location = useLocation();
+  const { partnerCompanyId } = useParams();
 
   useEffect(() => {
     setUserPhoto(localStorage.getItem('userPhoto') || '');
-  }, []);
+    setCompanyName(localStorage.getItem('companyName') || '');
+
+    if (location.pathname.startsWith('/employee/employee-tasks/')) {
+      setSelectedComponent('Partner Tasks');
+    } else {
+      const pathToComponent = {
+        '/employee/work-groups': 'Work Groups',
+        '/employee/tasks-projects': 'Tasks & Projects',
+        '/employee/apply-leave': 'Apply Leave',
+        '/employee/my-leaves': 'My Leaves',
+        '/employee/work-reports': 'Work Reports',
+        '/employee/profile': 'Profile',
+      };
+      setSelectedComponent(pathToComponent[location.pathname] || 'Tasks & Projects');
+    }
+  }, [location.pathname]);
 
   const startTimer = () => {
     const interval = setInterval(() => {
@@ -46,14 +397,8 @@ const EmployeeSidebar = () => {
 
   const handleClockIn = () => {
     setLoading(true);
-
-    const formatDateForMySQL = (date) => {
-      return date.toISOString().slice(0, 10);
-    };
-
-    const formatTimeForMySQL = (date) => {
-      return date.toTimeString().split(' ')[0];
-    };
+    const formatDateForMySQL = (date) => date.toISOString().slice(0, 10);
+    const formatTimeForMySQL = (date) => date.toTimeString().split(' ')[0];
 
     const userDetails = {
       companyName: localStorage.getItem('companyName'),
@@ -82,7 +427,36 @@ const EmployeeSidebar = () => {
       });
   };
 
-  const handleClockOut = () => {
+  // const handleClockOut = () => {
+  //   setLoading(true);
+  //   clearInterval(clockInterval);
+  //   const formatTimeForMySQL = (date) => date.toTimeString().split(' ')[0];
+  //   const totalWorkedTime = formatElapsedTime(elapsedSeconds);
+
+  //   const clockOutData = {
+  //     employeeId: localStorage.getItem('userEmployeeId'),
+  //     companyName: localStorage.getItem('companyName'),
+  //     clockOutTime: formatTimeForMySQL(new Date()),
+  //     workedTime: totalWorkedTime,
+  //   };
+
+  //   axios.patch('http://localhost:5000/api/attendance/clock-out', clockOutData)
+  //     .then(() => {
+  //       setClockedIn(false);
+  //       setShowContinueWorking(true);
+  //       setSnackbarOpen(true);
+  //       localStorage.setItem('workedTime', totalWorkedTime);
+  //       setClockInterval(null);
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error('Clock-out failed:', error);
+  //       alert('Failed to clock out. Please try again.');
+  //       setLoading(false);
+  //     });
+  // };
+
+    const handleClockOut = () => {
     setLoading(true);
     clearInterval(clockInterval);
 
@@ -134,6 +508,17 @@ const EmployeeSidebar = () => {
     setTimeout(() => {
       setSelectedComponent(component);
       setLoading(false);
+      const componentToPath = {
+        'Work Reports': '/employee/work-reports',
+        'Tasks & Projects': '/employee/tasks-projects',
+        'Apply Leave': '/employee/apply-leave',
+        'My Leaves': '/employee/my-leaves',
+        'Work Groups': '/employee/work-groups',
+        'Profile': '/employee/profile',
+      };
+      if (component !== 'Partner Tasks') {
+      navigate(componentToPath[component] || '/employee/tasks-projects');
+      }
     }, 1000);
   };
 
@@ -146,13 +531,22 @@ const EmployeeSidebar = () => {
       );
     }
     switch (selectedComponent) {
-      case 'Work Reports': return <WorkReports />;
-      case 'Tasks & Projects': return <EmployeeTasksProjects />;
-      case 'Apply Leave': return <ApplyLeave />;
-      case 'My Leaves': return <MyLeaves />;
-      case 'Work Groups': return <EmployeeWorkgroups />;
-      case 'Profile': return <EmployeeProfile />;
-      default: return <EmployeeTasksProjects />;
+      case 'Work Reports':
+        return <WorkReports />;
+      case 'Partner Tasks':
+        return <EmployeePartnerTasks />;
+      case 'Tasks & Projects':
+        return <EmployeeTasksProjects />;
+      case 'Apply Leave':
+        return <ApplyLeave />;
+      case 'My Leaves':
+        return <MyLeaves />;
+      case 'Work Groups':
+        return <EmployeeWorkGroups />;
+      case 'Profile':
+        return <EmployeeProfile />;
+      default:
+        return <EmployeeTasksProjects />;
     }
   };
 
@@ -165,9 +559,7 @@ const EmployeeSidebar = () => {
   };
 
   const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+    if (reason === 'clickaway') return;
     setSnackbarOpen(false);
   };
 
@@ -262,27 +654,22 @@ const EmployeeSidebar = () => {
                 ? <Notepad2 size="25" variant="Bold" />
                 : <Notepad2 size="25" variant="Outline" />
             },
-                        {
+            {
               text: 'Work Groups',
               icon: selectedComponent === 'Work Groups'
                 ? <People size="25" variant="Bold" />
                 : <People size="25" variant="Outline" />
             },
-            // {
-            //   text: 'Profile',
-            //   icon: selectedComponent === 'Profile'
-            //     ? <Profile size="25" variant="Bold" />
-            //     : <Profile size="25" variant="Outline" />
-            // }
           ].map(({ text, icon }) => (
             <ListItem sx={{ justifyContent: 'center', height: '50px' }} disablePadding key={text}>
-              <ListItemButton onClick={() => handleListItemOnClick(text)}
+              <ListItemButton
+                onClick={() => handleListItemOnClick(text)}
                 sx={{
                   '&:hover': {
-                    backgroundColor: 'transparent', 
+                    backgroundColor: 'transparent',
                   },
                 }}
-                disableRipple  
+                disableRipple
               >
                 <ListItemIcon sx={{ color: '#14286D' }}>{icon}</ListItemIcon>
                 <Collapse in={sidebarOpen} orientation="horizontal">
