@@ -81,7 +81,7 @@ const EmployeeTasksProjects = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>
-        Tasks & Projects {is25th() ? '(Including Recurring Tasks)' : '(Non-Recurring Tasks Only)'}
+        Tasks & Projects
       </Typography>
       <Tabs value={tabValue} onChange={handleTabChange} sx={{ mb: 2 }}>
         <Tab label="Tasks" />

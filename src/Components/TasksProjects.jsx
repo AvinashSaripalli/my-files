@@ -887,7 +887,7 @@ const TasksProjects = () => {
     <Box sx={{ p: 5 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-          Tasks and Projects {is25th() ? '(Including Recurring Tasks)' : '(Non-Recurring Tasks Only)'}
+          Tasks and Projects
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
           <FormControl sx={{ minWidth: 140 }}>
@@ -940,7 +940,7 @@ const TasksProjects = () => {
                   <TableCell><strong>Task Name</strong></TableCell>
                   <TableCell><strong>Description</strong></TableCell>
                   <TableCell><strong>Due Date</strong></TableCell>
-                  <TableCell><strong>Assigned Employees</strong></TableCell>
+                  <TableCell align='left'><strong>Assigned Employees</strong></TableCell>
                   <TableCell><strong>Created By</strong></TableCell>
                   <TableCell><strong>Status</strong></TableCell>
                   <TableCell><strong>Recurring</strong></TableCell>
@@ -957,7 +957,7 @@ const TasksProjects = () => {
                       <TableCell>{task.name}</TableCell>
                       <TableCell>{task.description}</TableCell>
                       <TableCell>{formatDateForDisplay(task.dueDate)}</TableCell>
-                      <TableCell>
+                      <TableCell align='left'>
                         <AvatarGroup
                           max={4}
                           sx={{ cursor: 'pointer' }}
@@ -1028,7 +1028,7 @@ const TasksProjects = () => {
                   <TableCell><strong>Description</strong></TableCell>
                   <TableCell><strong>Start Date</strong></TableCell>
                   <TableCell><strong>End Date</strong></TableCell>
-                  <TableCell><strong>Assigned Employees</strong></TableCell>
+                  <TableCell align='left'><strong>Assigned Employees</strong></TableCell>
                   <TableCell><strong>Created By</strong></TableCell>
                   <TableCell><strong>Status</strong></TableCell>
                   <TableCell><strong>Actions</strong></TableCell>
@@ -1045,7 +1045,7 @@ const TasksProjects = () => {
                       <TableCell>{project.description}</TableCell>
                       <TableCell>{formatDateForDisplay(project.startDate)}</TableCell>
                       <TableCell>{formatDateForDisplay(project.endDate)}</TableCell>
-                      <TableCell>
+                      <TableCell align='left'>
                         <AvatarGroup
                           max={4}
                           sx={{ cursor: 'pointer' }}

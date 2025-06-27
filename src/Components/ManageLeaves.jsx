@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Button, Chip, TablePagination
+  Paper, Button, Chip, TablePagination, MenuItem, Tooltip,
+  Snackbar, Alert, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText,
+  FormControl, InputLabel, Select
 } from '@mui/material';
 import axios from 'axios';
 
 const ManageLeaves = () => {
   const [leaves, setLeaves] = useState([]);
+  const [filteredLeaves, setFilteredLeaves] = useState([]);
   const [page, setPage] = useState(0); 
   const [rowsPerPage, setRowsPerPage] = useState(5); 
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, leaveId: null, status: '' });
 
   const fetchLeaves = async () => {
     try {
@@ -20,6 +26,7 @@ const ManageLeaves = () => {
         params: { companyName },
       });
       setLeaves(response.data);
+      setFilteredLeaves(response.data);
     } catch (error) {
       console.error('Error fetching leave data:', error);
     }
@@ -29,16 +36,18 @@ const ManageLeaves = () => {
     fetchLeaves();
   }, []);
 
-  const handleUpdateStatus = async (leaveId, status) => {
+  const handleUpdateStatus = async () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put('http://localhost:5000/api/leaves/update-status',
-        { leaveId, status },
+        { leaveId: confirmDialog.leaveId, status: confirmDialog.status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      setSnackbar({ open: true, message: `Leave ${confirmDialog.status}`, severity: 'success' });
+      setConfirmDialog({ open: false, leaveId: null, status: '' });
       fetchLeaves();
     } catch (error) {
-      console.error(`Error updating leave status to ${status}:`, error);
+      setSnackbar({ open: true, message: 'Error updating leave', severity: 'error' });
     }
   };
 
@@ -48,74 +57,87 @@ const ManageLeaves = () => {
     setPage(0);
   };
 
-  return (
-    <Box sx={{ pl: 6, pr: 6, mt: '60px' }}>
-      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>Leave Management</Typography>
+  const handleFilter = () => {
+    let filtered = [...leaves];
+    if (statusFilter !== 'All') {
+      filtered = filtered.filter(l => l.status === statusFilter);
+    }
+    setFilteredLeaves(filtered);
+    setPage(0);
+  };
 
-      <TableContainer component={Paper} sx={{
-        maxHeight: '462px',
-        overflowY: 'auto',
-        boxShadow: "rgba(0, 0, 0, 0.1) 0px 2px 12px",
-      }}>
-        <Table stickyHeader aria-label="leaves table">
-          <TableHead sx={{ backgroundColor: '#f4f7fe', height:"80px" }} >
+  useEffect(() => {
+    handleFilter();
+  }, [statusFilter, leaves]);
+
+  return (
+    <Box sx={{ p: 7 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', mb: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold', mb: { xs: 1, sm: 0 } }}>
+          Leave Management
+        </Typography>
+        <FormControl size="small" sx={{ minWidth: 180 }}>
+          <InputLabel id="status-filter-label">Filter by Status</InputLabel>
+          <Select
+            labelId="status-filter-label"
+            value={statusFilter}
+            label="Filter by Status"
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            {['All', 'Pending', 'Approved', 'Rejected'].map((status) => (
+              <MenuItem key={status} value={status}>{status}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
+      <TableContainer component={Paper} sx={{ maxHeight: 460, mb: 2 }}>
+        <Table stickyHeader>
+          <TableHead>
             <TableRow>
               <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Employee ID</TableCell>
               <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Leave Type</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Start Date</TableCell>
-              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>End Date</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Start Date</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>End Date</TableCell>
               <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Reason</TableCell>
-              <TableCell align="left" sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {leaves.length > 0 ? (
-              leaves
+            {filteredLeaves.length > 0 ? (
+              filteredLeaves
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((leave, index) => (
-                  <TableRow key={index} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
-                    <TableCell align='center'>{leave.employeeId}</TableCell>
-                    <TableCell align='left'>{leave.leave_type}</TableCell>
-                    <TableCell align='left'>{new Date(leave.start_date).toLocaleDateString('en-GB')}</TableCell>
-                    <TableCell align='left'>{new Date(leave.end_date).toLocaleDateString('en-GB')}</TableCell>
-                    <TableCell align='left'>{leave.reason}</TableCell>
-                    <TableCell align="left">
+                  <TableRow key={index}>
+                    <TableCell align="center">{leave.employeeId}</TableCell>
+                    <TableCell align="left">{leave.leave_type}</TableCell>
+                    <TableCell align="center">{new Date(leave.start_date).toLocaleDateString('en-GB')}</TableCell>
+                    <TableCell align="center">{new Date(leave.end_date).toLocaleDateString('en-GB')}</TableCell>
+                    <TableCell align="left">{leave.reason}</TableCell>
+                    <TableCell align="center">
                       {leave.status === 'Pending' ? (
                         <>
-                          <Button
-                            variant="contained"
-                            color="success"
-                            onClick={() => handleUpdateStatus(leave.id, 'Approved')}
-                            sx={{ mr: 1 }}
-                          >
+                          <Button size="small" color="success" variant="contained" sx={{ mr: 1 }}
+                            onClick={() => setConfirmDialog({ open: true, leaveId: leave.id, status: 'Approved' })}>
                             Approve
                           </Button>
-                          <Button
-                            variant="contained"
-                            color="error"
-                            onClick={() => handleUpdateStatus(leave.id, 'Rejected')}
-                          >
+                          <Button size="small" color="error" variant="contained"
+                            onClick={() => setConfirmDialog({ open: true, leaveId: leave.id, status: 'Rejected' })}>
                             Reject
                           </Button>
                         </>
                       ) : (
-                        <Chip
-                          label={leave.status}
-                          color={
-                            leave.status === 'Approved' ? 'success' :
-                              leave.status === 'Rejected' ? 'error' : 'warning'
-                          }
-                          style={{ width: "100px", minWidth: "unset"}}
-                        />
+                        <Chip label={leave.status} color={
+                          leave.status === 'Approved' ? 'success' :
+                            leave.status === 'Rejected' ? 'error' : 'warning'
+                        } />
                       )}
                     </TableCell>
                   </TableRow>
                 ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
-                  No leave records found
-                </TableCell>
+                <TableCell colSpan={6} align="center">No leave records found</TableCell>
               </TableRow>
             )}
           </TableBody>
@@ -124,16 +146,47 @@ const ManageLeaves = () => {
 
       <TablePagination
         component="div"
-        count={leaves.length}
+        count={filteredLeaves.length}
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
       />
+
+      <Dialog
+        open={confirmDialog.open}
+        onClose={() => setConfirmDialog({ open: false, leaveId: null, status: '' })}
+      >
+        <DialogTitle>Confirm {confirmDialog.status}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to {confirmDialog.status.toLowerCase()} this leave request?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDialog({ open: false, leaveId: null, status: '' })} variant='outlined' >Cancel</Button>
+          <Button onClick={handleUpdateStatus} autoFocus variant='outlined' color={confirmDialog.status === 'Approved' ? 'success' : 'error'}>
+            Yes, {confirmDialog.status}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
 export default ManageLeaves;
-

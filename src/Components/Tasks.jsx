@@ -248,21 +248,21 @@ const Tasks = () => {
         <Table stickyHeader aria-label="partner tasks table">
           <TableHead>
             <TableRow>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Title</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Description</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Status</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Assigned To</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Due Date</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Created By</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold' }}>Actions</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Title</TableCell>
+              <TableCell align='left' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Description</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Status</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Assigned To</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Due Date</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Created By</TableCell>
+              <TableCell align='center' sx={{ fontWeight: 'bold', fontSize: '16px', color: 'black' }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {tasks.length > 0 ? (
               tasks.map((task) => (
                 <TableRow key={task.id}>
-                  <TableCell align="center">{task.title}</TableCell>
-                  <TableCell align="center">{task.description}</TableCell>
+                  <TableCell align="left">{task.title}</TableCell>
+                  <TableCell align="left">{task.description}</TableCell>
                   <TableCell align="center">{task.status}</TableCell>
                   <TableCell align="center">
                     <Chip
